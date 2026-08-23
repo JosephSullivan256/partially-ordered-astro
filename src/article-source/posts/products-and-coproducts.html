@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        let darkmode = false;
+        if(localStorage.getItem('dark-mode')){
+            darkmode = localStorage.getItem('dark-mode')=='enabled';
+        }
+
+        if(darkmode) {
+            document.documentElement.classList.toggle("dark-mode")
+        }
+
+        window.addEventListener("load", ()=>{
+            let darkcheckbox = document.getElementById("dark-mode");
+            darkcheckbox.checked = darkmode;
+
+            darkcheckbox.addEventListener("change", ()=>{
+                darkmode = !darkmode;
+                if(darkmode) {
+                    localStorage.setItem('dark-mode', 'enabled')
+                } else {
+                    localStorage.setItem('dark-mode', 'disabled')
+                }
+
+                document.documentElement.classList.toggle("dark-mode");
+            });
+        })
+
+    </script>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/mystyles.css">
+    <link rel="stylesheet" href="/static/node_modules/%40fortawesome/fontawesome-free/css/all.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="author" content="Joseph Sullivan">
+<title>Products and Coproducts</title>
+<style>
+header {
+  margin-bottom: 4em;
+  text-align: center;
+}
+hr {
+  background-color: #1a1a1a;
+  border: none;
+  height: 1px;
+  margin: 1em 0
+}
+#TOC {
+	line-height: 100%;
+}
+</style>
+<script>
+	window.MathJax = {
+		tex: {
+			tags: "ams",
+			inlineMath: [ ["\\\(","\\\)"] ],
+			displayMath: [ ['$$','$$'],["\\[","\\]"] ],
+			processEscapes: true,
+			processEnvironments: true,
+			packages: ['base', 'color', 'ams', 'physics']
+		},
+		loader: {
+			load: ['[tex]/color', '[tex]/ams', '[tex]/physics']
+		}
+	};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+
+
+</head>
+<body>
+
+    
+<section class="hero">
+    <div class="hero-body">
+        <nav class="breadcrumb is-centered is-medium" aria-label="breadcrumbs">
+            <ul>
+                
+                    
+                        <li><a href="/">index</a></li>
+                    
+                
+                    
+                        <li><a href="/posts">posts</a></li>
+                    
+                
+                    
+                        <li class="is-active"><a href="#">Products and Coproducts</a></li>
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</section>
+
+    <section class="section post">
+            <div class="content serif reading-margins">
+                <header id="title-block-header">
+<h1 class="title">Products and Coproducts</h1>
+<p class="author">Joseph Sullivan</p>
+<p class="date">December 2021</p>
+</header>
+<h1 id="background-on-categories">Background on Categories</h1>
+<div class="remark">
+<p><strong>Remark 1</strong>.  Before reading the formal definition of a category, keep in mind the big picture and some examples.</p>
+<p>A category is just a collection of objects and arrows (called morphisms) between them. There’s the category <span class="math inline">\(\mathsf{Top}\)</span> which has objects being topological spaces, and morphisms being continuous maps (i.e., an arrow for each continuous map). There’s the category <span class="math inline">\(\mathsf{Group}\)</span> which has objects being groups, and morphisms being group homomorphisms.</p>
+<p>At the same time, a category is a very general definition, and some unexpected things can actually fit the axioms. In general we think of morphisms as being functions, but there are examples where morphisms aren’t literally functions, which we’ll get into later.</p>
+</div>
+<div class="definition">
+<p><strong>Definition 1</strong> (Categories Part (1)).  A <strong>category</strong> <span class="math inline">\(\mathcal{C}\)</span> is a structure consisting of</p>
+<ul>
+<li><p>A collection <span class="math inline">\(\mathop{\mathrm{Ob}}(\mathcal{C})\)</span> called the <strong>objects of <span class="math inline">\(\mathcal{C}\)</span></strong></p></li>
+<li><p>For any <span class="math inline">\(A,B\in \mathop{\mathrm{Ob}}(\mathcal{C})\)</span>, a collection <span class="math inline">\(\mathop{\mathrm{Hom}}_\mathcal{C}(A,B)\)</span> called the <strong>morphisms from <span class="math inline">\(A\)</span> to <span class="math inline">\(B\)</span></strong> or the <strong>Hom set of <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span></strong></p></li>
+<li><p>For any <span class="math inline">\(A\in \mathop{\mathrm{Ob}}(\mathcal{C})\)</span>, a morphism <span class="math inline">\(\mathrm{id}_A \in \mathop{\mathrm{Hom}}_\mathcal{C}(A,A)\)</span> called the <strong>identity morphism</strong> of <span class="math inline">\(A\)</span>.</p></li>
+</ul>
+<p>and for any <span class="math inline">\(A,B,C\in \mathop{\mathrm{Ob}}(\mathcal{C})\)</span> we have an assignment called <strong>composition</strong> <span class="math display">\[\circ: \mathop{\mathrm{Hom}}_\mathcal{C}(A,B) \times \mathop{\mathrm{Hom}}_\mathcal{C}(B,C) \to \mathop{\mathrm{Hom}}_\mathcal{C}(A,C)\]</span> which sends <span class="math inline">\(f,g \mapsto g\circ f\)</span>, called the <strong>composition</strong> of <span class="math inline">\(f\)</span> and <span class="math inline">\(g\)</span>. We define some notation before writing the axioms for a category.</p>
+</div>
+<div class="remark">
+<p><strong>Remark 2</strong>.  We outline some notation.</p>
+<ul>
+<li><p>Instead of writing <span class="math inline">\(A\in \mathop{\mathrm{Ob}}(\mathcal{C})\)</span>, we often just write <span class="math inline">\(A\in \mathcal{C}\)</span>.</p></li>
+<li><p>Instead of writing <span class="math inline">\(f\in \mathop{\mathrm{Hom}}_\mathcal{C}(A,B)\)</span>, we often just write <span class="math inline">\(f\in \mathop{\mathrm{Hom}}(A,B)\)</span> when <span class="math inline">\(\mathcal{C}\)</span> is clear, or just <span class="math inline">\(f: A\to B\)</span>.</p></li>
+<li><p>For <span class="math inline">\(f:A\to B\)</span>, we call <span class="math inline">\(A\)</span> the <strong>domain</strong> of <span class="math inline">\(f\)</span> and <span class="math inline">\(B\)</span> the <strong>codomain</strong> of <span class="math inline">\(f\)</span>.</p></li>
+<li><p>Instead of writing <span class="math inline">\(g\circ f\)</span> for <span class="math inline">\(f:A\to B\)</span>, <span class="math inline">\(g:B\to C\)</span>, we often just write <span class="math inline">\(gf\)</span> (unless this could be confused for a coordinate-wise product in certain categories).</p></li>
+</ul>
+</div>
+<div class="definition">
+<p><strong>Definition 2</strong> (Categories Part (2)).  Here are the axioms for a category.</p>
+<ul>
+<li><p>For any morphism <span class="math inline">\(f: A\to B\)</span>, <span class="math display">\[\mathrm{id}_B \circ f = f\circ \mathrm{id}_A = f.\]</span></p></li>
+<li><p>For any morphisms <span class="math inline">\(f: A\to B\)</span>, <span class="math inline">\(g:B\to C\)</span>, <span class="math inline">\(h:C\to D\)</span>, <span class="math display">\[(h\circ g)\circ f = h\circ (g\circ f),\]</span> i.e., composition is associative.</p></li>
+</ul>
+</div>
+<div class="example">
+<p><strong>Example 1</strong>.  Let’s go over some examples of some standard categories.</p>
+<ul>
+<li><p><span class="math inline">\(\mathsf{Group}\)</span> is the category of groups, where <span class="math inline">\(\mathop{\mathrm{Ob}}(\mathsf{Group})\)</span> is the collection of all groups, and for <span class="math inline">\(G,H\)</span> being groups, <span class="math inline">\(\mathop{\mathrm{Hom}}(G,H)\)</span> is the set of all group homomorphisms from <span class="math inline">\(G\)</span> to <span class="math inline">\(H\)</span>. For any group <span class="math inline">\(G\)</span>, the identity morphism <span class="math inline">\(\mathrm{id}_G\)</span> is just the identity group homomorphism <span class="math inline">\(\mathrm{id}_G\)</span>.</p>
+<p>To be extra careful, we should check the axioms, but they are pretty clear when morphisms are literally functions—composing with an identity function does nothing, and function composition is associative.</p></li>
+<li><p><span class="math inline">\(\mathsf{Top}\)</span> is the category of topological spaces. Objects are topological spaces, morphisms are continuous maps, and the identity morphism of <span class="math inline">\(X\)</span> is just the identity map of <span class="math inline">\(X\)</span>.</p></li>
+<li><p>We could go on listing more familiar things. <span class="math inline">\(\mathsf{Ring}\)</span> is the category of rings (please, please take the convention that rings have identity—otherwise call them rngs) with ring homomorphisms, <span class="math inline">\(\mathsf{Mod}_R\)</span> is the category of modules with module homomorphisms, <span class="math inline">\(\mathsf{Set}\)</span> is the category of sets with functions, etc.</p></li>
+</ul>
+</div>
+<div class="example">
+<p><strong>Example 2</strong>.  Let’s now mention some weird categories to emphasize that morphisms need not be functions.</p>
+<ul>
+<li><p>Let’s just construct a finite category with our hands. I’ll draw a picture. In general we normally picture categories as directed graphs of sorts, just like when we draw commutative diagrams in algebra.</p>
+<div class="center">
+<p><img src="tikz-images/9742a220a027e564c69980fcd8454f587bfb07c9.svg" style="display:block; margin:auto; height: calc(1.7*30px)" /></p>
+</div>
+<p>We then define our category <span class="math inline">\(\mathcal{C}\)</span> based to match our picture. We say <span class="math display">\[\mathop{\mathrm{Ob}}(\mathcal{C}) = \{A,B\},\]</span> and (adding in the not drawn identity morphisms that are required by the axioms) <span class="math display">\[\mathop{\mathrm{Hom}}(A,A) = \{\mathrm{id}_A\}, \qquad \mathop{\mathrm{Hom}}(B,B) = \{\mathrm{id}_B\}, \qquad \mathop{\mathrm{Hom}}(A,B) = \{f\}.\]</span> Now, we need to define composition. There aren’t very many possible compositions (because domain and codomain need to match), so it won’t take long to just write them all down: <span class="math display">\[\mathrm{id}_A\circ \mathrm{id}_A = \mathrm{id}_A, \quad f\circ \mathrm{id}_A = f, \quad \mathrm{id}_B \circ f = f, \quad \mathrm{id}_B \circ \mathrm{id}_B = \mathrm{id}_B.\]</span> You can check that this satisfies identity morphisms being identities for composition, and composition being associative (i.e., the category axioms). Thus, we’ve just defined a category without our objects being sets or our morphisms being functions.</p></li>
+<li><p>Generalizing our previous example, we can define a category given any directed graph. We take our objects to be the vertices, and our morphisms to be the arrows closed under adding identity morphisms and compositions of arrows (i.e., given</p>
+<div class="center">
+<p><img src="tikz-images/69a88e6d3071b42f49f368ffb3f0d6ce49c10a4d.svg" style="display:block; margin:auto; height: calc(1.7*40px)" /></p>
+</div>
+<p>we would need to say <span class="math inline">\(\mathop{\mathrm{Hom}}(A,C)\)</span> includes <span class="math inline">\(g\circ f\)</span>).</p></li>
+</ul>
+</div>
+<p>Here’s one more definition that we’ll need.</p>
+<div class="definition">
+<p><strong>Definition 3</strong>.  Let <span class="math inline">\(\mathcal{C}\)</span> be a category. A morphism <span class="math inline">\(f:A\to B\)</span> is called an <strong>isomorphism</strong> if there exists a morphism <span class="math inline">\(g:B\to A\)</span> such that <span class="math inline">\(g\circ f = \mathrm{id}_A\)</span>, <span class="math inline">\(f\circ g = \mathrm{id}_B\)</span> (i.e., there exists an inverse morphism).</p>
+</div>
+<h1 id="products-and-coproducts">Products and Coproducts</h1>
+<div class="remark">
+<p><strong>Remark 3</strong>.  Our goal is to understand what it means for something to be a product/coproduct in the category theory sense, and then see how this perspective can help us prove some things in topology.</p>
+</div>
+<h2 id="products">Products</h2>
+<div class="remark">
+<p><strong>Remark 4</strong> (Intuition).  You’ve definitely seen some products before. The cartesian product of two sets <span class="math inline">\(A,B\)</span> is a new set <span class="math display">\[A\times B = \{(a,b) \mid a\in A, b\in B\}.\]</span></p>
+<p>The product of topological spaces <span class="math inline">\(X,Y\)</span> is the cartersian of the underlying sets <span class="math inline">\(X\times Y\)</span>, with the topology generated (i.e., having subbasis) sets <span class="math inline">\(U\times Y\)</span>, <span class="math inline">\(X\times V\)</span> for <span class="math inline">\(U\subseteq X\)</span> open, <span class="math inline">\(V\subseteq Y\)</span> open. This is kind of a weird way to phrase it, but it turns out to be useful later. This is exactly the same as the topology generated by <span class="math inline">\(U\times V\)</span> for <span class="math inline">\(U,V\)</span> open, since we can get <span class="math inline">\(U\times V\)</span> by doing <span class="math display">\[U\times Y \cap X\times V.\]</span></p>
+<p>We can also talk about products of groups, rings, etc. All of these constructions feel kinda natural in some sense. For starters, these constructions make it so the projection maps are morphisms in the appropriate category (i.e., functions, continuous maps, group/ring homomorphisms). However, this is clearly not a sufficient requirement. For example, <span class="math inline">\(\mathbb{Z}\times \mathbb{Z}\times \mathbb{Z}/2\mathbb{Z}\)</span> has two projection maps to <span class="math inline">\(\mathbb{Z}\)</span>, but this thing is definitely not the product of <span class="math inline">\(\mathbb{Z}\times \mathbb{Z}\)</span>.</p>
+<p>In category theory we like to zoom out and talk about objects and morphisms, usually trying to somewhat avoid talking about elements of objects. Can we come up with a category theoretic definition of product that somehow encapsulates all of these examples? It probably should say something about these projection maps, but what should it say?</p>
+</div>
+<div class="definition">
+<p><strong>Definition 4</strong> (Universal Property of Products).  Let <span class="math inline">\(\mathcal{C}\)</span> be a category, and <span class="math inline">\(A,B\in \mathcal{C}\)</span>. We say that <span class="math inline">\(P\)</span> is a <strong>product</strong> of <span class="math inline">\(A,B\)</span> if there exist morphisms <span class="math inline">\(\pi_A: P\to A\)</span>, <span class="math inline">\(\pi_B: P\to B\)</span> called <strong>projection morphisms</strong> such that for any <span class="math inline">\(C\in \mathcal{C}\)</span> with morphisms <span class="math inline">\(f_A: C\to A\)</span>, <span class="math inline">\(f_B: C\to B\)</span>, there exists a unique morphism <span class="math inline">\(f: C\to P\)</span> that makes the following diagram commutes.</p>
+<div class="center">
+<p><img src="tikz-images/f13ee264293b46205681648bfecfa5eb7954eef9.svg" style="display:block; margin:auto; height: calc(1.7*65px)" /></p>
+</div>
+<p>We often denote the product <span class="math inline">\(P\)</span> by <span class="math inline">\(A\times B\)</span>.</p>
+</div>
+<div class="remark">
+<p><strong>Remark 5</strong>.  So that’s a lot of text, and we should make some comments.</p>
+<p>First, this universal property holds for the product constructions that we’re familiar with. For example, if <span class="math inline">\(A,B,C\)</span> are sets, and we have a functions <span class="math inline">\(f_A: C\to A\)</span> and <span class="math inline">\(f_B: C\to B\)</span>, we can assemble these two coordinate functions into a single function <span class="math inline">\(f:C\to A\times B\)</span> defined by <span class="math inline">\(f(c) = (f_A(c),f_A(c))\)</span>.</p>
+<p>Second, we said “a” product, not “the” product. For starters, there are some categories where certain objects do not have products. Still, we’ll eventually see that the product (if it exists) is unique up to unique isomorphism that makes the projections commute. So this makes it so products are pretty much unique, but not quite. We’ll usually say “the” anyways.</p>
+<p>For example, if <span class="math inline">\(\varphi: C\to A\times B\)</span> is an isomorphism between an object <span class="math inline">\(C\)</span> and the product <span class="math inline">\(A\times B\)</span>, then we could also <span class="math inline">\(C\)</span> is a product with projections <span class="math inline">\(\pi_A\circ \varphi, \pi_B \circ \varphi\)</span>.</p>
+</div>
+<div class="exercise">
+<p><strong>Exercise 1</strong>.  Prove that the product of topological spaces is the categorical product.</p>
+</div>
+<div class="remark">
+<p><strong>Remark 6</strong>.  I’m going to be a little bit intentionally vague in this remark. It’ll be more clear in the actual proof of uniqueness. I just wanted to get some motivation down first.</p>
+<p>Let’s turn our attention to uniqueness of the product. Our definition of a categorical product is an example of a <strong>universal property</strong>. There’s a precise definition of universal property somewhere out there, but it’s not worth getting at for now (I’m not even sure what it is either). Essentially, something has a universal property when we have a condition that says “whenever <span class="math inline">\(-\)</span> morphisms exist, then there exists a unique morphism <span class="math inline">\(-\)</span> such that <span class="math inline">\(-\)</span> commutes”.</p>
+<p>Then, there’s a common strategy to prove that an object with a universal property is unique up to unique isomorphism (that makes some diagram commute). Given two objects <span class="math inline">\(C,D\)</span> with the universal property, we use the universal property to come up with a morphism <span class="math inline">\(C\to D\)</span> and a morphism <span class="math inline">\(D\to C\)</span>, and then we use uniqueness to argue that the composition <span class="math inline">\(C\to D\to C\)</span> is just the identity morphism.</p>
+</div>
+<div class="theorem">
+<p><strong>Theorem 1</strong>.  Let <span class="math inline">\(\mathcal{C}\)</span> be a category, and let <span class="math inline">\(A,B\in \mathcal{C}\)</span>. Let <span class="math inline">\(P\)</span> (with projections <span class="math inline">\(\pi_A,\pi_B\)</span>) and <span class="math inline">\(P&#39;\)</span> (with projections <span class="math inline">\(\pi_A&#39;, \pi_B&#39;\)</span>) be products of <span class="math inline">\(A,B\)</span>. Then, there exists a unique isomorphism <span class="math inline">\(f: P\to P&#39;\)</span> such that the following commutes</p>
+<div class="center">
+<p><img src="tikz-images/9e645ccc7e14fd3d46dce5d58ad17e487561ad73.svg" style="display:block; margin:auto;height: calc(1.7*70px)" /></p>
+</div>
+<p>(i.e., we can do projections before or after the isomorphism).</p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> We want to find morphisms <span class="math inline">\(f: P\to P&#39;\)</span>, <span class="math inline">\(g: P&#39;\to P\)</span> such that <span class="math inline">\(g\circ f = \mathrm{id}_P\)</span>, <span class="math inline">\(f\circ g = \mathrm{id}_{P&#39;}\)</span>, i.e., we’re trying to find an isomorphism.</p>
+<p>To find these morphisms, our strategy is to project <span class="math inline">\(P\)</span> down to <span class="math inline">\(A,B\)</span>, and then put the projections together (using the universal property of <span class="math inline">\(P&#39;\)</span>) to get a morphism <span class="math inline">\(P\to P&#39;\)</span>.</p>
+<p>More precisely, since <span class="math inline">\(P\)</span> has morphisms <span class="math inline">\(\pi_A,\pi_B\)</span> to <span class="math inline">\(A,B\)</span>, and since <span class="math inline">\(P&#39;\)</span> is a categorical product, we get a morphism <span class="math inline">\(f:P\to P&#39;\)</span> such that the following commutes.</p>
+<div class="center">
+<p><img src="tikz-images/9e645ccc7e14fd3d46dce5d58ad17e487561ad73.svg" style="display:block; margin:auto; height: calc(1.7*70px)" /></p>
+</div>
+<p>Similarly, <span class="math inline">\(P&#39;\)</span> has morphisms <span class="math inline">\(\pi_A&#39;, \pi_B&#39;\)</span> to <span class="math inline">\(A,B\)</span>, and <span class="math inline">\(P\)</span> is a categorical product, so we get a morphism <span class="math inline">\(g: P&#39;\to P\)</span> such that the following commutes.</p>
+<div class="center">
+<p><img src="tikz-images/55d02ec4d63be7fe499e0335304777c851369de2.svg" style="display:block; margin:auto;height: calc(1.7*65px)" /></p>
+</div>
+<p>Now, we want to show <span class="math inline">\(g\circ f = \mathrm{id}_P\)</span>, and by symmetry we also get <span class="math inline">\(f\circ g = \mathrm{id}_{P&#39;}\)</span>. The key is to use the uniqueness part of the universal property of products. The fact that our two diagrams commute tells us that the following larger diagram commutes.</p>
+<div class="center">
+<p><img src="tikz-images/82fb3544456301faa4084cc40ff08dd8f61ec794.svg" style="display:block; margin:auto; height: calc(1.7*135px)" /></p>
+</div>
+<p>Just looking at the outside and middle arrows, we have the following commutative diagram.</p>
+<div class="center">
+<p><img src="tikz-images/598b829edd92355930eef748859b2b3ea79f1361.svg" style="display:block; margin:auto; height: calc(1.7*65px)" /></p>
+</div>
+<p>We also observe that the identity morphism <span class="math inline">\(\mathrm{id}_P\)</span> instead of <span class="math inline">\(g\circ f\)</span> also makes the diagram, so by the (uniqueness part) universal property of products applied to <span class="math inline">\(P\)</span>, this tells us <span class="math inline">\(\mathrm{id}_P = g\circ f\)</span>. ◻</p>
+</div>
+<h2 id="coproducts">Coproducts</h2>
+<div class="remark">
+<p><strong>Remark 7</strong> (Intuition).  We saw before that products generalize cartesian products. In the same way, coproducts generalize disjoint unions. Roughly speaking, a coproduct is the free-est way to put together two objects in a category. In particular, we’ll see later that direct sums are an example of coproducts.</p>
+<p>First things first, we should clarify what we mean by a disjoint union. There’s a slightly annoying abuse of notation that goes on here. You might have heard of internal/external direct sum—we’re going to have the same problem.</p>
+</div>
+<div class="definition">
+<p><strong>Definition 5</strong>.  We define what I’m referring to as internal/external disjoint union.</p>
+<ul>
+<li><p>Let <span class="math inline">\(X\)</span> be a set, <span class="math inline">\(A,B\subseteq X\)</span> such that <span class="math inline">\(A\cap B=\emptyset\)</span> and <span class="math inline">\(A\cup B = X\)</span>. Then, we say <span class="math inline">\(X\)</span> is the <strong>(internal) disjoint union</strong> of <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span>, and we write <span class="math display">\[X = A\sqcup B\]</span></p></li>
+<li><p>Let <span class="math inline">\(A,B\)</span> be sets. We define the <strong>(external) disjoint union</strong> of <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> to be the set <span class="math display">\[\begin{aligned}
+            A\sqcup B &amp;\overset{\text{def}}{=}(A\times\{0\}) \cup (B\times \{1\})\\
+            &amp;= \{(a,0) \mid a\in A\} \cup \{(b,1) \mid b\in B\}.
+        \end{aligned}\]</span></p></li>
+</ul>
+</div>
+<div class="remark">
+<p><strong>Remark 8</strong>.  In case of external disjoint unions, we put together two sets <span class="math inline">\(A,B\)</span> that might overlap, but we assert that their elements be different in the disjoint union by “tagging” them with either a <span class="math inline">\(0\)</span> or a <span class="math inline">\(1\)</span>. These tagged versions of <span class="math inline">\(A,B\)</span> are still in bijection with <span class="math inline">\(A,B\)</span>.</p>
+</div>
+<div class="definition">
+<p><strong>Definition 6</strong> (Universal Property of Coproducts).  Let <span class="math inline">\(\mathcal{C}\)</span> be a category, and let <span class="math inline">\(A,B\in \mathcal{C}\)</span>. We say that <span class="math inline">\(U\)</span> is a <strong>coproduct</strong> of <span class="math inline">\(A,B\)</span> of there exist morphisms <span class="math inline">\(i_A: A\to U, i_B: B\to U\)</span> called <strong>inclusion morphisms</strong> such that for any <span class="math inline">\(C\in \mathcal{C}\)</span> with morphisms <span class="math inline">\(g_A: A\to C\)</span>, <span class="math inline">\(g_B: B\to C\)</span> there exists a unique morphism <span class="math inline">\(g: U\to C\)</span> that makes the following diagram commute.</p>
+<div class="center">
+<p><img src="tikz-images/0bdbef1774ce1489c68df4274e7b36e48d844fa5.svg" style="display:block; margin:auto; height: calc(1.7*65px)" /></p>
+</div>
+<p>We often denote the coproduct <span class="math inline">\(U\)</span> by <span class="math inline">\(A\sqcup B\)</span>.</p>
+</div>
+<div class="remark">
+<p><strong>Remark 9</strong>.  As before, coproducts need not exist in every category, and they will only be unique up to unique isomorphism. We will see a proof of this later.</p>
+</div>
+<div class="exercise">
+<p><strong>Exercise 2</strong> (Easy).  Show that for sets <span class="math inline">\(A,B\)</span>, the disjoint union <span class="math inline">\(A\sqcup B\)</span> is a coproduct <span class="math inline">\(A,B\)</span>.</p>
+</div>
+<div class="exercise">
+<p><strong>Exercise 3</strong>.  Let <span class="math inline">\(A,B\)</span> be <span class="math inline">\(R\)</span>-modules. Show that <span class="math inline">\(A\oplus B\)</span> is a coproduct of <span class="math inline">\(A,B\)</span>.</p>
+<p><em>Hint.</em> The inclusion maps should be <span class="math inline">\(i_A: A\to A\oplus B\)</span> which sends <span class="math inline">\(i_A(a)=(a,0)\)</span>, and likewise for <span class="math inline">\(B\)</span>.</p>
+</div>
+<div class="remark">
+<p><strong>Remark 10</strong>.  We recall that the direct product and direct sum of finitely many <span class="math inline">\(R\)</span>-modules are isomorphic, i.e., <span class="math inline">\(A\times B \cong A\oplus B\)</span>. In some category, for objects <span class="math inline">\(A,B\)</span>, when the product and coproduct are isomorphic, we call it the <strong>biproduct</strong>. The category of <span class="math inline">\(R\)</span>-modules is a particularly nice category because it has all finite biproducts. It has lots of other nice properties too—it’s what’s called an <strong>abelian category</strong>.</p>
+</div>
+<div class="remark">
+<p><strong>Remark 11</strong>.  Before proving the uniqueness of coproducts, we’re going to go on a tangent about <strong>duality</strong> in category theory, which in the process will give us a nice proof of uniqueness of coproducts for free.</p>
+</div>
+<h2 id="duality">Duality</h2>
+<div class="remark">
+<p><strong>Remark 12</strong>.  Observe that the diagram giving the universal property of a coproduct has the same shape as that of products, except all of the arrows are reversed. We can actually take advantage of this symmetry to translate proofs about products into proofs of <strong>dual</strong> propositions about coproducts.</p>
+<p>For starters, we could just say, “take the proof of uniqueness of products, except flip all arrows, and then we have a proof of uniqueness of coproducts” (using the fact that “reversed” isomorphisms are still isomorphisms). So you could try to write down a proof of uniqueness of coproducts already.</p>
+<p>Instead, we’re going to do essentially the same thing with more formalism. If we have a category <span class="math inline">\(\mathcal{C}\)</span> and we want to prove uniqueness of coproducts in <span class="math inline">\(\mathcal{C}\)</span>, we’re going to cook up another category called <span class="math inline">\({\mathcal{C}}^{\mathrm{op}}\)</span>. Then, in <span class="math inline">\({\mathcal{C}}^{\mathrm{op}}\)</span>, coproducts of <span class="math inline">\(\mathcal{C}\)</span> are literally translated into products.</p>
+</div>
+<div class="definition">
+<p><strong>Definition 7</strong>.  Let <span class="math inline">\(\mathcal{C}\)</span> be a category. We define the <strong>opposite category</strong> <span class="math inline">\({\mathcal{C}}^{\mathrm{op}}\)</span> to be the category with objects <span class="math inline">\(\mathop{\mathrm{Ob}}(\mathcal{C})\)</span>, with morphisms <span class="math display">\[\mathop{\mathrm{Hom}}_{{\mathcal{C}}^{\mathrm{op}}}(A,B) = \mathop{\mathrm{Hom}}_\mathcal{C}(B,A).\]</span> Then, define composition <span class="math display">\[\circ: \mathop{\mathrm{Hom}}_{{\mathcal{C}}^{\mathrm{op}}}(A,B) \times \mathop{\mathrm{Hom}}_{{\mathcal{C}}^{\mathrm{op}}}(B,C) \longrightarrow \mathop{\mathrm{Hom}}_{{\mathcal{C}}^{\mathrm{op}}}(A,C)\]</span> by <span class="math inline">\(f,g \mapsto f\circ g\)</span> (this is composition given in <span class="math inline">\(\mathcal{C}\)</span>, and we can compose in this “backwards” way because the Hom sets are backwards).</p>
+</div>
+<div class="remark">
+<p><strong>Remark 13</strong>.  We make a few remarks.</p>
+<ul>
+<li><p>The opposite category is really is just taking a category, and flipping all of the arrows around. The thing to note is that reversing all the arrows still gives you a category—you should check the axioms and see that identities and associativity still works out.</p></li>
+<li><p>For <span class="math inline">\(f\in \mathop{\mathrm{Hom}}_\mathcal{C}(B,A)\)</span>, sometimes (for clarification) we write the corresponding morphism in <span class="math inline">\(\mathop{\mathrm{Hom}}_{{\mathcal{C}}^{\mathrm{op}}}(A,B)\)</span> by <span class="math inline">\({f}^{\mathrm{op}}\)</span>.</p></li>
+<li><p>The opposite category is an example of a category where the morphisms aren’t literally functions—they are just arrows that are “labeled” by functions, but the arrows are pointing opposite of the functions.</p></li>
+</ul>
+</div>
+<div class="example">
+<p><strong>Example 3</strong>.  Let’s run through <span class="math inline">\({\mathsf{Set}}^{\mathrm{op}}\)</span> for practice. The objects are still just sets. For example, we have objects <span class="math inline">\(\{0,1,2,3\}\)</span> and <span class="math inline">\(\{0\}\)</span>. In good ol’ <span class="math inline">\(\mathsf{Set}\)</span>, we have a morphism (function) <span class="math inline">\(f:\{0,1,2,3\} \to \{0\}\)</span> which sends everything to <span class="math inline">\(0\)</span>. Then, in <span class="math inline">\({\mathsf{Set}}^{\mathrm{op}}\)</span>, we have a morphism (<em>not</em> function) <span class="math inline">\({f}^{\mathrm{op}}: \{0\}\to \{0,1,2,3\}\)</span> which refers to the same function <span class="math inline">\(f\)</span>, but we just reversed the direction.</p>
+</div>
+<div class="exercise">
+<p><strong>Exercise 4</strong>.  Let <span class="math inline">\(\mathcal{C}\)</span> be a category, <span class="math inline">\(A,B\in \mathcal{C}\)</span>, and let <span class="math inline">\(P\)</span> be a product of <span class="math inline">\(A,B\)</span>. Show that <span class="math inline">\(P\)</span> is a coproduct of <span class="math inline">\(A,B\)</span> in <span class="math inline">\({\mathcal{C}}^{\mathrm{op}}\)</span>.</p>
+</div>
+<div class="exercise">
+<p><strong>Exercise 5</strong>.  Let <span class="math inline">\(\mathcal{C}\)</span> be a category, <span class="math inline">\(f: A\to B\)</span> a morphism in <span class="math inline">\(\mathcal{C}\)</span>. Prove that <span class="math inline">\(f:A\to B\)</span> is an isomorphism in <span class="math inline">\(\mathcal{C}\)</span> if and only if <span class="math inline">\({f}^{\mathrm{op}}: B\to A\)</span> is an isomorphism in <span class="math inline">\({\mathcal{C}}^{\mathrm{op}}\)</span>.</p>
+</div>
+<div class="exercise">
+<p><strong>Exercise 6</strong>.  Use exercises 4,5 to prove that coproducts are unique up to a unique isomorphism that commutes with inclusions.</p>
+</div>
+
+            </div>
+    </section>
+
+<footer class="footer">
+    <div class="content has-text-centered">
+        <p>
+            <label class="checkbox">
+            <input type="checkbox" id="dark-mode">
+                Dark Mode
+                <span class="icon is-small"><i class="fas fa-moon" aria-hidden="true"></i></span>
+            </label>
+        </p>
+        <p>
+            © 2023 Joseph Sullivan
+            <a href="https://github.com/JosephSullivan256"><span class="icon is-small"><i class="fab fa-github" aria-hidden="true"></i></span></a>&nbsp;
+            <a href="mailto: partiallyordered@gmail.com"><span class="icon is-small"><i class="fas fa-envelope" aria-hidden="true"></i></span></a>
+        </p>
+    </div>
+</footer>
+</body>
+</html>

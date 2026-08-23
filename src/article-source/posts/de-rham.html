@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        let darkmode = false;
+        if(localStorage.getItem('dark-mode')){
+            darkmode = localStorage.getItem('dark-mode')=='enabled';
+        }
+
+        if(darkmode) {
+            document.documentElement.classList.toggle("dark-mode")
+        }
+
+        window.addEventListener("load", ()=>{
+            let darkcheckbox = document.getElementById("dark-mode");
+            darkcheckbox.checked = darkmode;
+
+            darkcheckbox.addEventListener("change", ()=>{
+                darkmode = !darkmode;
+                if(darkmode) {
+                    localStorage.setItem('dark-mode', 'enabled')
+                } else {
+                    localStorage.setItem('dark-mode', 'disabled')
+                }
+
+                document.documentElement.classList.toggle("dark-mode");
+            });
+        })
+
+    </script>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/mystyles.css">
+    <link rel="stylesheet" href="/static/node_modules/%40fortawesome/fontawesome-free/css/all.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="author" content="Joseph Sullivan">
+<title>De Rham's Theorem</title>
+<style>
+header {
+  margin-bottom: 4em;
+  text-align: center;
+}
+hr {
+  background-color: #1a1a1a;
+  border: none;
+  height: 1px;
+  margin: 1em 0
+}
+#TOC {
+	line-height: 100%;
+}
+.lemma, .proposition, .definition, .remark, .theorem, .example {
+    border-style: solid;
+    border-width: 2px;
+    margin: 10px 0px;
+    padding: 0px 4px;
+}
+
+</style>
+<script>
+	window.MathJax = {
+		tex: {
+			tags: "ams",
+			inlineMath: [ ["\\\(","\\\)"] ],
+			displayMath: [ ['$$','$$'],["\\[","\\]"] ],
+			processEscapes: true,
+			processEnvironments: true,
+			packages: ['base', 'color', 'ams', 'physics']
+		},
+		loader: {
+			load: ['[tex]/color', '[tex]/ams', '[tex]/physics']
+		}
+	};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+
+
+</head>
+<body>
+
+    
+<section class="hero">
+    <div class="hero-body">
+        <nav class="breadcrumb is-centered is-medium" aria-label="breadcrumbs">
+            <ul>
+                
+                    
+                        <li><a href="/">index</a></li>
+                    
+                
+                    
+                        <li><a href="/posts">posts</a></li>
+                    
+                
+                    
+                        <li class="is-active"><a href="#">De Rham&#39;s Theorem</a></li>
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</section>
+
+    <section class="section post">
+            <div class="content serif reading-margins">
+                <header id="title-block-header">
+<h1 class="title">De Rham’s Theorem</h1>
+<p class="author">Joseph Sullivan</p>
+<p class="date">31 December 2023</p>
+</header>
+<h1 id="introduction">Introduction</h1>
+<p>We want to prove <em>de Rham’s Theorem</em>, which states that for a
+smooth <span class="math inline">\(n\)</span>-manifold <span
+class="math inline">\(M\)</span>, there is a natural isomorphism <span
+class="math inline">\(H_{\mathrm{dR}}^p(M)\cong
+H^p(M;\mathbb{R})\)</span> from the de Rham cohomology to the singular
+cohomology.</p>
+<p><strong>Quick Review.</strong> We recall that de Rham cohomology is
+by definition of the cohomology of the cochain complex <span
+class="math display">\[0\to \Omega^0(M) = C^\infty(M) \xrightarrow{d}
+\Omega^1(M) \xrightarrow{d} \Omega^2(M) \rightarrow \cdots \rightarrow
+\Omega^n(M) \to 0,\]</span> i.e., the de Rham cohomology groups are
+closed differential <span class="math inline">\(p\)</span>-forms (<span
+class="math inline">\(d\omega = 0\)</span>) modulo exact differential
+<span class="math inline">\(p\)</span>-forms (<span
+class="math inline">\(\omega = d\eta\)</span>).</p>
+<p><strong>Why should we expect de Rham’s theorem?</strong> Without
+proving anything, one might already expect some relation between de Rham
+cohomology and singular cohomology. Differential <span
+class="math inline">\(p\)</span>-forms assign values to <span
+class="math inline">\(p\)</span>-dimensional submanifolds (by
+integration), and cochains assign values to <span
+class="math inline">\(p\)</span>-dimensional chains. Both cohomologies
+measure the extent to which forms/cochains fail to come from lower
+dimensional forms/cochains. Both cohomologies have Mayer-Vietoris
+theorems that say how to find the cohomology of a space by gluing open
+sets.</p>
+<p><strong>What are the hurdles?</strong> The proof of de Rham’s theorem
+mimics some classic proofs in algebraic topology—induction on
+Mayer-Vietoris. After we define the de Rham homomorphism <span
+class="math inline">\(H_\mathrm{dR}^p(M)\to H^p(M)\)</span>, we’re
+primarily worried about two things:</p>
+<ul>
+<li><p>What if singular cohomology has too many more cocycles or de Rham
+cohomology has too few coboundaries? We need a “base case” for the
+induction to say that this doesn’t happen on some basic
+manifolds.</p></li>
+<li><p>What if <span class="math inline">\(\delta\)</span> (for the
+singular cochain complex) and <span class="math inline">\(d\)</span> (in
+the de Rham complex) work totally differently? We need to show that the
+de Rham homomorphism commutes with the connecting map for Mayer Vietoris
+(which is made from <span class="math inline">\(\delta\)</span>/<span
+class="math inline">\(d\)</span>).</p></li>
+</ul>
+<h1 id="defining-the-de-rham-homomorphism">Defining the de Rham
+Homomorphism</h1>
+<h2 id="smooth-simplices-and-singular-homology">Smooth Simplices and
+Singular Homology</h2>
+<p>In order to define the de Rham homomorphism, we want to say that
+singular cohomology with <span class="math inline">\(\mathbb{R}\)</span>
+coefficients is dual to <em>smooth</em> singular homology, rather than
+just continuous singular homology.</p>
+<div class="defn">
+<p><strong>Definition 1</strong>. </p>
+<ul>
+<li><p>A <strong>smooth simplex</strong> in <span
+class="math inline">\(M\)</span> is a smooth map <span
+class="math inline">\(\sigma: \Delta^p \to M\)</span>, where <span
+class="math inline">\(\Delta^p\)</span> is considered as a manifold with
+corners.</p></li>
+<li><p>Let <span class="math inline">\(C_p^\infty(M) \leq
+C_p(M)\)</span> be subgroup consisting of chains which are formal sums
+of smooth simplices. An element of <span
+class="math inline">\(C_p^\infty(M)\)</span> is called a <strong>smooth
+chain</strong>.</p></li>
+</ul>
+<p>Then, the boundary map <span class="math inline">\(\partial: C_p(M)
+\to C_{p-1}(M)\)</span> satisfies <span
+class="math inline">\(\partial(C^\infty_p(M)) \subseteq
+C^\infty_{p-1}(M)\)</span>, so we can restrict it to smooth chains to
+get a chain complex <span class="math display">\[\cdots \to
+C_p^\infty(M) \xrightarrow{\partial} C_{p-1}^\infty(M) \to \cdots \to
+C_1^\infty(M) \xrightarrow{\partial} C_0^\infty(M) \to 0,\]</span> and
+we can define the <strong>smooth singular homology group of <span
+class="math inline">\(M\)</span></strong> as <span
+class="math display">\[H_p^\infty(M) \cong \frac{\ker(\partial:
+C_p^\infty(M) \to C_{p-1}^\infty(M))}{\mathop{\mathrm{im}}(\partial:
+C_{p+1}^\infty(M) \to C_p^\infty(M))}.\]</span></p>
+</div>
+<p>We black-box the following theorem.</p>
+<div class="thm">
+<p><strong>Theorem 1</strong>. <em>The inclusion chain map <span
+class="math inline">\(i_\#: C_\#^\infty(M) \to C_\#(M)\)</span> is a
+chain homotopy equivalence. In particular, <span
+class="math display">\[H_p^\infty(M) \cong H_p(M),\]</span> given by
+<span class="math inline">\([\sigma] \mapsto [\sigma]\)</span>.</em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> The proof is technical—the idea is to write an
+inverse map sending each singular simplex to a smooth singular simplex,
+such that the assignment respects the boundary map. Then, one needs to
+write a homotopy from the newly constructed smooth singular simplex to
+the original singular simplex. ◻</p>
+</div>
+<h2 id="evaluating-forms-on-smooth-chains">Evaluating Forms on Smooth
+Chains</h2>
+<p>The point of the previous theorem is that we can replace our study of
+chains with smooth chains when studying manifolds. Our ultimate goal is
+to replace cochains with differential forms, so just as we evaluate
+cochains on chains, we define how to evaluate forms on smooth
+chains.</p>
+<p>In other words, we extend our notion of integrating <span
+class="math inline">\(n\)</span>-forms over <span
+class="math inline">\(n\)</span>-dimensional submanifolds to integrating
+over <span class="math inline">\(n\)</span>-dimensional smooth
+simplices.</p>
+<div class="defn">
+<p><strong>Definition 2</strong>. Let <span class="math inline">\(\omega
+\in \Omega^p(M)\)</span> and <span class="math inline">\(\sigma:
+\Delta^p \to M\)</span> a smooth <span
+class="math inline">\(p\)</span>-simplex. Define the <strong>integral of
+<span class="math inline">\(\omega\)</span> over <span
+class="math inline">\(\sigma\)</span></strong> to be <span
+class="math display">\[\int_\sigma \omega = \int_{\Delta^p} \sigma^*
+\omega.\]</span> More generally, for <span class="math inline">\(c \in
+C^\infty_p(M)\)</span> a smooth <span
+class="math inline">\(p\)</span>-chain, write <span
+class="math inline">\(c\)</span> as a sum of smooth singular simplices
+<span class="math inline">\(\sum_i c_i \sigma_i\)</span> and define the
+<strong>integral of <span class="math inline">\(\omega\)</span> over
+<span class="math inline">\(c\)</span></strong> to be <span
+class="math display">\[\int_c \omega = \sum_i c_i \int_{\sigma_i}
+\omega.\]</span></p>
+</div>
+<p>A corollary of Stokes’ theorem for manifolds with corners is the
+following.</p>
+<div class="cor">
+<p><strong>Corollary 1</strong>. <em>(Stokes’ Theorem for Chains). If
+<span class="math inline">\(c\in C^\infty_p(M)\)</span> and <span
+class="math inline">\(\omega \in \Omega^{p-1}(M)\)</span>, then <span
+class="math display">\[\int_{\partial c} \omega = \int_c
+d\omega.\]</span></em></p>
+</div>
+<h2 id="de-rham-homomorphism">De Rham Homomorphism</h2>
+<p>By the Universal Coefficient Theorem (and the isomorphism of smooth
+singular homology), <span class="math inline">\(H^p(M;\mathbb{R}) \cong
+\mathop{\mathrm{Hom}}(H_p^\infty(M),\mathbb{R})\)</span> by evaluating
+cocycle on chains, so we need to define the <strong>de Rham
+homomorphism</strong> <span class="math display">\[I:
+H^p_{\mathrm{dR}}(M) \longrightarrow
+\mathop{\mathrm{Hom}}(H_p^\infty(M),\mathbb{R}).\]</span> We try setting
+<span class="math display">\[I([\omega])([c]) = \int_c \omega.\]</span>
+We check that this definition is well-defined. By algebra, we need to
+check that when either <span class="math inline">\([\omega]=0\)</span>
+or <span class="math inline">\([c]=0\)</span>, that the result is 0.</p>
+<p>First, suppose <span class="math inline">\([\omega] = 0\)</span>, so
+<span class="math inline">\(\omega = d\eta\)</span>. Then, by Stokes’
+theorem <span class="math display">\[\int_c d\eta = \int_{\partial c}
+\eta = 0\]</span> because <span class="math inline">\(c\)</span> is a
+cycle, so <span class="math inline">\(\partial c = 0\)</span>.</p>
+<p>Next, suppose <span class="math inline">\([c]=0\)</span>, so <span
+class="math inline">\(c = \partial b\)</span>. Again, by Stokes’ theorem
+<span class="math display">\[\int_c \omega = \int_b d\omega = 0\]</span>
+because <span class="math inline">\(\omega\)</span> is closed.</p>
+<p>Thus, the de Rham homomorphism is well-defined. Now, we need to show
+that it is an isomorphism.</p>
+<h1 id="base-case-for-induction">Base Case for Induction</h1>
+<p>We want to compute the de Rham cohomology of a convex/contractible
+open subset of <span class="math inline">\(\mathbb{R}^n\)</span> in
+order to get our Mayer-Vietoris induction started—this is the
+<em>Poincaré Lemma</em>, that for <span class="math inline">\(M\)</span>
+a contractible manifold, <span
+class="math inline">\(H_\mathrm{dR}^p(M)\)</span> vanishes for <span
+class="math inline">\(p\geq 1\)</span>.</p>
+<p>There are many proofs of the Poincaré Lemma. Our approach is to first
+prove homotopy invariance, and then compute the de Rham cohomology of a
+point from the definition.</p>
+<p>Let us recall how we proved homotopy invariance for (co)homology.
+Given a homotopy <span class="math inline">\(H: X\times[0,1] \to
+Y\)</span> between <span class="math inline">\(H_0=f\)</span> and <span
+class="math inline">\(H_1=g\)</span>, we created a homotopy operator
+<span class="math display">\[h: C_n(X) \to C_{n+1}(Y)\]</span></p>
+<div class="center">
+<p><img style="display:block; margin:auto; height: 200px;" src="misc-images/de_rham_homotopy_op.png" alt="image" /></p>
+</div>
+<p>which satisfies <span class="math display">\[g_\# - f_\# = \partial h
++ h \partial.\]</span> Then, we dualize to get a map <span
+class="math display">\[h^*: C^n(Y) \to C^{n-1}(X)\]</span> satisfying
+<span class="math display">\[g^\# - f^\# = h^* \delta + \delta
+h^*.\]</span> This implies homotopy invariance, since given a cocycle
+<span class="math inline">\(\phi \in C^n(Y)\)</span> (i.e., <span
+class="math inline">\(\delta \phi=0\)</span>), we get <span
+class="math display">\[g^\#\phi - f^\#\phi = h^* \delta\phi + \delta
+h^*\phi = \delta h^*\phi,\]</span> so <span
+class="math inline">\(g^*[\phi] = f^*[\phi]\)</span> (difference of
+representative is a coboundary).</p>
+<h2 id="cartans-magic-formula">Cartan’s Magic Formula</h2>
+<p>The main insight into the homotopy operator for de Rham cohomology is
+Cartan’s Magic Formula. It tells you, for a vector field <span
+class="math inline">\(X\)</span>, that <span
+class="math display">\[\mathcal{L}_X = d\iota_X + \iota_X d.\]</span> We
+will prove later that <span class="math inline">\(\mathcal{L}_X:
+\Omega^*(M) \to \Omega^*(M)\)</span> is a chain map (commutes with <span
+class="math inline">\(d\)</span>). Then, in this light, we can interpret
+the formula as saying that the chain map <span
+class="math inline">\(\mathcal{L}_X\)</span> is chain homotopic to the 0
+chain map, with chain homotopy <span
+class="math inline">\(\iota_X\)</span>. In other words, <span
+class="math inline">\(\mathcal{L}_X\)</span> is trivial on
+cohomology.</p>
+<p>If we expect de Rham cohomology to be homotopy invariant, then this
+makes sense—<span class="math inline">\(\mathcal{L}_X\)</span> is taking
+the derivative of the flow <span class="math inline">\(\phi_t\)</span>
+corresponding to <span class="math inline">\(X\)</span>, and such a flow
+is a homotopy. So, on the level of cohomology, <span
+class="math inline">\([\phi_t^* \omega] = [\omega]\)</span>, so taking
+the derivative of this constant function, we should get <span
+class="math inline">\([0]\)</span>.</p>
+<p>In this way, Cartan’s Magic Formula tells us that <span
+class="math inline">\(\iota_X\)</span> is the “infinitesimal” chain
+homotopy operator, and to get the actual chain homotopy operator, we
+just need to integrate.</p>
+<p>We dedicate this subsection to proving Cartan’s Magic Formula, i.e.,
+that <span class="math inline">\(\iota_X\)</span> is an infinitesimal
+homotopy operator, through the formalism of derivations.</p>
+<h3 id="derivations">Derivations</h3>
+<div class="defn">
+<p><strong>Definition 3</strong>. A <strong>graded commutative
+algebra</strong> <span class="math inline">\(A\)</span> over <span
+class="math inline">\(R\)</span> is a graded <span
+class="math inline">\(R\)</span>-algebra <span class="math display">\[A
+= \bigoplus_{n=0}^\infty A^i\]</span> such that multiplication satisfies
+<span class="math display">\[a\cdot b = (-1)^{\deg(a)\deg(b)} b\cdot
+a.\]</span></p>
+</div>
+<div class="defn">
+<p><strong>Definition 4</strong>. A <strong>degree <span
+class="math inline">\(p\)</span> derivation</strong> on <span
+class="math inline">\(A\)</span> is a degree <span
+class="math inline">\(p\)</span> graded <span
+class="math inline">\(R\)</span>-module homomorphism <span
+class="math inline">\(d: A\to A\)</span> satisfying the graded Leibniz
+rule. In other words, <span class="math inline">\(d\)</span> is <span
+class="math inline">\(R\)</span>-linear satisfying</p>
+<ul>
+<li><p><span class="math inline">\(d(A^i)\subseteq
+A^{i+p}\)</span></p></li>
+<li><p><span class="math inline">\(d(ab) = d(a)b +
+(-1)^{p\deg(a)}ad(b)\)</span> for <span class="math inline">\(a\)</span>
+homogeneous.</p></li>
+</ul>
+</div>
+<div class="defn">
+<p><strong>Definition 5</strong>. A <strong>differential graded
+commutative algebra</strong> is a graded commutative algebra <span
+class="math inline">\(A\)</span> with a degree <span
+class="math inline">\(+1\)</span> derivation <span
+class="math inline">\(d\)</span> satisfying <span
+class="math inline">\(d^2=0\)</span>.</p>
+</div>
+<div class="eg">
+<p><strong>Example 1</strong>. The set of all differential forms <span
+class="math display">\[\Omega(M) = \bigoplus_{p=0}^{\infty} \Omega^p(M)
+= C^\infty(M) \oplus \Omega^1(M) \oplus \cdots \oplus
+\Omega^n(M)\]</span> with the exterior derivative <span
+class="math inline">\(d\)</span> is a differential graded algebra over
+<span class="math inline">\(\mathbb{R}\)</span>.</p>
+<p>Given a vector field <span class="math inline">\(X\in
+\Gamma(TM)\)</span>, there are also the following natural
+derivations:</p>
+<ul>
+<li><p>The Lie derivative <span
+class="math inline">\(\mathcal{L}_X\)</span> is a degree <span
+class="math inline">\(0\)</span> derivation.</p></li>
+<li><p>The interior derivative <span
+class="math inline">\(\iota_X\)</span> is a degree <span
+class="math inline">\(-1\)</span> derivation.</p></li>
+</ul>
+<p>Proving these are derivations are lemmas/exercises in Lee.</p>
+</div>
+<p>Recalling that vector fields are derivations, the fact that the Lie
+bracket is still a derivation is a standard fact. This result
+generalizes to derivations of higher degrees.</p>
+<div class="lem">
+<p><strong>Lemma 1</strong>. <em>Let <span
+class="math inline">\(A\)</span> be a graded algebra over <span
+class="math inline">\(R\)</span>, and let <span
+class="math inline">\(D_1, D_2\)</span> be graded <span
+class="math inline">\(R\)</span>-derivations of degrees <span
+class="math inline">\(p_1,p_2\)</span> respectively. Then, <span
+class="math display">\[D = D_1D_2 - (-1)^{p_1 p_2} D_2D_1\]</span> is a
+derivation of degree <span
+class="math inline">\(p_1+p_2\)</span>.</em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> First, <span class="math inline">\(D\)</span> is
+clearly a graded <span class="math inline">\(R\)</span>-module
+homomorphism of degree <span class="math inline">\(p_1 + p_2\)</span>,
+since it is the sum of compositions of <span
+class="math inline">\(R\)</span>-module homomorphisms with the degrees
+adding up correctly. It remains to show that <span
+class="math inline">\(D\)</span> is a derivation. We compute
+(analogously to the standard Lie bracket computation) the following
+expression for <span class="math inline">\(D_1D_2(ab)\)</span>, <span
+class="math display">\[\begin{align*}
+        &amp;= D_1(D_2(a)b + (-1)^{p_2|a|}aD_2(b))\\
+        &amp;= D_1 D_2(a)b + (-1)^{p_1|a|+p_1p_2} D_2(a)D_1(b) +
+(-1)^{p_2|a|}D_1(a)D_2(b) + (-1)^{(p_1+p_2)|a|}aD_1D_2(b),
+    
+\end{align*}\]</span> and swapping the indices we compute the following
+expression for <span class="math inline">\(D_2 D_1(ab)\)</span>, <span
+class="math display">\[D_2 D_1(a)b + (-1)^{p_2|a|+p_1p_2} D_1(a)D_2(b) +
+(-1)^{p_1|a|}D_2(a)D_1(b) + (-1)^{(p_1+p_2)|a|}aD_2D_1(b).\]</span>
+Finally, we get cancellation of the mixed terms by our choice of sign
+<span class="math inline">\((-1)^{p_1p_2}\)</span>, so indeed <span
+class="math inline">\(D\)</span> is a degree <span
+class="math inline">\((p_1+p_2)\)</span> <span
+class="math inline">\(R\)</span>-derivation. ◻</p>
+</div>
+<h3 id="cartans-magic-formula-1">Cartan’s Magic Formula</h3>
+<p>First, we prove two lemmas.</p>
+<div class="lem">
+<p><strong>Lemma 2</strong>. <em>Let <span
+class="math inline">\(D\)</span> be a degree <span
+class="math inline">\(0\)</span> derivation on <span
+class="math inline">\(\Omega(M)\)</span>. Let <span
+class="math inline">\(p\in M\)</span>, and <span
+class="math inline">\(b:M\to \mathbb{R}\)</span> a function which is
+identically 1 on a neighborhood of <span
+class="math inline">\(p\)</span>. Then, for all <span
+class="math inline">\(\omega\in \Omega(M)\)</span>, <span
+class="math display">\[D(b\omega)_p = D(\omega)_p.\]</span></em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> By definition, <span
+class="math display">\[\begin{align*}
+        D(b\omega) &amp;= D(b)\omega + b D(\omega)\\
+        &amp;= D(b)\omega + b D(\omega),
+    
+\end{align*}\]</span> so evaluating at <span
+class="math inline">\(p\)</span> we get <span
+class="math display">\[D(b\omega)_p = D(b)_p \omega_p + b(p) D(\omega)_p
+= 0\omega_p + 1 \cdot D(\omega)_p = D(\omega)_p,\]</span> since a degree
+<span class="math inline">\(0\)</span> derivation on <span
+class="math inline">\(\Omega(M)\)</span> restricts to a derivation <span
+class="math inline">\(D: C^\infty(M) \to C^\infty(M)\)</span> which is
+just a vector field, which has <span
+class="math inline">\(D(b)_p=0\)</span> because <span
+class="math inline">\(b\)</span> is constant in a neighborhood of <span
+class="math inline">\(p\)</span>. ◻</p>
+</div>
+<div class="lem">
+<p><strong>Lemma 3</strong>. <em>(Exterior and Lie Derivatives Commute.)
+Let <span class="math inline">\(X\)</span> be a vector field and <span
+class="math inline">\(\omega\)</span> a differential form. Then, <span
+class="math display">\[\mathcal{L}_X(d\omega) = d(\mathcal{L}_X
+\omega)\]</span></em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Let <span class="math inline">\(\theta_t\)</span> be
+the flow corresponding to <span class="math inline">\(X\)</span>. Then,
+<span class="math display">\[\mathcal{L}_X(d\omega) = \frac{\mathrm d
+}{\mathrm d t}|_{t=0} (\theta_t)^* d\omega,\]</span> and recalling that
+the exterior derivative commutes with pullbacks, we get <span
+class="math display">\[\mathcal{L}_X(d\omega) = \frac{\mathrm d
+}{\mathrm d t}|_{t=0} d (\theta_t)^* \omega = d(\frac{\mathrm d
+}{\mathrm d t}|_{t=0} (\theta_t)^* \omega),\]</span> (where the exterior
+derivative commutes with the time derivative by commuting mixed partial
+derivatives), giving us <span
+class="math display">\[\mathcal{L}_X(d\omega) = d(\mathcal{L}_X
+\omega).\]</span> ◻</p>
+</div>
+<div class="prop">
+<p><strong>Proposition 1</strong>. <em>(Cartan’s Magic Formula.) For
+<span class="math inline">\(M\)</span> a smooth manifold, and <span
+class="math inline">\(X\)</span> a vector field, <span
+class="math display">\[\mathcal{L}_X = d \iota_X + \iota_X
+d.\]</span></em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> We can recognize the right hand side as <span
+class="math display">\[d \iota_X - (-1)^{\deg(d)\deg(\iota_X)} \iota_X
+d,\]</span> so it is a graded commutator. Thus, by our lemma, this is a
+degree 0 derivation (just like <span
+class="math inline">\(\mathcal{L}_X\)</span>).</p>
+<p>To show that these two derivations agree, we first reduce to a local
+version of the problem. Given <span class="math inline">\(\omega \in
+\Omega(M)\)</span>, we need to show that for all <span
+class="math inline">\(p\in M\)</span>, <span
+class="math display">\[(\mathcal{L}_X \omega)_p = (d\iota_X + \iota_X
+d)(\omega)_p.\]</span> Choose a chart <span
+class="math inline">\(U\)</span> containing <span
+class="math inline">\(p\)</span>, and choose a bump function <span
+class="math inline">\(b\)</span> supported in <span
+class="math inline">\(U\)</span> with <span
+class="math inline">\(b(p)=1\)</span>. Then, for any derivation <span
+class="math inline">\(D\)</span>, <span
+class="math display">\[D(b\omega)_p = D(\omega)_p.\]</span> Thus, we can
+assume that <span class="math inline">\(\omega=b\omega\)</span> is
+supported in a chart. Let <span
+class="math inline">\(x_1,\dots,x_n\)</span> be coordinates for <span
+class="math inline">\(U\)</span>, so that we can write <span
+class="math display">\[\omega = \sum_I f_I dx_I,\]</span> where <span
+class="math inline">\(I\)</span> is an ordered tuple, <span
+class="math inline">\(dx_I\)</span> denotes the wedge over <span
+class="math inline">\(I\)</span>, and each <span
+class="math inline">\(f_I \in C^\infty(M)\)</span>. In this way, <span
+class="math inline">\(\omega\)</span> is in the subalgebra of <span
+class="math inline">\(\Omega(M)\)</span> generated by <span
+class="math inline">\(0\)</span>-forms and exact <span
+class="math inline">\(1\)</span>-forms.</p>
+<p>We show <span class="math inline">\(\mathcal{L}_X\)</span> and <span
+class="math inline">\(d\iota_X + \iota_X d\)</span> agree on <span
+class="math inline">\(0\)</span>-forms and exact <span
+class="math inline">\(1\)</span>-forms, so that they will agree on such
+<span class="math inline">\(\omega\)</span> because they are both degree
+<span class="math inline">\(0\)</span> derivations.</p>
+<p>First, let <span class="math inline">\(f\in C^\infty(M)\)</span>.
+Then, <span class="math display">\[\mathcal{L}_X f = X\cdot f\]</span>
+and <span class="math display">\[(d\iota_X + \iota_X d)(f) = 0 +
+\iota_Xdf = df(X) = X\cdot f,\]</span> so indeed we get equality.</p>
+<p>Next, let <span class="math inline">\(df \in \Omega^1(M)\)</span> be
+an exact 1-form. Then, <span class="math display">\[\mathcal{L}_X (df) =
+d(X\cdot f)\]</span> by the lemma, and <span
+class="math display">\[(d\iota_X + \iota_X d)(df) = d(df(X)) +
+\iota_X(0) = d(X\cdot f),\]</span> so we get equality for exact 1-forms
+as well. ◻</p>
+</div>
+<h2 id="integrate-cartans-formula">Integrate Cartan’s Formula</h2>
+<p>Now that we have Cartan’s Magic Formula, we will get our desired
+homotopy operator by integration. We first get a homotopy operator for
+our favorite homotopy—the straight line homotopy.</p>
+<div class="thm">
+<p><strong>Theorem 2</strong>. <em>Let <span
+class="math inline">\(M\)</span> be a <span
+class="math inline">\(C^\infty\)</span> manifold, and define the
+homotopy <span class="math display">\[\begin{align*}
+        i_t: M &amp;\longrightarrow M\times I\\
+        x &amp;\longmapsto (x,t).
+    
+\end{align*}\]</span> Then, there exists a homotopy operator <span
+class="math inline">\(h: \Omega^p(M\times I) \to
+\Omega^{p-1}(M)\)</span> satisfying <span class="math display">\[hd + dh
+= i_1^* - i_0^*.\]</span></em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> We consider <span class="math inline">\(M\times I
+\subseteq M\times \mathbb{R}\)</span> as a submanifold. Define a vector
+field <span class="math inline">\(S\)</span> on <span
+class="math inline">\(M\times \mathbb{R}\)</span> by <span
+class="math display">\[S_{(q,s)} = (0, \frac{\partial }{\partial
+s}\mid_s)\]</span> (identifying <span class="math inline">\(T_{(q,s)}M
+\cong T_q M \times T_s \mathbb{R}\)</span>), so that the corresponding
+flow composed with the inclusion <span
+class="math inline">\(i_0\)</span> gives the homotopy. We have the
+following picture.</p>
+<div class="center">
+<p><img style="display:block; margin:auto; height: 400px;" src="misc-images/de_rham_de_rham_hmtpy.png" alt="image" /></p>
+</div>
+<p>We have a vector field, now we can apply Lie’s Magic Formula.
+Denoting <span class="math inline">\(\theta_t\)</span> the flow
+corresponding to <span class="math inline">\(S\)</span>, and replacing
+the Lie derivative with its flow definition, Cartan’s formula gives us
+<span class="math display">\[\begin{align*}
+        \frac{\mathrm d }{\mathrm d t}\Big|_{t=0} (\theta_t)^* &amp;=
+d\iota_S + \iota_S d.
+    
+\end{align*}\]</span> Precomposing both sides with <span
+class="math inline">\(i_t^*\)</span> and using the fact <span
+class="math inline">\(i_t = \theta_t \circ i_0\)</span> (from the
+definition of our vector field), we get <span
+class="math display">\[\begin{align*}
+        (i_t)^* \frac{\mathrm d }{\mathrm d t}\Big|_{t=0} \theta_t^*
+&amp;= i_t^* d\iota_S + i_t^* \iota_S d\\
+        \frac{\mathrm d }{\mathrm d t}\Big|_{t=t} i_0^* \theta_t^*
+&amp;= d i_t^* \iota_S + i_t^* \iota_S d\\
+        \frac{\mathrm d }{\mathrm d t}\Big|_{t=t} i_t^* &amp;=  d i_t^*
+\iota_S + i_t^* \iota_S d
+    
+\end{align*}\]</span> and then integrating with respect to <span
+class="math inline">\(t\)</span>, we have, by the fundamental theorem of
+calculus <span class="math display">\[\begin{align*}
+        i_1^* - i_0^* &amp;= \int_0^1 (d i_t^* \iota_S + i_t^* \iota_S
+d) dt.
+    
+\end{align*}\]</span> Now, we can commute the integral with the
+exterior derivative by differentiating under the integral, to get <span
+class="math display">\[i_1^* - i_0^* = d \int_0^1 (i_t^* \iota_S) dt +
+\int_0^1 (i_t^* \iota_S d) dt,\]</span> so we should define our homotopy
+operator <span class="math inline">\(h:\Omega^p(M\times I) \to
+\Omega^{p-1}(M)\)</span> by sending <span
+class="math inline">\(\omega\in \Omega^p(M\times I)\)</span> <span
+class="math display">\[\omega \longmapsto \int_0^1 (i_t^* \iota_S
+\omega) dt.\]</span> ◻</p>
+</div>
+<div class="cor">
+<p><strong>Corollary 2</strong>. <em>Let <span
+class="math inline">\(F,G: M\to N\)</span> be homotopic smooth maps.
+Then, <span class="math inline">\(F^*,G^*: H^p(N) \to H^p(M)\)</span>
+are homotopic.</em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Let <span class="math inline">\(H:M\times I \to
+N\)</span> be the (not necessarily smooth) homotopy from <span
+class="math inline">\(F\)</span> to <span
+class="math inline">\(G\)</span>. By a corollary of the Whitney
+approximation theorem, we can assume <span
+class="math inline">\(H\)</span> is smooth. Now, we can write the
+composition</p>
+<div class="center">
+<p><img style="display:block; margin:auto; height: 60px;" src="tikz-images/de_rham_cd1.svg" alt="image" /></p>
+</div>
+<p>By the previous theorem, <span class="math inline">\(i_0^* =
+i_1^*\)</span>, so we get <span class="math display">\[\begin{align*}
+        i_0^* \circ H^* &amp;= i_1^* \circ H^*\\
+        (H \circ i_0)^* &amp;= (H \circ i_1)^*\\
+        F^* &amp;= G^*.
+    
+\end{align*}\]</span> ◻</p>
+</div>
+<div class="cor">
+<p><strong>Corollary 3</strong> (Homotopy Invariance). <em>If <span
+class="math inline">\(M\simeq N\)</span> are homotopy equivalent, then
+<span class="math inline">\(H^p(M) \cong H^p(N)\)</span>. In particular,
+if <span class="math inline">\(M\)</span> is contractible, then <span
+class="math inline">\(H^p(M) = H^p(\{\mathrm{pt}\}\)</span>).</em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Standard algebraic topology proof. ◻</p>
+</div>
+<p>Finally, to prove the Poincaré Lemma, we compute the de Rham
+cohomology of a point.</p>
+<div class="prop">
+<p><strong>Proposition 2</strong>. <em><span
+class="math inline">\(H^0(\{q\}) = \mathbb{R}\)</span> and <span
+class="math inline">\(H^p(\{q\}) = 0\)</span> for <span
+class="math inline">\(p\geq 1\)</span>.</em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> By definition, <span class="math inline">\(H^0(\{q\})
+= \ker(d: C^\infty(\{q\})\to \Omega^1(\{q\})) /
+\mathop{\mathrm{im}}0\)</span>, which is <span
+class="math inline">\(\mathbb{R}\)</span> since the functions on <span
+class="math inline">\(\{q\}\)</span> are constant functions <span
+class="math inline">\(\mathbb{R}\)</span> which have differential 0.
+Then, <span class="math inline">\(H^p(\{q\})=0\)</span> for <span
+class="math inline">\(p\geq 1\)</span> since the cohomology groups are
+quotients of subobjects of <span
+class="math inline">\(\Omega^p(\{q\})\)</span>, which is 0
+already. ◻</p>
+</div>
+<div class="lem">
+<p><strong>Lemma 4</strong> (Poincaré Lemma). <em>If <span
+class="math inline">\(M\)</span> is contractible (in particular
+diffeomorphic to a star-shaped open subset of <span
+class="math inline">\(\mathbb{R}^n\)</span> or <span
+class="math inline">\(\mathbb{H}^n\)</span>), then <span
+class="math display">\[H^p(M) = \begin{cases}
+        \mathbb{R}&amp; p=0\\
+        0 &amp; p\geq 1.
+    \end{cases}\]</span></em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Homotopy invariance + de Rham cohomology of a
+point. ◻</p>
+</div>
+<h1 id="commuting-with-coboundary">Commuting with Coboundary</h1>
+<h2 id="review-of-mayer-vietoris">Review of Mayer-Vietoris</h2>
+<p>Before we can show that the de Rham homomorphism commutes with
+coboundary (the connecting homomorphism as seen in the Mayer-Vietoris
+sequence), we review what the coboundary/connecting map even is in both
+singular and de Rham cohomology.</p>
+<p>In de Rham cohomology, we get the Mayer-Vietoris sequence from this
+SES of chain complexes.</p>
+<div class="center">
+<p><img style="display:block; margin:auto; height: 130px;" src="tikz-images/de_rham_cd2.svg" alt="image" /></p>
+</div>
+<p>The most convenient thing for us is to see the SES defining
+Mayer-Vietoris in singular homology, and then to see that the connecting
+homomorphism for cohomology is calculated using the dual map to that in
+singular homology (at the level of chains).</p>
+<div class="center">
+<p><img style="display:block; margin:auto; height: 130px;" src="tikz-images/de_rham_cd3.svg" alt="image" /></p>
+</div>
+<p>where <span class="math inline">\(C^*(U+V)\)</span> is chain
+homotopic to <span class="math inline">\(C^*(M)\)</span> by the
+inclusion map (reverse direction is barycentric subdivision).</p>
+<h2 id="proving-commutativity">Proving Commutativity</h2>
+<div class="prop">
+<p><strong>Proposition 3</strong> (Naturality of the de Rham
+Homomorphism). <em>Let <span class="math inline">\(M\)</span> be a
+smooth manifold and <span class="math inline">\(p\)</span> a nonnegative
+integer. Then,</em></p>
+<ol type="a">
+<li><p><em>If <span class="math inline">\(F:M\to N\)</span> is a smooth
+map, then the following diagram commutes:</em></p>
+<div class="center">
+<p><img style="display:block; margin:auto; height: 130px;" src="tikz-images/de_rham_cd4.svg" alt="image" /></p>
+</div></li>
+<li><p><em>If <span class="math inline">\(M\)</span> is a smooth
+manifold and <span class="math inline">\(U,V\)</span> are open subsets
+whose union is <span class="math inline">\(M\)</span>, then the
+following diagram commutes:</em></p>
+<div class="center">
+<p><img style="display:block; margin:auto; height: 130px;" src="tikz-images/de_rham_cd5.svg" alt="image" /></p>
+</div></li>
+</ol>
+</div>
+<div class="proof">
+<p><em>Proof of (a)..</em> This is routine. Let <span
+class="math inline">\([\omega]\in H_\mathrm{dR}^p(N)\)</span>. To show
+<span class="math inline">\(F^*\circ I([\omega]) = I\circ
+F^*([\omega])\)</span>, we show both evaluate the same on smooth
+simplices. Let <span class="math inline">\(\sigma\in
+C_p^\infty(N)\)</span>. Then, <span
+class="math display">\[\begin{align*}
+        (I\circ F^*)([\omega])(\sigma) &amp;= I([F^*\omega])(\sigma)\\
+        &amp;= \int_\sigma F^* \omega\\
+        &amp;= \int_{\Delta^p} \sigma^*F^*\omega\\
+        &amp;= \int_{\Delta^p} (F\circ \sigma)^*\omega\\
+        &amp;= \int_{F\circ \omega} \omega\\
+        &amp;= (F^*\circ I)([\omega])(\sigma).
+    
+\end{align*}\]</span> ◻</p>
+</div>
+<div class="proof">
+<p><em>Proof of (b)..</em> The key is to remember how to compute <span
+class="math inline">\(\delta\)</span> and <span
+class="math inline">\(\partial^*\)</span>, which requires us to remember
+how the Zig-Zag lemma works and to go back to the SES sequences of chain
+complexes in de Rham/singular (co)homology which gave us
+Mayer-Vietoris.</p>
+<p>As before, let <span class="math inline">\([\omega] \in
+H_\mathrm{dR}^{p-1}(U\cap V)\)</span>, and let <span
+class="math inline">\([\sigma]\in H_p^\infty(M)\)</span>. We will show
+<span class="math display">\[(\partial^* \circ I)([\omega])(\sigma) =
+(I\circ \delta)([\omega])(\sigma).\]</span> We first compute <span
+class="math inline">\((\partial^* \circ I)([\omega])(\sigma)\)</span>,
+using the fact that <span class="math inline">\(\partial^*\)</span> is
+really dual to <span class="math inline">\(\partial_*\)</span> (the
+connecting homomorphism in homology Mayer-Vietoris), so <span
+class="math display">\[(\partial^* \circ I)([\omega])(\sigma) =
+I([\omega])(\partial_*\circ \sigma).\]</span> Now, we recall how to
+compute <span class="math inline">\(\partial_*\)</span> (going through
+the Zig-Zag Lemma):</p>
+<ul>
+<li><p>We write <span class="math inline">\(\sigma = \tau +
+\tau&#39;\)</span> for some <span class="math inline">\(\tau\in
+C_p^\infty(U)\)</span> and <span class="math inline">\(\tau&#39;\in
+C_p^\infty(V)\)</span>.</p></li>
+<li><p>We apply boundary to get the pair <span
+class="math inline">\((\partial\tau, \partial\tau&#39;) \in
+C_{p-1}^\infty(U)\oplus C_{p-1}^\infty(V)\)</span>.</p></li>
+<li><p>We recognize that <span class="math inline">\((\partial\tau,
+\partial\tau&#39;)\)</span> come from a chain <span
+class="math inline">\(\tilde{\sigma} \in C_{p-1}^\infty(U\cap
+V)\)</span>, i.e., <span
+class="math inline">\([\partial\tau]=[\partial\tau&#39;]=[\tilde{\sigma}]\)</span></p></li>
+</ul>
+<div class="center">
+<p><img style="display:block; margin:auto; height: 200px;" src="misc-images/de_rham_mayer_vietoris.png" alt="image" /></p>
+</div>
+<p>Therefore, we have <span class="math display">\[\begin{align*}
+        (\partial^* \circ I)([\omega])(\sigma) &amp;=
+I([\omega])(\tilde{\sigma})\\
+        &amp;= \int_{\tilde{\sigma}} \omega
+    
+\end{align*}\]</span></p>
+<p>Now, we compute <span class="math inline">\((I\circ
+\delta)([\omega])(\sigma)\)</span>. By definition of <span
+class="math inline">\(\delta\)</span>, we do the following.</p>
+<ul>
+<li><p>We choose a preimage of <span
+class="math inline">\(\omega\)</span> under <span
+class="math inline">\(i_1^* - i_2^*\)</span>, say <span
+class="math inline">\(\omega = \eta_{U\cap V} - \eta&#39;_{U\cap
+V}\)</span> for <span class="math inline">\(\eta\in
+\Omega^{p-1}(U)\)</span> and <span class="math inline">\(\eta&#39;\in
+\Omega^{p-1}(V)\)</span>.</p></li>
+<li><p>Then, we apply the exterior derivative (the coboundary map) to
+get <span class="math inline">\(d\eta + d\eta&#39; \in \Omega^p(U)\oplus
+\Omega^p(V)\)</span>.</p></li>
+<li><p>Finally, it just turns out (i.e., the Zig-Zag lemma proves) that
+<span class="math inline">\(d\eta,d\eta&#39;\)</span> comes from a
+differential form <span class="math inline">\(\tilde{\omega}\in
+\Omega^P(M)\)</span>.</p></li>
+</ul>
+<p>Then, <span class="math inline">\(\delta([\omega]) =
+[\tilde{\eta}]\)</span>. Therefore, we have <span
+class="math display">\[\begin{align*}
+        (I\circ \delta)([\omega])(\sigma) &amp;=
+I([\tilde{\eta}])(\sigma)\\
+        &amp;=\int_\sigma \tilde{\omega}\\
+        &amp;=\int_\tau \tilde{\omega} + \int_{\tau&#39;} \tilde{\omega}
+\tag{$\sigma=\tau+\tau&#39;$}\\
+        &amp;= \int_\tau d\eta + \int_{\tau&#39;} d\eta&#39;
+\tag{$\tilde{\omega}$ restricted}\\
+        &amp;= \int_{\tilde{\sigma}} \eta + \int_{\tilde{\sigma}}
+\eta&#39; \tag{Stokes&#39; theorem}\\
+        &amp;= \int_{\tilde{\sigma}} (\eta + \eta&#39;)\\
+        &amp;= \int_{\tilde{\sigma}} \omega
+\tag{$\omega=\eta+\eta&#39;$}
+    
+\end{align*}\]</span> ◻</p>
+</div>
+<h1 id="induction">Induction</h1>
+<p>Our situation is the following: We have two families of functors
+<span class="math inline">\(\mathsf{Man}^\infty \to
+\mathsf{Vec}_\mathbb{R}\)</span> (de Rham cohomology and singular
+cohomology), and we have a natural transformation <span
+class="math inline">\(I\)</span> between them. Both cohomologies give
+the same answer on contractible spaces, and both cohomologies feature
+Mayer Vietoris sequences with coboundary commuting with <span
+class="math inline">\(I\)</span>. It’s our task to argue that <span
+class="math inline">\(I\)</span> is an isomorphism for an arbitrary
+manifold <span class="math inline">\(M\)</span>. The idea is essentially
+induction—we assume <span class="math inline">\(I\)</span> is an
+isomorphism for <span class="math inline">\(U,V\)</span>, then the
+5-lemma gets the result for <span class="math inline">\(U\cup
+V\)</span>.</p>
+<div class="thm">
+<p><strong>Theorem 3</strong>. <em>For every smooth manifold <span
+class="math inline">\(M\)</span> and nonnegative integer <span
+class="math inline">\(p\)</span>, the de Rham homomorphism <span
+class="math inline">\(I: H_\mathrm{dR}^p(M) \to
+H^p(M;\mathbb{R})\)</span> is an isomorphism.</em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> In the style of induction, our task is to show for
+all <span class="math inline">\(M\)</span>, <span
+class="math inline">\(I: H_\mathrm{dR}^p(M) \to
+H^p(M;\mathbb{R})\)</span> is an isomorphism, starting with the “easy”
+ones.</p>
+<p><strong>Terminology.</strong> We call a manifold <span
+class="math inline">\(M\)</span> <strong>de Rham</strong> if <span
+class="math inline">\(I\)</span> is an isomorphism. We call an open
+cover <span class="math inline">\(\{U_i\}\)</span> a <strong>de Rham
+cover</strong> if each intersection of <span
+class="math inline">\(U_i\)</span> is de Rham. We write <span
+class="math inline">\(H^{p-1}(M)\)</span> to be singular cohomology of
+<span class="math inline">\(M\)</span> with real coefficients. We call a
+collection <span class="math inline">\(\{U_i\}\)</span> a <strong>de
+Rham basis</strong> if it is a basis and a de Rham cover.</p>
+<p><strong>Strategy.</strong> Our base case is convex open subsets.
+Then, we will show to</p>
+<p><strong>Step 1.</strong> (Base Case, every convex open subset of
+<span class="math inline">\(\mathbb{R}^n\)</span> is de Rham) By the
+Poincaré lemma, <span class="math inline">\(H_\mathrm{dR}^p(U)\)</span>
+is trivial when <span class="math inline">\(p\neq 0\)</span>, which
+agrees with singular cohomology. We only have to show that <span
+class="math display">\[I: H_\mathrm{dR}^0(U) \to
+H^0(U;\mathbb{R})\]</span> is an isomorphism, i.e., not the zero map.
+Let <span class="math inline">\(f\in \Omega^0(U)\)</span> be a closed
+form representing a generator <span
+class="math inline">\(H_\mathrm{dR}^0(U)\)</span>, i.e., a function
+which is constant (closed on a contractible set) and nonzero. Then, the
+0th smooth singular homology of <span class="math inline">\(U\)</span>
+is represented by any point <span class="math inline">\(x\)</span> of
+<span class="math inline">\(U\)</span>, and <span
+class="math display">\[I([f])([x]) = \int_{x} f = f(x) \neq 0,\]</span>
+so <span class="math inline">\(I([f])\neq 0\)</span>, so <span
+class="math inline">\(I\)</span> is an isomorphism.</p>
+<p><strong>Step 2.</strong> (Finite Induction, if <span
+class="math inline">\(M\)</span> has finite de Rham cover, then <span
+class="math inline">\(M\)</span> is de Rham) Suppose <span
+class="math inline">\(M=U\cup V\)</span> for <span
+class="math inline">\(U,V,U\cap V\)</span> de Rham manifolds. We write
+down the respective Mayer-Vietoris sequences for both de Rham/singular
+cohomology, and we write the <span class="math inline">\(I\)</span> map
+going down. By the previous section, all of these squares commute, so we
+have the following commutative diagram with exact rows:</p>
+<div class="center">
+<p><img style="display:block; margin:auto; height: 130px;" src="tikz-images/de_rham_cd6.svg" alt="image" /></p>
+</div>
+<p>Now, because <span class="math inline">\(U,V\)</span> are de Rham
+manifolds, this means every map downwards is an isomorphism, except for
+potentially the middle map. However, then by the Five Lemma, the middle
+map is an isomorphism, so <span class="math inline">\(M\)</span> is a de
+Rham manifold.</p>
+<p>We can use this step repeatedly to show that any <span
+class="math inline">\(M\)</span> with a finite de Rham cover is a de
+Rham manifold.</p>
+<p><strong>Step 3.</strong> (Infinite-ish Induction, if <span
+class="math inline">\(M\)</span> has a de Rham basis, then <span
+class="math inline">\(M\)</span> is de Rham) Let <span
+class="math inline">\(\{U_i\}\)</span> be a de Rham basis, and let <span
+class="math inline">\(f:M\to \mathbb{R}\)</span> be an (any) exhaustion
+function. For each <span class="math inline">\(m\in \mathbb{N}\)</span>,
+define <span class="math display">\[\begin{align*}
+        A_m &amp;= f^{-1}([m,m+1])\\
+        A_m&#39; &amp;= f^{-1}((m-\frac{1}{2}, m+\frac{3}{2})).
+    
+\end{align*}\]</span> so that <span
+class="math inline">\(M=\bigcup_{m\in \mathbb{N}} A_m\)</span> is this
+union of compact sets, and each <span
+class="math inline">\(A_m&#39;\)</span> is an open neighborhood of the
+compact <span class="math inline">\(A_m\)</span>.</p>
+<div class="center">
+<p><img style="display:block; margin:auto; height: 300px;" src="misc-images/de_rham_exhaustion.png" alt="image" /></p>
+</div>
+<p>Since <span class="math inline">\(M\)</span> has a de Rham basis,
+each point in <span class="math inline">\(A_m&#39;\)</span> has a de
+Rham neighborhood, and we can take a finite subcover over <span
+class="math inline">\(A_m\)</span> to get a finite de Rham cover of
+<span class="math inline">\(A_m\)</span>, entirely contained in <span
+class="math inline">\(A_m&#39;\)</span>. By Step 2, the union of these
+open sets <span class="math inline">\(B_m\)</span> is de Rham.</p>
+<p>In total, we have these “stripes” of de Rham sets, <span
+class="math inline">\(B_1,B_2,B_3,\dots\)</span>, and we split the
+stripes by <span class="math display">\[U = B_1 \sqcup B_3 \sqcup
+\cdots, \qquad V = B_2 \sqcup B_4 \sqcup \cdots,\]</span> where the
+unions are disjoint because, for example, <span
+class="math inline">\(B_1 \subseteq A_1&#39;\)</span> and <span
+class="math inline">\(B_3\subseteq A_3&#39;\)</span>, but <span
+class="math inline">\(A_1&#39;\cap A_3&#39;=\emptyset\)</span>.</p>
+<p>Now, because the unions are disjoint, and both cohomologies send
+countable infinite unions to countable infinite direct products in a way
+commuting with <span class="math inline">\(I\)</span>, we have that
+<span class="math inline">\(U,V\)</span> are both de Rham. Furthermore,
+<span class="math inline">\(U\cap V\)</span> is de Rham because each
+intersecting stripe is de Rham (as in the construction of the <span
+class="math inline">\(B_m\)</span>), and again it is a countable
+disjoint union of these stripes.</p>
+<p>Thus, by step 2, <span class="math inline">\(M=U\cup V\)</span> is de
+Rham.</p>
+<p><strong>Step 4.</strong> (Apply the Induction) First, any open subset
+(not necessarily connected!) of <span
+class="math inline">\(\mathbb{R}^n\)</span> is de Rham, since it has a
+basis of open balls which is a de Rham basis. Next, every manifold has a
+basis of coordinate charts (not necessarily connected!), where each
+susbset is diffeomorphic to an open subset of <span
+class="math inline">\(\mathbb{R}^n\)</span> so is de Rham, and every
+finite intersection is still a coordinate chart, so still de Rham. This
+is therefore a de Rham cover, so <span class="math inline">\(M\)</span>
+is de Rham. ◻</p>
+</div>
+<div class="rmk">
+<p><em>Remark 1</em>. For a compact manifold, there’s a less technical
+way of doing this. Choose a metric <span
+class="math inline">\(g\)</span> on <span
+class="math inline">\(M\)</span>, choose a finite open cover of <span
+class="math inline">\(M\)</span> by geodesically convex sets <span
+class="math inline">\(U_i\)</span>. Then, each <span
+class="math inline">\(U_i\)</span> is contractible, so we will get <span
+class="math inline">\(U_i\)</span> is a de Rham manifold (basically just
+Poincaré lemma). Furthermore, each intersection is still geodesically
+convex, so <span class="math inline">\(\{U_i\}\)</span> forms a finite
+de Rham cover. Then, the finite induction with the 5-lemma handles the
+rest.</p>
+</div>
+<h1 id="an-alternative-approach">An Alternative Approach</h1>
+<p>There’s another approach for proving the de Rham theorem using
+sheaves, though it is more difficult to see that the isomorphism is
+exactly given by the de Rham homomorphism, i.e., integration. The proof
+plays with different ways of computing sheaf cohomology—either Cech
+cohomology or via an acyclic resolution.</p>
+<p>The proof sketch is as follows:</p>
+<ul>
+<li><p>The sheaf cohomology of the constant sheaf <span
+class="math inline">\(\underline{\mathbb{R}}\)</span> computes the
+singular cohomology for <span class="math inline">\(M\)</span> (and nice
+spaces in general). This can be seen by choosing a good open cover of
+<span class="math inline">\(M\)</span>, then computing via Ĉech
+cohomology that <span
+class="math inline">\(H^i(M,\underline{\mathbb{R}})\)</span> is the
+simplicial cohomology of the nerve of the cover, which is homotopy
+equivalent to <span class="math inline">\(M\)</span>.</p></li>
+<li><p>By the Poincaré lemma, the following sequence is exact: <span
+class="math display">\[0\to \underline{\mathbb{R}} \hookrightarrow
+C^\infty(M) \xrightarrow{d} \Omega^1(M) \to \cdots \xrightarrow{d}
+\Omega^n(M) \to 0,\]</span> since a surjection in the category sheaves
+needs only to be locally surjective, i.e., for a closed form <span
+class="math inline">\(\omega\)</span> at every point <span
+class="math inline">\(p\)</span> there is a contractible neighborhood
+<span class="math inline">\(U\)</span> where it is exact, so <span
+class="math inline">\(\omega=d\eta\)</span>. This means that the
+sheafification of the image presheaf is exactly the kernel sheaf of the
+differential.</p></li>
+<li><p>The differential form sheaves are <em>fine</em> sheaves, i.e.,
+they have partitions of unity. Fine sheaves are acyclic (no higher sheaf
+cohomology).</p></li>
+<li><p>Acyclic resolutions compute sheaf cohomology.</p></li>
+</ul>
+<h1 id="appendix">Appendix</h1>
+<h2 id="random-extra-tools">Random Extra Tools</h2>
+<ul>
+<li><p><strong>Exhaustion function.</strong> A function <span
+class="math inline">\(f:M\to \mathbb{R}\)</span> which has the property
+that <span class="math inline">\(f^{-1}((-\infty,c])\)</span> is compact
+for all <span class="math inline">\(c\)</span> (called the
+<strong>sublevel sets of <span
+class="math inline">\(f\)</span></strong>). These are useful gadgets for
+generalizing from compact to noncompact manifolds. You can construct
+them using partitions of unity subordinate to a countable basis of
+precompact sets.</p></li>
+</ul>
+
+            </div>
+    </section>
+
+<footer class="footer">
+    <div class="content has-text-centered">
+        <p>
+            <label class="checkbox">
+            <input type="checkbox" id="dark-mode">
+                Dark Mode
+                <span class="icon is-small"><i class="fas fa-moon" aria-hidden="true"></i></span>
+            </label>
+        </p>
+        <p>
+            © 2023 Joseph Sullivan
+            <a href="https://github.com/JosephSullivan256"><span class="icon is-small"><i class="fab fa-github" aria-hidden="true"></i></span></a>&nbsp;
+            <a href="mailto: partiallyordered@gmail.com"><span class="icon is-small"><i class="fas fa-envelope" aria-hidden="true"></i></span></a>
+        </p>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        let darkmode = false;
+        if(localStorage.getItem('dark-mode')){
+            darkmode = localStorage.getItem('dark-mode')=='enabled';
+        }
+
+        if(darkmode) {
+            document.documentElement.classList.toggle("dark-mode")
+        }
+
+        window.addEventListener("load", ()=>{
+            let darkcheckbox = document.getElementById("dark-mode");
+            darkcheckbox.checked = darkmode;
+
+            darkcheckbox.addEventListener("change", ()=>{
+                darkmode = !darkmode;
+                if(darkmode) {
+                    localStorage.setItem('dark-mode', 'enabled')
+                } else {
+                    localStorage.setItem('dark-mode', 'disabled')
+                }
+
+                document.documentElement.classList.toggle("dark-mode");
+            });
+        })
+
+    </script>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/mystyles.css">
+    <link rel="stylesheet" href="/static/node_modules/%40fortawesome/fontawesome-free/css/all.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="author" content="Joseph Sullivan">
+<title>Covering Spaces</title>
+<style>
+header {
+  margin-bottom: 4em;
+  text-align: center;
+}
+hr {
+  background-color: #1a1a1a;
+  border: none;
+  height: 1px;
+  margin: 1em 0
+}
+#TOC {
+	line-height: 100%;
+}
+.lemma, .proposition, .definition, .remark, .theorem, .example {
+    border-style: solid;
+    border-width: 2px;
+    margin: 10px 0px;
+    padding: 0px 4px;
+}
+
+</style>
+<script>
+	window.MathJax = {
+		tex: {
+			tags: "ams",
+			inlineMath: [ ["\\\(","\\\)"] ],
+			displayMath: [ ['$$','$$'],["\\[","\\]"] ],
+			processEscapes: true,
+			processEnvironments: true,
+			packages: ['base', 'color', 'ams', 'physics']
+		},
+		loader: {
+			load: ['[tex]/color', '[tex]/ams', '[tex]/physics']
+		}
+	};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+
+
+</head>
+<body>
+
+    
+<section class="hero">
+    <div class="hero-body">
+        <nav class="breadcrumb is-centered is-medium" aria-label="breadcrumbs">
+            <ul>
+                
+                    
+                        <li><a href="/">index</a></li>
+                    
+                
+                    
+                        <li><a href="/posts">posts</a></li>
+                    
+                
+                    
+                        <li class="is-active"><a href="#">Covering Spaces</a></li>
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</section>
+
+    <section class="section post">
+            <div class="content serif reading-margins">
+                <header id="title-block-header">
+<h1 class="title">Covering Spaces</h1>
+<p class="author">Joseph Sullivan</p>
+<p class="date">August 2022</p>
+</header>
+<h1 class="unnumbered" id="introduction">Introduction</h1>
+<p>These are a set of notes about covering spaces, about on the same level of difficulty/scope as Hatcher. I make no claim of originality—a lot of theorem statements are taken directly from Hatcher, or slightly modified. Other bits of content are from notes I took while taking topology at UCSB. Hopefully these notes are a bit more streamlined or easier to use for reference—all of the theorems/definitions are in convenient boxes for easy reading.</p>
+<p>I also do a little bit more dirty work than Hatcher. For example, I frequently use the Lebesgue number lemma and pasting lemma to really show that certain lifts exist or are continuous. Proofs of these point-set topology lemmas are deferred to the last section.</p>
+<h1 id="conventions">Conventions</h1>
+<p>Neighborhoods are be open. We take <span class="math inline">\(S^1\subseteq \mathbb{C}\)</span>, and we often take the basepoint of <span class="math inline">\(S^1\)</span> to be <span class="math inline">\(e^{0\cdot 2\pi i}=1\in S^1\subseteq \mathbb{C}\)</span>. All maps are continuous. We use the notation <span class="math display">\[f: X,x \to Y,y\]</span> to refer to a map of <em>pointed topological spaces</em>, i.e., a continuous map <span class="math inline">\(f:X\to Y\)</span> which obeys <span class="math inline">\(f(x)=y\)</span>. We write <span class="math inline">\(c_x: Y \to X\)</span> for the constant <span class="math inline">\(x\)</span> map.</p>
+<p>For <span class="math inline">\(\alpha: I\to X\)</span> a path, we write <span class="math inline">\(\overline{\alpha}\)</span> for the reversed path, i.e., <span class="math display">\[\begin{aligned}
+    \overline{\alpha} : I &amp;\longrightarrow X\\
+    t &amp;\longmapsto \alpha(1-x).\end{aligned}\]</span> For two paths <span class="math inline">\(\alpha,\beta: I\to X\)</span>, we write <span class="math inline">\(\alpha \cdot \beta\)</span> for the concatenation path, which first follows <span class="math inline">\(\alpha\)</span> and then <span class="math inline">\(\beta\)</span>, i.e., <span class="math display">\[\begin{aligned}
+    \alpha \cdot \beta : I &amp;\longrightarrow X\\
+    t &amp;\longmapsto \begin{cases}
+        \alpha(2t) &amp; t&lt;\frac{1}{2}\\
+        \beta(2t-1) &amp; t \geq \frac{1}{2}.
+    \end{cases}\end{aligned}\]</span> This is easy to forget—this is backwards from the normal function composition order.</p>
+<h1 id="definitions-and-examples">Definitions and Examples</h1>
+<div class="definition">
+<p><strong>Definition 1</strong>.  A <strong>covering space</strong> of a space <span class="math inline">\(X\)</span> (“downstairs”) is a space <span class="math inline">\(\widetilde{X}\)</span> (“upstairs”) with a map <span class="math inline">\(p: \widetilde{X} \to X\)</span> such that every point <span class="math inline">\(x\in X\)</span> has an <strong>evenly covered</strong> neighborhood, i.e., a neighborhood <span class="math inline">\(V\)</span> such that <span class="math inline">\(p^{-1}(V)\)</span> is a disjoint union of open sets <span class="math inline">\(\widetilde{V}\)</span> which have <span class="math display">\[p|_{\widetilde{V}} : \widetilde{V} \to V\]</span> being a homeomorphism.</p>
+</div>
+<div class="example">
+<p><strong>Example 2</strong>.  We claim that the real line <span class="math inline">\(\mathbb{R}\)</span> covers the circle <span class="math inline">\(S^1\subseteq \mathbb{C}\)</span> by the map <span class="math display">\[\begin{aligned}
+        p: \mathbb{R}&amp;\longrightarrow S^1\\
+        t &amp;\longmapsto e^{t 2\pi i}.
+    \end{aligned}\]</span></p>
+<div class="center">
+<p><img src="misc-images/cover_eg1.png" alt="image" style="display:block; margin:auto; height: 300px;" /></p>
+</div>
+<p>This follows because each point <span class="math inline">\(e^{\theta 2\pi i} \in S^1\)</span> has a neighborhood <span class="math inline">\(V=\{e^{(\theta+t) 2\pi i} \operatorname{\big|}t\in (-1/2,1/2)\}\)</span>, and the preimage under <span class="math inline">\(p\)</span> is <span class="math display">\[\cdots, \left(\theta - 1 - \frac{1}{2},\theta-1 +\frac{1}{2}\right), \left(\theta - \frac{1}{2},\theta +\frac{1}{2}\right), \left(\theta+1 - \frac{1}{2},\theta+1 +\frac{1}{2}\right),\cdots,\]</span> which is a disjoint collection of open subsets of <span class="math inline">\(\mathbb{R}\)</span> which are each homeomorphically mapped to <span class="math inline">\(V\)</span> by <span class="math inline">\(p\)</span>.</p>
+</div>
+<p>This particular covering space of <span class="math inline">\(S^1\)</span> was very helpful in computing the fundamental group for the first time (we will reprove this machinery in greater generality soon). Our strategy was to <em>lift</em> maps <span class="math inline">\(f: I,0 \to S^1, 1\)</span> to the real line <span class="math inline">\(\mathbb{R},0\)</span>, i.e., get a map <span class="math inline">\(\widetilde{f}: I,0 \to \mathbb{R},0\)</span> such that the following diagram commutes.</p>
+<div class="center">
+<p><img src="tikz-images/196c78bbb492a17d60538b7061f8b7542b47d077.svg" style="display:block; margin:auto; height: 130px;" /></p>
+</div>
+<p>This strategy comes in much greater generality with much greater utility. We’re going to try to <em>lift</em> (which we will define precisely later) all sorts of maps, and these theorems about lifting will help us eventually classify covering spaces of a given space.</p>
+<p>Let’s make a definition before we get ahead of ourselves.</p>
+<div class="definition">
+<p><strong>Definition 3</strong>.  Let <span class="math inline">\(p:\widetilde{X} \to X\)</span> be a covering space, and <span class="math inline">\(f:Y\to X\)</span> be a map. A map <span class="math inline">\(\widetilde{f}: Y\to \widetilde{X}\)</span> is called a <strong>lift of <span class="math inline">\(f\)</span></strong> if the following diagram commutes:</p>
+<div class="center">
+<p><img src="tikz-images/3e6c6ffc43be74bdd8c7ff7a4108384d3751ee4f.svg" style="display:block; margin:auto; height: 130px;" /></p>
+</div>
+<p>i.e., <span class="math inline">\(p\circ \widetilde{f} = f\)</span>.</p>
+</div>
+<p>If there is a lift, there will usually be several lifts, so we are often interested in lifts based at a certain point. That is, given a covering space <span class="math inline">\(p:\widetilde{X}\to X\)</span> and a map <span class="math inline">\(f:X\to Y\)</span>, if we fix <span class="math inline">\(x\in X\)</span>, we set <span class="math inline">\(y=f(x)\)</span>, and we <em>choose</em> <span class="math inline">\(\widetilde{x}\in p^{-1}(x)\)</span>, we often look for lifts <span class="math display">\[\widetilde{f}: Y,y \longrightarrow \widetilde{X},\widetilde{x},\]</span> i.e., a lift <span class="math inline">\(\widetilde{f}: Y\to \widetilde{X}\)</span> which satisfies <span class="math inline">\(\widetilde{f}(y)=\widetilde{x}\)</span>. We’ll see this when we try to lift paths.</p>
+<p>On the other hand, it’s very common that there are no lifts at all. For example, the map <span class="math inline">\(\mathop{\mathrm{id}}_{S^1}:S^1\to S^1\)</span> does not lift to a map <span class="math inline">\(\widetilde{f}: S^1\to \mathbb{R}\)</span> because looking at fundamental groups/induced homomorphisms we would get</p>
+<div class="center">
+<p><img src="tikz-images/a4d4494c9407728a875601ef94e532a2fa7e7c54.svg" style="display:block; margin:auto; height: 130px;" /></p>
+</div>
+<p>which boils down to saying that the following diagram commutes,</p>
+<div class="center">
+<p><img src="tikz-images/5e941def2e96956f81f2401b3cb7c248fec2e002.svg" style="display:block; margin:auto; height: 130px;" /></p>
+</div>
+<p>but the identity homomorphism does not factor through the trivial group.</p>
+<p>Let’s look at a few more example before we prove some theorems about lifting.</p>
+<div class="example">
+<p><strong>Example 4</strong>.  We saw already that <span class="math inline">\(\mathbb{R}\)</span> covers <span class="math inline">\(S^1\)</span>, and it’s not hard to see that <span class="math inline">\(S^1\)</span> covers <span class="math inline">\(S^1\)</span> by the identity map, but <span class="math inline">\(S^1\)</span> also covers <span class="math inline">\(S^1\)</span> in a non trivial way. We claim <span class="math display">\[\begin{aligned}
+        p: S^1 &amp;\longrightarrow S^1\\
+        e^{t 2\pi i} &amp;\longmapsto e^{nt 2\pi i}
+    \end{aligned}\]</span> (i.e., just <span class="math inline">\(z\mapsto z^n\)</span>) is a covering map.</p>
+<div class="center">
+<p><img src="misc-images/cover_eg3.png" alt="image" style="display:block; margin:auto; height: 300px;"/></p>
+</div>
+<p>To see that this is a covering map, observe that each point <span class="math inline">\(e^{\theta 2\pi i}\)</span> has neighborhood <span class="math inline">\(V=\{e^{\theta + t)2\pi i} \operatorname{\big|}t\in (-1/2, 1/2)\}\)</span>, and the preimage of <span class="math inline">\(V\)</span> under <span class="math inline">\(p\)</span> is <span class="math display">\[A_n = \left\{e^{(\theta + t)2\pi i} \;\Big|\; t\in \left(\frac{-1}{2n}, \frac{1}{2n}\right)\right\}\]</span> <span class="math display">\[A_n,\; A_n + \frac{2\pi i}{n},\; \dots,\; A_n + \frac{2\pi i (n-1)}{n}.\]</span> When you restrict <span class="math inline">\(p\)</span> to any of these components, you indeed get a homeomorphism to <span class="math inline">\(V\)</span>.</p>
+</div>
+<div class="example">
+<p><strong>Example 5</strong>.  <span class="math inline">\(\mathbb{R}^2\)</span> covers the cylinder <span class="math inline">\(\mathbb{R}\times S^1\)</span> which in turn covers the torus <span class="math inline">\(S^1\times S^1\)</span>.</p>
+<div class="center">
+<p><img src="misc-images/cover_eg2.png" alt="image" style="display:block; margin:auto; height: 400px;"/></p>
+</div>
+<p>Explicitly, we can write <span class="math display">\[\begin{aligned}
+        &amp;p_1: \mathbb{R}^2 \to \mathbb{R}\times S^1, \qquad (x,y)\mapsto (x,e^{y2\pi i})\\
+        &amp;p_2: \mathbb{R}\times S^1 \to S^1 \times S^1, \qquad (x,e^{y2\pi i})\mapsto (e^{x2\pi i},e^{y2\pi i})\\
+        &amp;p_2 \circ p_1: \mathbb{R}^2 \to S^1 \times S^1, \qquad (x,y)\mapsto (e^{x2\pi i},e^{y2\pi i}).
+    \end{aligned}\]</span> One can check that these are all actually covering maps because they are products of covering maps, since we can get evenly covered neighborhoods by taking products of evenly covered neighborhoods.</p>
+</div>
+<h1 id="lifting-theorems">Lifting Theorems</h1>
+<div class="proposition">
+<p><strong>Proposition 6</strong> (Path Lifting Property).  Let <span class="math inline">\(p: \widetilde{X} \to X\)</span> be a covering space, <span class="math inline">\(f: I,0 \to X,x\)</span> be a path, and let <span class="math inline">\(\widetilde{x}\in p^{-1}(x)\)</span> be chosen. Then, there exists a unique lifted path <span class="math display">\[\widetilde{f}: I,0 \longrightarrow \widetilde{X},\widetilde{x}\]</span></p>
+</div>
+<p><em>Strategy.</em> We would like to just say <span class="math inline">\(\widetilde{f} = p^{-1}\circ f\)</span>, but in general <span class="math inline">\(p\)</span> is not a homeomorphism and may not have continuous inverse. Instead, we use local inverses of <span class="math inline">\(p\)</span> to keep extending to get <span class="math inline">\(\widetilde{f}\)</span>. To get local inverses, we will break <span class="math inline">\(I\)</span> into finitely many small pieces, each which map into an evenly covered set (where we can choose open sets to have a local inverse).</p>
+<div class="center">
+<p><img src="misc-images/cover_pf1.png" alt="image" style="display:block; margin:auto; height: 400px;"/></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> We will prove existence and uniqueness.</p>
+<p><em>Existence.</em> Since <span class="math inline">\(p:\widetilde{X}\to X\)</span> is a covering space, each <span class="math inline">\(f(t)\in X\)</span> has an evenly covered neighborhood <span class="math inline">\(U_t\)</span>. Then, <span class="math display">\[\{f^{-1}(U_t) \operatorname{\big|}t\in I\}\]</span> is an open cover of <span class="math inline">\(I\)</span>, so by the Lebesgue number lemma there exists <span class="math inline">\(\varepsilon&gt;0\)</span> such that each <span class="math inline">\(\varepsilon\)</span>-ball <span class="math inline">\(B_\varepsilon(s)\subseteq I\)</span> is contained in some <span class="math inline">\(f^{-1}(U_t)\)</span>. We choose <span class="math inline">\(n\in \mathbb{N}\)</span> such that <span class="math inline">\(1/n &lt; \varepsilon\)</span>. Then, we have <span class="math display">\[I = \left[0,\frac{1}{n}\right] \cup \left[\frac{1}{n},\frac{2}{n}\right] \cup \cdots \cup \left[\frac{n-1}{n},\frac{n}{n}\right]\]</span> where each piece has <span class="math display">\[f\left(\left[\frac{k-1}{n},\frac{k}{n}\right]\right) \subseteq U_t\]</span> for some <span class="math inline">\(t\in I\)</span>, and we denote this <span class="math inline">\(U_t\)</span> by <span class="math inline">\(U_k\)</span>.</p>
+<p>Now, we use these pieces to lift <span class="math inline">\(f\)</span>. We inductively define <span class="math inline">\(\widetilde{f_k}: [0,k/n], 0 \to \widetilde{X},\widetilde{x}\)</span> with <span class="math inline">\(p\circ \widetilde{f_k} = f|_{[0,k/n]}\)</span>. Our base case requires us to define <span class="math inline">\(\widetilde{f_0}: [0,0], 0 \to \widetilde{X}, \widetilde{x}\)</span>, and we can just set <span class="math inline">\(\widetilde{f_0}(0)=\widetilde{x}\)</span>.</p>
+<p>Now, assuming we’ve defined <span class="math inline">\(\widetilde{f_{k-1}}\)</span>, we define <span class="math inline">\(\widetilde{f_k}\)</span>. We choose the connected component <span class="math inline">\(\widetilde{U_k}\)</span> of <span class="math inline">\(p^{-1}(U_k)\)</span> that satisfies <span class="math display">\[\widetilde{f_{k-1}}(\frac{k-1}{n}) \in \widetilde{U_k},\]</span> and we then define <span class="math display">\[\widetilde{f_{k}}(t) = \begin{cases}
+        \widetilde{f_{k-1}}(t) &amp; t\in \left[0,\frac{k-1}{n}\right]\\
+        \left(p|_{\widetilde{U_k}}\right)^{-1}(f(t)) &amp; t\in \left[\frac{k-1}{n},\frac{k}{n}\right].
+    \end{cases}\]</span> This map <span class="math inline">\(\widetilde{f_k}\)</span> is well-defined because <span class="math inline">\(p\)</span> restricted to <span class="math inline">\(\widetilde{U_k}\)</span> is a homeomorphism and has an inverse (since <span class="math inline">\(U_k\)</span> is chosen to be evenly covered), and by choice of <span class="math inline">\(\widetilde{U_k}\)</span> and definition of <span class="math inline">\(\widetilde{f_{k-1}}\)</span> we have <span class="math display">\[\left(p|_{\widetilde{U_k}}\right)\left(\widetilde{f_{k-1}}(\frac{k-1}{n})\right) = f(\frac{k-1}{n}),\]</span> so we can apply <span class="math inline">\((p|_{\widetilde{U_k}})^{-1}\)</span> to get that both parts of <span class="math inline">\(\widetilde{f_{k}}\)</span> agree on the overlap.</p>
+<p>Since both parts are continuous and agree on overlap, by the pasting lemma (for closed sets), <span class="math inline">\(\widetilde{f_k}\)</span> is continuous. Furthermore, it satisfies <span class="math inline">\(p\circ \widetilde{f_k} = f|_{[0,k/n]}\)</span> because we can check on both parts of <span class="math inline">\(\widetilde{f_k}\)</span>.</p>
+<p>Once we get to the <span class="math inline">\(n\)</span>th step, we get our desired lift <span class="math inline">\(\widetilde{f}: I,0\to \widetilde{X},\widetilde{x}\)</span>.</p>
+<p><em>Uniqueness.</em> Suppose <span class="math inline">\(\widetilde{g}:I,0\to \widetilde{X},\widetilde{x}\)</span> is another lift of <span class="math inline">\(f\)</span>. Our strategy to show <span class="math inline">\(\widetilde{f}=\widetilde{g}\)</span> is to show that each time we extended <span class="math inline">\(\widetilde{f_k}\)</span> that our hand was forced—we didn’t have any other options.</p>
+<p>We prove that <span class="math display">\[\widetilde{f}|_{[0,k/n]} = \widetilde{g}|_{[0,k/n]}\]</span> by induction on <span class="math inline">\(k\)</span>. For our base case, by assumption we have <span class="math inline">\(\widetilde{f}(0)=\widetilde{g}(0)\)</span>. Now, assume that we know for <span class="math inline">\(k\)</span> that <span class="math display">\[\widetilde{f}|_{[0,(k-1)/n]} = \widetilde{g}|_{[0,(k-1)/n]}.\]</span> We know that <span class="math display">\[p \circ \widetilde{g} = f,\]</span> and on <span class="math inline">\([(k-1)/n,k/n]\)</span> our map <span class="math inline">\(f\)</span> lands inside <span class="math inline">\(U_k\)</span>. Therefore, on <span class="math inline">\([(k-1)/n,k/n]\)</span> <span class="math inline">\(\widetilde{g}\)</span> lands in <span class="math inline">\(p^{-1}(U_k)\)</span>. Since <span class="math inline">\(\widetilde{g}\)</span> is continuous, the image the connected set <span class="math inline">\([(k-1)/n,k/n]\)</span> under <span class="math inline">\(\widetilde{g}\)</span> must be connected, i.e., it must land in a single connected component of <span class="math inline">\(p^{-1}(U_k)\)</span>.</p>
+<p>By assumption, <span class="math inline">\(\widetilde{f}((k-1)/n)=\widetilde{g}((k-1)/n)\)</span>, so the image of <span class="math inline">\([(k-1)/n,k/n]\)</span> under <span class="math inline">\(\widetilde{g}\)</span> must be <span class="math inline">\(\widetilde{U_k}\)</span>, the same connected component as <span class="math inline">\(\widetilde{f}\)</span>. Therefore, we can write <span class="math display">\[p|_{\widetilde{U_k}} \circ \widetilde{f}|_{[(k-1)/n,k/n]} = p|_{\widetilde{U_k}} \circ \widetilde{g}|_{[(k-1)/n,k/n]},\]</span> and since <span class="math inline">\(p|_{\widetilde{U_k}}\)</span> a homeomorphism, we have <span class="math display">\[\widetilde{f}|_{[(k-1)/n,k/n]} = \widetilde{g}|_{[(k-1)/n,k/n]}.\]</span> Thus, we have completed our induction step, having shown <span class="math display">\[\widetilde{f}|_{[0,k/n]} = \widetilde{g}|_{[0,k/n]}.\]</span> After <span class="math inline">\(n\)</span> steps, we get <span class="math inline">\(\widetilde{f}=\widetilde{g}\)</span>. Thus, the lift is unique. ◻</p>
+</div>
+<div class="remark">
+<p><strong>Remark 7</strong>.  We could have tried to do this without the Lebesgue number lemma—inside each <span class="math inline">\(f^{-1}(U_t)\)</span>, pick a smaller basis neighborhood <span class="math inline">\((a_t,b_t)\)</span> containing <span class="math inline">\(t\)</span>, and we would still have an open cover of <span class="math inline">\(I\)</span>. We would take a finite subcover, and then arrange the intervals somehow. I always find the interval arranging step a little confusing, so I’ve opted to shortcut to the Lebesgue number lemma.</p>
+</div>
+<p>Let’s see a neat application of the path lifting property.</p>
+<div class="proposition">
+<p><strong>Proposition 8</strong>.  Let <span class="math inline">\(p: \widetilde{X}\to X\)</span> be a covering space. Assume <span class="math inline">\(\widetilde{X}\)</span> are <span class="math inline">\(X\)</span> are both path-connected. Then, the cardinality <span class="math inline">\(|p^{-1}(x)|\)</span> does not depend on <span class="math inline">\(x\)</span>. This constant value is called the <strong>degree of the cover</strong>.</p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Let <span class="math inline">\(a,b\in X\)</span>, and let <span class="math inline">\(f: I\to X\)</span> be a path <span class="math inline">\(a\)</span> to <span class="math inline">\(b\)</span>.</p>
+<p>We attempt to define a bijection <span class="math inline">\(\varphi: p^{-1}(a) \to p^{-1}(b)\)</span>. For each <span class="math inline">\(\widetilde{a_i}\in p^{-1}(x)\)</span>, by the path lifting property, there exists a unique lift <span class="math display">\[\widetilde{f_i}: I,0 \to \widetilde{X},\widetilde{a_i}\]</span> of <span class="math inline">\(f\)</span>. Set <span class="math inline">\(\varphi(a)=\widetilde{f_i}(1)\)</span>, i.e., the other endpoint of the lifted path.</p>
+<p>The function <span class="math inline">\(\varphi\)</span> is well-defined by the uniqueness of the lifted path. We need to show that it is injective/surjective. Let <span class="math inline">\(\widetilde{a_1},\widetilde{a_2} \in p^{-1}(a)\)</span>, and assume that <span class="math inline">\(\varphi(\widetilde{a_1})=\varphi(\widetilde{a_2})\)</span>, so <span class="math inline">\(\widetilde{f_1}(1)=\widetilde{f_2}(1)\)</span>. Then, the reversed lifts <span class="math display">\[\overline{\widetilde{f_1}}, \overline{\widetilde{f_2}}\]</span> are both lifts of the reversed path <span class="math inline">\(\widetilde{f}\)</span>. Since the reversed lifts both have the same starting point, by the uniqueness part of the path-lifting property, we must have <span class="math display">\[\overline{\widetilde{f_1}} = \overline{\widetilde{f_2}},\]</span> so <span class="math inline">\(\widetilde{f_1}=\widetilde{f_2}\)</span>, so <span class="math inline">\(\widetilde{a_1}=\widetilde{a_2}\)</span>. Thus, <span class="math inline">\(\varphi\)</span> is injective.</p>
+<p>Now, we check surjectivity. Let <span class="math inline">\(\widetilde{b_j}\in p^{-1}(b)\)</span>. Then, we can lift the reversed path <span class="math inline">\(\overline{f}\)</span> starting at <span class="math inline">\(\widetilde{b_j}\)</span> to the lift <span class="math inline">\(\widetilde{\overline{f}_j}\)</span>, and we can check that <span class="math inline">\(\widetilde{\overline{f}_j}(1) \in p^{-1}(a)\)</span> maps to <span class="math inline">\(\widetilde{b_j}\)</span> under <span class="math inline">\(\varphi\)</span>. ◻</p>
+</div>
+<p>Now, we prove the more general homotopy lifting property. In general, we cannot hope to lift every single map to <span class="math inline">\(X\)</span> to a covering space <span class="math inline">\(\widetilde{X}\)</span>. However, if we can lift a map, then we can lift an entire homotopy of it. That is, if we can specify how a homotopy lifts at time 0, we get a unique lift of the entire homotopy.</p>
+<div class="proposition">
+<p><strong>Proposition 9</strong> (Homotopy Lifting Property).  Let <span class="math inline">\(p: \widetilde{X}\to X\)</span> be a covering space, <span class="math inline">\(F: Y\times I\to X\)</span> a homotopy, and <span class="math inline">\(\widetilde{F_0}: Y\to \widetilde{X}\)</span> a lift of <span class="math inline">\(f_0\)</span>. Then, there exists a unique lift <span class="math display">\[\widetilde{F}: Y\times I \longrightarrow \widetilde{X}\]</span> extending <span class="math inline">\(\widetilde{F_0}\)</span>.</p>
+</div>
+<p><em>Strategy.</em> Let’s talk about the strategy first. For a given <span class="math inline">\(y\in Y\)</span>, we first try to lift <span class="math inline">\(F|_{N\times I}\)</span> for a small neighborhood <span class="math inline">\(N\)</span> of <span class="math inline">\(y\)</span>. We will use a similar argument as per the path lifting principle, and by uniqueness we will get that adjacent restrictions <span class="math display">\[F|_{N\times I}, F|_{N&#39;\times I}\]</span> will agree on overlap. This will allow us to assemble the restrictions together.</p>
+<p>We will then need to choose our small neighborhood <span class="math inline">\(N\)</span> for which we will lift <span class="math inline">\(F|_{N\times I}\)</span>. We will choose <span class="math inline">\(N\)</span> to be the intersection of small neighborhoods of <span class="math inline">\(y\)</span> that come up when we try divide <span class="math inline">\(I\)</span> into evenly covered pieces, as per the proof of the path lifting principle.</p>
+<div class="center">
+<p><img src="misc-images/cover_pf2.png" alt="image" style="display:block; margin:auto; height: 450px;"/></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Let <span class="math inline">\(y\in Y\)</span> be given. For each <span class="math inline">\(t\in I\)</span>, there exists an evenly covered neighborhood <span class="math inline">\(U_t\)</span> of <span class="math inline">\(F(y,t)\)</span>. Then, there exists a basic neighborhood <span class="math inline">\(N_t\times V_t \subseteq F^{-1}(U_t)\)</span> of <span class="math inline">\((y,t)\)</span>. The collection <span class="math display">\[\{V_t \operatorname{\big|}t\in I\}\]</span> is a cover of <span class="math inline">\(I\)</span> which has subcover <span class="math inline">\(V_{t_1},\dots,V_{t_m}\)</span>. Choose a Lebesgue number <span class="math inline">\(\varepsilon&gt;0\)</span> for the subcover <span class="math inline">\(\{V_{t_i}\}\)</span> and choose <span class="math inline">\(n\in \mathbb{N}\)</span> so that <span class="math inline">\(1/n&lt;\varepsilon\)</span>. Thus, each <span class="math display">\[I_k = \left[\frac{k-1}{n}, \frac{k}{n}\right]\]</span> is contained in some <span class="math inline">\(V_{t_i}\)</span>. Then, we can take <span class="math display">\[N = \bigcap_{i=1}^m N_{t_i},\]</span> so that for each <span class="math inline">\(k\)</span> we have <span class="math display">\[N\times I_k \subseteq F^{-1}(U_{t_k}).\]</span> This is a big win—we’ve have a neighborhood <span class="math inline">\(N\)</span> of <span class="math inline">\(y\)</span> such that <span class="math inline">\(N\times I\)</span> can be written as the union of sets <span class="math inline">\(N\times I_k\)</span> which map into evenly covered sets.</p>
+<p>Now, we’re in a good position to lift <span class="math inline">\(F|_{N\times I}\)</span> (this is an abuse of notation—we don’t really mean the restriction because for different <span class="math inline">\(N\)</span> this map a-priori may not be the same. Eventually, we will prove that these lifts all agree with each other, and the abuse of notation will be correct). Inductively, we define <span class="math display">\[\widetilde{F}|_{N\times [0,k/n]},\]</span> with our base case <span class="math inline">\(\widetilde{F}|_{N\times [0,0]}\)</span> given by assumption, and our induction step by choosing a connected component <span class="math inline">\(\widetilde{V_{t_i}}\subseteq p^{-1}(V_{t_i})\)</span> containing <span class="math inline">\(F(y,(k-1)/n)\)</span> and defining <span class="math display">\[\widetilde{F}|_{N\times [(k-1)/n,k/n]} = \left(p|_{\widetilde{V_{t_i}}}\right)^{-1}\circ F|_{[(k-1)/n,k/n]}.\]</span> The resulting map will be well-defined by choice of <span class="math inline">\(\widetilde{V_{t_i}}\)</span> and continuous by the pasting lemma (for closed sets).</p>
+<p>Now, for each <span class="math inline">\(y\in Y\)</span> we have neighborhoods <span class="math inline">\(N_y=N\)</span> and a lift <span class="math display">\[\widetilde{F}|_{N_y\times I} : N_y\times I \to \widetilde{X}\]</span> with <span class="math inline">\(\widetilde{F}_{N_y\times \{0\}}\)</span> given by assumption. We need to show that these lifts agree with each other so that they assemble into a continuous map <span class="math inline">\(\widetilde{F}: Y\times I\to \widetilde{X}\)</span>.</p>
+<p>The collection <span class="math display">\[\{N_y \operatorname{\big|}y\in Y\}\]</span> forms an open cover of <span class="math inline">\(Y\)</span>. Let <span class="math inline">\(y,y&#39;\in Y\)</span> and let <span class="math inline">\(z\in N_y\cap N_{y&#39;}\)</span>. Then, <span class="math display">\[\left(\widetilde{F}_{N_y\times I}\right)_{\{z\}\times I}: \{z\}\times I\to \widetilde{X}, \qquad \left(\widetilde{F}_{N_{y&#39;}\times I}\right)_{\{z\}\times I}: \{z\}\times I\to \widetilde{X}\]</span> are both lifts of the path <span class="math display">\[F|_{\{z\}\times I}: \{z\}\times I \to X\]</span> that send <span class="math inline">\(0\mapsto \widetilde{F}_0(z)\)</span>. Thus, by the uniqueness of the path lifting property, these two maps must be the same. This just tells us that any two lifts agree on intersection, so we can get a well-defined lift <span class="math inline">\(\widetilde{F}: Y\times I \to \widetilde{X}\)</span>, which is continuous by the pasting lemma (for open sets).</p>
+<p>Finally, our lift <span class="math inline">\(\widetilde{F}: Y\times I\to \widetilde{X}\)</span> is unique again because each restriction to <span class="math inline">\(\{y\}\times I\)</span> is a lift of the path <span class="math inline">\(F|_{\{y\}\times I}\)</span>, so unique by the path lifting property. ◻</p>
+</div>
+<h1 id="correspondence-theorem">Correspondence Theorem</h1>
+<p>So far, we’ve proved some theorems about lifting paths and homotopies—the essential ingredients of the fundamental group. We’re going to use these tools to study the interplay between the fundamental groups upstairs and downstairs. Let’s look at an example.</p>
+<div class="example">
+<p><strong>Example 10</strong>.  Recall the covering <span class="math inline">\(p:S^1\to S^1\)</span> by <span class="math inline">\(z\mapsto z^n\)</span>. Let <span class="math inline">\(\gamma:I\to S^1\)</span> be a generator of the upstairs fundamental group, say <span class="math display">\[\gamma(t) = e^{t2\pi i},\]</span> and denote <span class="math inline">\(\omega\)</span> the same map, but thought of as generating the downstairs fundamental group. Then, <span class="math display">\[p\circ \gamma(t) = e^{nt 2 \pi i},\]</span> so <span class="math display">\[p_*([\gamma]) = [p\circ \gamma] = [\omega]^n.\]</span> Under the isomorphism <span class="math inline">\(\pi_1(S^1,1)\cong \mathbb{Z}\)</span>, this tells us that <span class="math display">\[p_*(\pi_1(S^1,1)) = n\mathbb{Z}\leq \mathbb{Z}\]</span> By choosing different <span class="math inline">\(n\neq 0\)</span> or by having <span class="math inline">\(\mathbb{R}\)</span> cover <span class="math inline">\(S^1\)</span> (corresponding to <span class="math inline">\(n=0\)</span>), we can actually get any subgroup <span class="math inline">\(n\mathbb{Z}\leq \mathbb{Z}\)</span> by looking at the image of the fundamental group of a covering space.</p>
+</div>
+<p>We will later see that this is example is no coincidence. These examples are leading us towards a big classification/correspondence theorem for covering spaces. We will eventually see that there is a bijection <span class="math display">\[\{\text{covering spaces } p: \widetilde{X}\to X\}/\sim\qquad \longrightarrow \qquad \{H\leq \pi_1(X,x)\}/\sim,\]</span> where the left equivalence relation is “isomorphism” of covering spaces and the right equivalence relation is conjugacy.</p>
+<p>In the process, we’ll also get a powerful result telling us when we can lift any map, not just paths and homotopies.</p>
+<p>We’ll need to prove quite a few intermediary results to build up to this correspondence and in general the connection between group theory and covering spaces. Let’s start with some quick corollaries of the homotopy lifting property.</p>
+<div class="lemma">
+<p><strong>Lemma 11</strong>.  Let <span class="math inline">\(p:\widetilde{X}\to X\)</span> be a covering space, and let <span class="math inline">\(F:I\times I\to X\)</span> be a homotopy rel <span class="math inline">\(\partial I\)</span> (a homotopy of paths). Given <span class="math inline">\(\widetilde{x}\in p^{-1}(F_0(0))\)</span>, <span class="math inline">\(F\)</span> lifts uniquely to a homotopy of paths <span class="math display">\[\widetilde{F}: I\times I \to \widetilde{X}.\]</span></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> By the path lifting property, <span class="math inline">\(F_0:I\to X\)</span> lifts to a unique path <span class="math inline">\(\widetilde{F}_0: I\to \widetilde{X}\)</span> starting at <span class="math inline">\(\widetilde{x}\)</span>. Then, by the homotopy lifting property, <span class="math inline">\(F\)</span> lifts to a unique map <span class="math display">\[\widetilde{F}: I\times I \to \widetilde{X}\]</span> with the already defined <span class="math inline">\(\widetilde{F}_0\)</span>.</p>
+<p>We now show that <span class="math inline">\(\widetilde{F}\)</span> is a homotopy of paths. Since the paths <span class="math display">\[t \mapsto F_t(0), \qquad t\mapsto F_t(1)\]</span> are constant (because <span class="math inline">\(F\)</span> is a homotopy of paths), and we have that <span class="math display">\[t\mapsto \widetilde{F}_0(0), \qquad t\mapsto \widetilde{F}_0(1)\]</span> are lifts of the respective paths, by uniqueness of path lifting we must have <span class="math inline">\(\widetilde{F}_t(0)\)</span> and <span class="math inline">\(\widetilde{F}_t(1)\)</span> constant. Thus, <span class="math inline">\(\widetilde{F}\)</span> is a homotopy of paths. ◻</p>
+</div>
+<div class="proposition">
+<p><strong>Proposition 12</strong>.  Let <span class="math inline">\(p:\widetilde{X}\to X\)</span> be a covering space. Then, <span class="math display">\[p_*: \pi_1(\widetilde{X},\widetilde{x}) \longrightarrow \pi_1(X,x=p(\widetilde{x}))\]</span> is injective.</p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Let <span class="math inline">\([\widetilde{f}]\in \ker{p_*}\)</span>, so <span class="math inline">\(p\circ \widetilde{f} \simeq c_x\)</span> rel <span class="math inline">\(\partial I\)</span>. Let <span class="math display">\[F: I\times I \to X, \qquad F_0 = p\circ \widetilde{f}, \qquad F_1=c_x\]</span> be the homotopy. We can then lift this homotopy of paths to a homotopy of paths based at <span class="math inline">\(\widetilde{x}\)</span>, giving us <span class="math display">\[\widetilde{F}: I\times I \to X, \qquad \widetilde{F}_0 = \widetilde{f}.\]</span> We claim <span class="math inline">\(\widetilde{F}_1 = c_{\widetilde{x}}\)</span>. This must be the case because <span class="math inline">\(\widetilde{F}_1\)</span> is a lift of <span class="math inline">\(c_x\)</span> based at <span class="math inline">\(\widetilde{x}\)</span>, and so is <span class="math inline">\(c_{\widetilde{x}}\)</span>. Thus, by uniqueness <span class="math inline">\(\widetilde{F}_1 = c_{\widetilde{x}}\)</span>.</p>
+<p>Therefore, <span class="math inline">\([\widetilde{f}]=0\)</span> because <span class="math inline">\(\widetilde{f}\)</span> is homotopic to <span class="math inline">\(c_{\widetilde{x}}\)</span>. Thus, <span class="math inline">\(p_*\)</span> is injective. ◻</p>
+</div>
+<p>Proposition 4 already gives us one direction of our desired correspondence (modulo some equivalence relation), where we send a covering space <span class="math inline">\(p:\widetilde{X}\to X\)</span> to the subgroup <span class="math inline">\(p_*\pi_1(\widetilde{X},\widetilde{x})\)</span>.</p>
+<div class="definition">
+<p><strong>Definition 13</strong>.  Let <span class="math inline">\(p:\widetilde{X}\to X\)</span> be a covering map. Then, <span class="math inline">\(p_*(\pi_1(\widetilde{X},\widetilde{x}))\)</span> is the subgroup of <span class="math inline">\(\pi_1(X,x)\)</span> corresponding to the cover. This depends on choice of basepoint, and assuming <span class="math inline">\(\widetilde{X}\)</span> is path-connected, different choices of <span class="math inline">\(\widetilde{x}\)</span> just give conjugate subgroups.</p>
+</div>
+<div id="degree" class="proposition">
+<p><strong>Proposition 14</strong>.  Let <span class="math inline">\(p:\widetilde{X}\to X\)</span> be a covering space, <span class="math inline">\(\widetilde{x} \in \widetilde{X}\)</span>, <span class="math inline">\(x=p(\widetilde{x})\)</span>, and assume <span class="math inline">\(X,\widetilde{X}\)</span> path connected. Then, <span class="math display">\[\deg(p) = [\pi_1(X,x) : p_*(\pi_1(\widetilde{X},\widetilde{x}))]\]</span></p>
+</div>
+<p><em>Strategy.</em> We can roughly think of covering spaces as unwrappings of a space, and the degree is how much we’ve unwrapped. Then, <span class="math inline">\(\pi_1(\widetilde{X},\widetilde{x})\)</span> are roughly speaking the loops that weren’t broken by unwrapping (e.g., think of the cylinder covering the torus, and the two loops around the torus—one lifts to a loop, the other lifts just to a path). So the loops in <span class="math inline">\(p_*(\pi_1(\widetilde{X},\widetilde{x}))\)</span> lift to paths ending in <span class="math inline">\(\widetilde{x}\)</span>, and the others do not. Then, the index <span class="math display">\[[\pi_1(X,x) : p_*(\pi_1(\widetilde{X},\widetilde{x}))]\]</span> is roughly like the number of loops based at <span class="math inline">\(x\)</span> divided by the the number of loops that, when lifted, still end at <span class="math inline">\(\widetilde{x}\)</span>. The quotient should roughly be like the number of ways that lifted loops can end modulo redundancy—this should end up being the degree.</p>
+<div class="proof">
+<p><em>Proof.</em> Let <span class="math inline">\(G=\pi_1(X,x)\)</span> and <span class="math inline">\(H=p_*(\pi_1(\widetilde{X},\widetilde{x}))\)</span>. Our strategy is to define a bijection from <span class="math inline">\([G:H]\)</span> to <span class="math inline">\(p^{-1}(x)\)</span>, since <span class="math inline">\(\deg(p)=|p^{-1}(x)|\)</span>. We define <span class="math display">\[\begin{aligned}
+        \theta: \pi_1(X,x)/H &amp;\longrightarrow p^{-1}(x)
+    \end{aligned}\]</span> as follows. Given <span class="math inline">\([\alpha]H\)</span>, first lift <span class="math inline">\(\alpha\)</span> to get <span class="math inline">\(\widetilde{\alpha}\)</span> starting at <span class="math inline">\(\widetilde{x}\)</span>. Then, set <span class="math inline">\(\theta([\alpha])=\widetilde{\alpha}(1)\)</span>, i.e., the other endpoint of <span class="math inline">\(\widetilde{\alpha}\)</span>.</p>
+<p>We need to show <span class="math inline">\(\theta\)</span> is well-defined, surjective, and injective. To show well-defined, assume <span class="math inline">\([\alpha]=[\beta]\)</span>, so there is path homotopy <span class="math inline">\(F:I\times I \to X\)</span>. We can lift this homotopy to a path homotopy <span class="math inline">\(\widetilde{F}\)</span> starting at <span class="math inline">\(\widetilde{\alpha}\)</span>. Then, <span class="math inline">\(\widetilde{F}_t(1)\)</span> is constantly <span class="math inline">\(\widetilde{F}_0(1)=\widetilde{\alpha}(1)\)</span> because the lift is a path-homotopy. Thus, we can get <span class="math inline">\(\theta([\beta])=\widetilde{\alpha}(1)\)</span>, and <span class="math inline">\(\theta\)</span> is well-defined.</p>
+<p>Next, we show <span class="math inline">\(\theta\)</span> is surjective. Let <span class="math inline">\(\widetilde{y}\in p^{-1}(x)\)</span>. Since <span class="math inline">\(\widetilde{X}\)</span> is path-connected, there is a path <span class="math inline">\(\widetilde{\alpha}\)</span> from <span class="math inline">\(\widetilde{x}\)</span> to <span class="math inline">\(\widetilde{y}\)</span>, which projects to <span class="math inline">\(p\circ \widetilde{\alpha}\)</span>, which is a loop at <span class="math inline">\(x\)</span>. Then, by the uniqueness in the path lifting property, we can get <span class="math display">\[\theta([p\circ \widetilde{\alpha}])=\widetilde{\alpha}(1)=\widetilde{y}.\]</span></p>
+<p>Finally, we show injectivity. Assume <span class="math inline">\(\theta([\alpha])=\theta([\beta])\)</span>. Then, <span class="math display">\[\widetilde{\alpha} \cdot \overline{\widetilde{\beta}}\]</span> is a loop at <span class="math inline">\(\widetilde{x}\)</span>, and <span class="math display">\[[\alpha]\cdot [\beta]^{-1} = p(\widetilde{\alpha} \cdot \overline{\widetilde{\beta}}) \in H,\]</span> so <span class="math inline">\([\alpha]H=[\beta]H\)</span>. ◻</p>
+</div>
+<div class="definition">
+<p><strong>Definition 15</strong>.  Let <span class="math inline">\(P\)</span> be a property that a topological space can have. A space <span class="math inline">\(X\)</span> is <strong>locally <span class="math inline">\(P\)</span></strong> is for every <span class="math inline">\(x\in X\)</span> and every neighborhood <span class="math inline">\(U\)</span> of <span class="math inline">\(x\)</span>, there exists an open set <span class="math inline">\(V\)</span> with <span class="math display">\[x\in V\subseteq U\]</span> such that <span class="math inline">\(V\)</span> has property <span class="math inline">\(P\)</span>.</p>
+</div>
+<div class="example">
+<p><strong>Example 16</strong>.  We will often consider the following properties:</p>
+<ul>
+<li><p>Locally path connected.</p></li>
+<li><p>Locally connected.</p></li>
+</ul>
+</div>
+<p>We saw a few instances where we can lift maps—the path lifting property and the homotopy lifting property. We’re getting to a way more general result that will tell us when we can us lift all sorts of maps, and we only have to check something algebraic. The motto is that a map <span class="math inline">\(f:Y\to X\)</span> lifts exactly when the fundamental group allows it.</p>
+<div id="liftcrit" class="theorem">
+<p><strong>Theorem 17</strong> (Lifting Criterion for Covering Spaces).  Let <span class="math inline">\(p:\widetilde{X} \to X\)</span> be a covering space, let <span class="math inline">\(x\in X\)</span> and <span class="math inline">\(\widetilde{x}\)</span> a lift of <span class="math inline">\(x\)</span>. Let <span class="math inline">\(Y\)</span> be path-connected and locally path-connected with <span class="math inline">\(y\in Y\)</span>. Given <span class="math inline">\(f: Y,y \to X,x\)</span>, there exists a lift <span class="math inline">\(\widetilde{f}: Y,y \to \widetilde{X},\widetilde{x}\)</span> if and only if <span class="math display">\[f_*(\pi_1(Y,y)) \subseteq p_*(\pi_1(\widetilde{X},\widetilde{x})).\]</span></p>
+<div class="center">
+<p><img src="tikz-images/8d3df2c406b5d08a71abc0d4800a2579f95c838a.svg" style="display:block; margin:auto; height: 130px;" /></p>
+</div>
+</div>
+<p><em>Strategy</em>. The hard direction is assuming <span class="math inline">\(f_*(\pi_1(Y,y))\subseteq p_*(\pi_1(X,x)))\)</span> and showing that a lift exists. Our strategy for this is really neat. We will essentially “probe” our space with paths, and use path-lifting to figure out <span class="math inline">\(f\)</span>.</p>
+<p>We will need to know at least one point to start off our definition of <span class="math inline">\(\widetilde{f}\)</span>, and we are given <span class="math inline">\(\widetilde{f}(y)=\widetilde{x}\)</span>. We need to figure out where to map all of the other points of <span class="math inline">\(y\)</span>. Let <span class="math inline">\(y&#39;\in Y\)</span>. Since <span class="math inline">\(Y\)</span> is path-connected, we have a path <span class="math inline">\(\gamma\)</span> from <span class="math inline">\(y\)</span> to <span class="math inline">\(y&#39;\)</span>. Then, <span class="math inline">\(f\circ \gamma\)</span> is a path in <span class="math inline">\(X\)</span>, and it lifts to a path in <span class="math inline">\(\widetilde{X}\)</span>. We then set <span class="math inline">\(\widetilde{f}(y&#39;)\)</span> to be the endpoint of the lifted path.</p>
+<p>One hurdle we will encounter is showing that this definition is well-defined, i.e., that choosing different paths <span class="math inline">\(\gamma&#39;\)</span> doesn’t give a different answer. This will boil down to being able to lift the loop <span class="math inline">\(f\circ (\overline{\gamma} \cdot \gamma&#39;)\)</span>. In general, we can’t always lift loops, but our condition on the fundamental groups says that we can do this.</p>
+<p>Finally, we will need local path-connectedness to check that <span class="math inline">\(\widetilde{f}\)</span> is actually continuous.</p>
+<div class="proof">
+<p><em>Proof.</em> First, assume that a lift <span class="math inline">\(\widetilde{f}\)</span> exists. Then, <span class="math display">\[\begin{aligned}
+        f &amp;= p \circ \widetilde{f}\\
+        f_* &amp;= p_* \circ \widetilde{f}_*,
+    \end{aligned}\]</span> so <span class="math inline">\(\mathop{\mathrm{im}}(f_*) \subseteq \mathop{\mathrm{im}}(p_*)\)</span>.</p>
+<p>Conversely, assume that <span class="math inline">\(\mathop{\mathrm{im}}(f_*)\subseteq \mathop{\mathrm{im}}(p_*)\)</span>. We need to come up with a definition of <span class="math inline">\(\widetilde{f}\)</span>, show that it is well-defined, and finally show that it is continuous. Let <span class="math inline">\(y&#39;\in Y\)</span>, and let <span class="math inline">\(\gamma\)</span> be a path from <span class="math inline">\(y\)</span> to <span class="math inline">\(y&#39;\)</span>. Then, <span class="math inline">\(f\circ \gamma\)</span> is a path from <span class="math inline">\(f(y)\)</span> to <span class="math inline">\(f(y&#39;)\)</span> in <span class="math inline">\(X\)</span>. By the path lifting property, there exists a lift of <span class="math inline">\(f\circ \gamma\)</span>, which we denote <span class="math inline">\(\widetilde{f\circ \gamma}\)</span>. Then, we set <span class="math display">\[\widetilde{f}(y) = (\widetilde{f\circ \gamma})(1).\]</span> A priori, this depends on <span class="math inline">\(\gamma\)</span>. To show that this is actually a function, we need to show it is well-defined.</p>
+<p>Let <span class="math inline">\(\gamma&#39;\)</span> be another path from <span class="math inline">\(y\)</span> to <span class="math inline">\(y&#39;\)</span>. We will show that <span class="math inline">\((\widetilde{f\circ \gamma})(1) = (\widetilde{f\circ \gamma&#39;})(1)\)</span>. Consider the loop <span class="math display">\[(f\circ \gamma&#39;) \cdot (f\circ \overline{\gamma}) = f\circ (\gamma&#39; \cdot \overline{\gamma}),\]</span> whose equivalence class is in <span class="math inline">\(f_*(\pi_1(Y,y)) \subseteq p_*(\pi_1(\widetilde{X},\widetilde{x}))\)</span>. Thus, <span class="math display">\[[f\circ (\gamma&#39; \cdot \overline{\gamma})] = [p \circ \alpha]\]</span> for some loop <span class="math inline">\([\alpha] \in \pi_1(\widetilde{X},\widetilde{x})\)</span>. Thus, we have a homotopy <span class="math inline">\(H: I\times I \to X\)</span> with <span class="math inline">\(H_0 = p\circ \alpha\)</span> and <span class="math inline">\(H_1 = f\circ (\gamma&#39; \cdot \overline{\gamma})\)</span>. Since we have a lift <span class="math inline">\(\widetilde{H_0} = \alpha\)</span>, by the homotopy lifting property we have a lift of the homotopy <span class="math inline">\(\widetilde{H}\)</span>. Then, <span class="math inline">\(\widetilde{H}_1\)</span> is a lift of <span class="math inline">\(f\circ (\gamma&#39;\cdot \overline{\gamma})\)</span>. In particular, the two halves of <span class="math inline">\(\widetilde{H}_1\)</span> are (reparameterized) lifts of <span class="math inline">\(f\circ \gamma&#39;\)</span> and <span class="math inline">\(f\circ \overline{\gamma}\)</span>. By the path lifting property, we then must have <span class="math display">\[\widetilde{H}_1 = \left(\overline{f\circ \gamma&#39;}\right) \cdot \left(\overline{\widetilde{f\circ \gamma}}\right),\]</span> so therefore we indeed have <span class="math display">\[(\widetilde{f\circ \gamma})(1) = (\widetilde{f\circ \gamma&#39;})(1),\]</span> so <span class="math inline">\(\widetilde{f}\)</span> is well-defined.</p>
+<p>Finally, we show that <span class="math inline">\(\widetilde{f}\)</span> is continuous. Let <span class="math inline">\(y&#39;\in Y\)</span>. Let <span class="math inline">\(\widetilde{U}\)</span> be a neighborhood of <span class="math inline">\(\widetilde{f}(y&#39;)\)</span>. We can assume <span class="math inline">\(\widetilde{U}\)</span> is small enough such that <span class="math inline">\(p|_{\widetilde{U}}\)</span> is a homeomorphism to an open set <span class="math inline">\(U\subseteq X\)</span>.</p>
+<p>By local path connectedness, choose an open path connected neighborhood <span class="math inline">\(V\)</span> of <span class="math inline">\(y\)</span> such that <span class="math inline">\(V\subseteq f^{-1}(U)\)</span>. We claim that <span class="math inline">\(\widetilde{f}(V)\subseteq \widetilde{U}\)</span>, so that <span class="math inline">\(\widetilde{f}\)</span> is continuous at <span class="math inline">\(y&#39;\)</span>.</p>
+<p>Let <span class="math inline">\(y&#39;&#39;\in V\)</span>. To evaluate <span class="math inline">\(\widetilde{f}\)</span>, let <span class="math inline">\(\gamma:I\to Y\)</span> be a path <span class="math inline">\(y\)</span> to <span class="math inline">\(y&#39;\)</span>, and let <span class="math inline">\(\eta:I\to V\)</span> be a path <span class="math inline">\(y&#39;\)</span> to <span class="math inline">\(y&#39;&#39;\)</span>. Then, using the definition of <span class="math inline">\(\widetilde{f}\)</span> and the uniqueness of path-lifting, <span class="math display">\[\widetilde{f}(y&#39;&#39;) = \widetilde{f\circ (\gamma\cdot \eta)} (1) = (\widetilde{f\circ \gamma}) \cdot (\widetilde{f\circ \eta})(1) = (\widetilde{f\circ \eta})(1).\]</span> Since <span class="math inline">\(\eta\)</span> is in <span class="math inline">\(V\subseteq f^{-1}(U)\)</span>, we actually know that the lift will be <span class="math display">\[(p|_{\widetilde{U}})^{-1} \circ f \circ \eta\]</span> by the uniqueness of path lifting. Thus, <span class="math display">\[\widetilde{f}(y&#39;&#39;) = (\widetilde{f\circ \eta})(1) = (p|_{\widetilde{U}})^{-1} \circ f \circ \eta(1) \quad  \in \widetilde{U},\]</span> so <span class="math inline">\(\widetilde{f}\)</span> is continuous. ◻</p>
+</div>
+<p>In fact, after picking a base point that works, such lifts are unique.</p>
+<div id="liftcritunique" class="proposition">
+<p><strong>Proposition 18</strong>.  Let <span class="math inline">\(p:\widetilde{X}\to X\)</span> be a covering space, and <span class="math inline">\(f:Y\to X\)</span>. If <span class="math inline">\(\widetilde{f_1},\widetilde{f_2}: Y\to \widetilde{X}\)</span> are two lifts of <span class="math inline">\(f\)</span> that agree at one point of <span class="math inline">\(Y\)</span> and <span class="math inline">\(Y\)</span> is connected, then <span class="math inline">\(\widetilde{f_1}=\widetilde{f_2}\)</span>.</p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Assume <span class="math inline">\(\widetilde{f_1}(y) = \widetilde{f_2}(y)\)</span> for some point <span class="math inline">\(y\in Y\)</span>. We show that the set of points where <span class="math inline">\(\widetilde{f_1}\)</span> and <span class="math inline">\(\widetilde{f_2}\)</span> agree is clopen, so since it is nonempty, it must all of <span class="math inline">\(Y\)</span> by connectedness.</p>
+<p>Let <span class="math inline">\(y&#39;\in Y\)</span>. Our goal is to find a neighborhood of <span class="math inline">\(y&#39;\)</span> where the two lifts entirely agree or disagree. Let <span class="math inline">\(U\subseteq X\)</span> be an evenly covered neighborhood of <span class="math inline">\(f(y&#39;)\)</span>, and let <span class="math inline">\(\widetilde{U_1},\widetilde{U_2}\subseteq \widetilde{X}\)</span> be the sheets above <span class="math inline">\(U\)</span> containing <span class="math inline">\(\widetilde{f_1}(y&#39;),\widetilde{f_2}(y&#39;)\)</span> respectively. By continuity of the lifts, we can choose a neighborhood <span class="math inline">\(N\subseteq Y\)</span> of <span class="math inline">\(y&#39;\)</span> such that <span class="math display">\[\widetilde{f_1}(N)\subseteq \widetilde{U_1}, \qquad \widetilde{f_2}(N)\subseteq \widetilde{U_2}\]</span> If <span class="math inline">\(\widetilde{f_1}(y&#39;)=\widetilde{f_2}(y&#39;)\)</span>, then <span class="math inline">\(\widetilde{U_1}=\widetilde{U_2}=\widetilde{U}\)</span>, and <span class="math display">\[p|_{\widetilde{U}} \circ \widetilde{f_1}|_{N} = p|_{\widetilde{U}} \circ \widetilde{f_2}|_{N}\]</span> implies by injectivity of <span class="math inline">\(p|_{\widetilde{U}}\)</span> that <span class="math inline">\(\widetilde{f_1},\widetilde{f_2}\)</span> agree on all of <span class="math inline">\(N\)</span>. Thus, the set of points where the lifts agree is open.</p>
+<p>Alternatively, if <span class="math inline">\(\widetilde{f_1}(y&#39;)\neq \widetilde{f_2}(y&#39;)\)</span>, then <span class="math inline">\(\widetilde{U_1}\neq \widetilde{U_2}\)</span>, and even more they are disjoint (because they are sheets), so <span class="math inline">\(\widetilde{f_1},\widetilde{f_2}\)</span> disagree on <span class="math inline">\(N\)</span>. Thus, the set of points where the lifts disagree is open. ◻</p>
+</div>
+<p>In our development of covering spaces and fundamental groups, we’ve finished achieving our main result on how to lift maps. Now, we turn to constructing covering spaces for each subgroup <span class="math inline">\(H\)</span> of the fundamental group, so that we can get our desired correspondence.</p>
+<p>For the point set topology to work out, we at least impose local path-connectedness, so that connected components and path components coincide and so that loops/fundamental group techniques are applicable. By forcing <span class="math inline">\(X\)</span> to be locally path connected, we will automatically get <span class="math inline">\(\widetilde{X}\)</span> locally path connected for any covering space. To get our desired correspondence, we want <span class="math inline">\(\widetilde{X}\)</span> to be path-connected, and since it is already locally path connected, we just require connected. Thus, we will impose certain conditions on <span class="math inline">\(X\)</span>, and then study connected covering spaces.</p>
+<p>One other technical condition we will impose on <span class="math inline">\(X\)</span> is the following, which is satisfied by most “nice” spaces, e.g., manifolds and CW complexes.</p>
+<div class="definition">
+<p><strong>Definition 19</strong>.  A space <span class="math inline">\(X\)</span> is <strong>semi locally simply connected</strong> (SLSC) if every <span class="math inline">\(x\in X\)</span> has a neighborhood <span class="math inline">\(U\)</span> such that <span class="math display">\[i_*: \pi_1(U,x) \to \pi_1(X,x)\]</span> is trivial.</p>
+</div>
+<p>In other words, every point <span class="math inline">\(x\)</span> has a neighborhood <span class="math inline">\(U\)</span> such that all loops at <span class="math inline">\(x\)</span> in <span class="math inline">\(U\)</span> are nullhomotopic in <span class="math inline">\(X\)</span>. Maybe a more straightforward (but strictly stronger) condition is <em>locally simply connected</em>, we require every point <span class="math inline">\(x\in X\)</span> to have an open neighborhood which is simply connected (i.e., the nullhomotopies are in <span class="math inline">\(U\)</span>).</p>
+<p>It is straightforward to check that manifolds for locally simply connected, or even locally contractible. CW complexes require some more theory.</p>
+<p>Let’s first see that this condition is actually necessary, so defining it isn’t a waste of time.</p>
+<div class="proposition">
+<p><strong>Proposition 20</strong>.  If <span class="math inline">\(X\)</span> has a simply connected covering space <span class="math inline">\(p: \widetilde{X}\to X\)</span>, then <span class="math inline">\(X\)</span> is SLSC.</p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Let <span class="math inline">\(x\in X\)</span>. Then, <span class="math inline">\(x\)</span> has a neighborhood <span class="math inline">\(U\)</span> with lift <span class="math inline">\(\widetilde{U}\)</span> such that <span class="math inline">\(p|_{\widetilde{U}}\)</span> is a homeomorphism.</p>
+<p>Let <span class="math inline">\(\gamma:I \to U\)</span> be a loop at <span class="math inline">\(x\)</span>. Then, <span class="math inline">\(\gamma\)</span> lifts to the loop <span class="math inline">\(p|_{\widetilde{U}}^{-1} \circ \gamma\)</span>, which is nullhomotopic in <span class="math inline">\(\widetilde{X}\)</span> because <span class="math inline">\(\widetilde{X}\)</span> is simply connected. Thus, there exists a homotopy <span class="math inline">\(h_t:I\to \widetilde{X}\)</span> with <span class="math display">\[h_0 = p|_{\widetilde{U}}^{-1} \circ \gamma\]</span> and <span class="math inline">\(h_1\)</span> being the constant loop. Then, <span class="math inline">\(p\circ h_t: I\to X\)</span> is a homotopy in <span class="math inline">\(X\)</span> which makes <span class="math inline">\(\gamma\)</span> nullhomotopic. ◻</p>
+</div>
+<p>In our quest for covering spaces, we first start with getting a simply connected one. We will see later that all other covering spaces are gotten by quotienting this simply connected one.</p>
+<div id="universal" class="theorem">
+<p><strong>Theorem 21</strong>.  Let <span class="math inline">\(X\)</span> be connected, locally path connected, and SLSC. Then, there exists a simply connected covering space <span class="math inline">\(p:\widetilde{X}\to X\)</span>, called a <strong>universal cover</strong>.</p>
+</div>
+<p><em>Strategy</em>. We make an observation first. Fix a point <span class="math inline">\(x\in X\)</span>. In a small enough neighborhood <span class="math inline">\(U\)</span> of <span class="math inline">\(x\)</span> (due to the SLSC condition), points of <span class="math inline">\(U\)</span> biject with homotopy classes of paths <span class="math inline">\(x\)</span> to <span class="math inline">\(x&#39;\)</span>.</p>
+<p>Here’s the kicker though. In spaces like a torus, there are multiple homotopy classes of paths for the same point, e.g., we can loop around once or twice to get a point. This is evidence of the fundamental group being nontrivial, and it reflects how our space is somehow folded/wrapped. To unwrap the space, we copy this point several times, once for each homotopy class of paths.</p>
+<p>As a set, we make our space <span class="math inline">\(\widetilde{X}\)</span> the set of homotopy classes of paths, and on small sets, we transfer the topology from <span class="math inline">\(X\)</span> to <span class="math inline">\(\widetilde{X}\)</span>. In our proof, we leave a lot of details as a sketch, since it is a little bit tedious to include all of the details.</p>
+<div class="proof">
+<p><em>Proof.</em> Choose a basepoint <span class="math inline">\(x\in X\)</span>. Define the set <span class="math display">\[\widetilde{X} = \{[\gamma] \operatorname{\big|}\gamma \text{ a path in } X \text{ starting at } x\},\]</span> where the equivalence class <span class="math inline">\([\gamma]\)</span> is with respect to path homotopies (fixing endpoints). We then define the map <span class="math display">\[\begin{aligned}
+        p: \widetilde{X} &amp;\longmapsto X\\
+        [\gamma] &amp;\longmapsto \gamma(1).
+    \end{aligned}\]</span> We now need to put a topology on <span class="math inline">\(\widetilde{X}\)</span>, prove that <span class="math inline">\(p\)</span> is a covering map, and prove that <span class="math inline">\(\widetilde{X}\)</span> is simply connected.</p>
+<p>First, let’s give <span class="math inline">\(\widetilde{X}\)</span> a topology. We extract data from <span class="math inline">\(X\)</span>. Define <span class="math inline">\(\mathcal{U}\)</span> to be the collection of path-connected open sets <span class="math inline">\(U\subseteq X\)</span> such that the induced inclusion map <span class="math inline">\(\pi_1(U) \to \pi_1(X)\)</span> is trivial (this doesn’t depend on basepoint because <span class="math inline">\(U\)</span> is path-connected). By the locally path connected and SLSC hypotheses, <span class="math inline">\(\mathcal{U}\)</span> forms a basis for <span class="math inline">\(X\)</span>.</p>
+<p>Now, for each <span class="math inline">\(U\in \mathcal{U}\)</span> define <span class="math display">\[U_{[\gamma]} = \{[\gamma\circ \eta] \operatorname{\big|}\eta \text{ is a path in $U$ with $\eta(0)=\gamma(1)$}\}.\]</span> One can check that the collection of <span class="math inline">\(U_{[\gamma]}\)</span> is a basis for topology for <span class="math inline">\(\widetilde{X}\)</span> (i.e., can generate intersections of basic sets and the entire space). One can next check that <span class="math inline">\(p: U_{[\gamma]} \to U\)</span> is a homeomorphism, which shows that <span class="math inline">\(p\)</span> is not only continuous but a covering map.</p>
+<p>Finally, we show that <span class="math inline">\(\widetilde{X}\)</span> is simply connected. First, we show path connectedness. Let <span class="math inline">\([\gamma]\in \widetilde{X}\)</span>. Define <span class="math inline">\(\gamma_t\)</span> by <span class="math display">\[s\mapsto \begin{cases}
+            \gamma(s) &amp; s\in [0,t]\\
+            \gamma(t) &amp; s\in [t,1],
+        \end{cases}\]</span> i.e., <span class="math inline">\(\gamma_t\)</span> follows <span class="math inline">\(\gamma\)</span> until <span class="math inline">\(t\)</span>, and then is stationary. Then, we have a path from the equivalence class of the constant loop <span class="math inline">\([x]\in \widetilde{X}\)</span> to <span class="math inline">\([\gamma]\)</span> by <span class="math display">\[t\mapsto [\gamma_t].\]</span> Then, we show <span class="math inline">\(\pi_1(\widetilde{X},[x]) = 0\)</span>. Let <span class="math inline">\(\widetilde{\gamma}\)</span> be a loop in <span class="math inline">\(\widetilde{X}\)</span> at <span class="math inline">\([x]\)</span>, so it is a lift of the path <span class="math inline">\(\gamma=p\circ \widetilde{\gamma}\)</span>. However, <span class="math inline">\(t\mapsto [\gamma_t]\)</span> also lifts <span class="math inline">\(\gamma\)</span> starting at <span class="math inline">\([x]\)</span>. By the uniqueness of the path-lifting property, these two paths are equal. In particular, we must have <span class="math inline">\([\gamma_1]=[x]\)</span> for <span class="math inline">\(t\to [\gamma_t]\)</span> to be a loop, so <span class="math inline">\([\gamma] = [x]\)</span>. Therefore, <span class="math inline">\(\pi_1(\widetilde{X},[x])=0\)</span>. ◻</p>
+</div>
+<div class="corollary">
+<p><strong>Corollary 22</strong>.  Let <span class="math inline">\(X\)</span> be connected, locally path connected, and SLSC with basepoint <span class="math inline">\(x\)</span>, and let <span class="math inline">\(H\leq \pi_1(X,x)\)</span>. Then, there exists a connected covering space <span class="math inline">\(p:X_H\to X\)</span> with <span class="math inline">\(\widetilde{x}\)</span> lifting <span class="math inline">\(x\)</span> and <span class="math display">\[p_*(\pi_1(X_H,\widetilde{x})) = H.\]</span></p>
+</div>
+<div class="proof">
+<p><em>Proof Sketch..</em> Take <span class="math inline">\(X_H\)</span> to be a quotient of the universal covering space <span class="math inline">\(\widetilde{X}/\sim\)</span> defined in the proof of theorem 21, where <span class="math inline">\(\sim\)</span> is the equivalence relation defined by <span class="math inline">\([\gamma]\sim [\gamma&#39;]\)</span> if <span class="math inline">\(\gamma&#39; \cdot \overline{\gamma} \in H\)</span>. ◻</p>
+</div>
+<p>Now that we have existence of covering spaces corresponding to subgroups of the fundamental group, we are concerned with uniqueness. We first define the right notion equivalence.</p>
+<div class="definition">
+<p><strong>Definition 23</strong>.  Let <span class="math inline">\(p_1: \widetilde{X}_1 \to X\)</span> and <span class="math inline">\(p_2: \widetilde{X}_2 \to X\)</span> be two covering spaces. A <strong>morphism</strong> of covering spaces is a continuous map <span class="math inline">\(f:\widetilde{X}_1 \to \widetilde{X}_2\)</span> such that</p>
+<div class="center">
+<p><img src="tikz-images/68be132b7174cde1e6d073e1f80d7f641acd5c73.svg" style="display:block; margin:auto; height: 130px;" /></p>
+</div>
+<p>commutes, i.e., <span class="math inline">\(f\)</span> respects the covering property. An <strong>isomorphism</strong> winds up being a morphism which is a homeomorphism (equivalent to a morphism with an inverse morphism).</p>
+</div>
+<div class="proposition">
+<p><strong>Proposition 24</strong>.  Let <span class="math inline">\(X\)</span> be path-connected and locally path-connected with base point <span class="math inline">\(x\)</span>. Let <span class="math inline">\(p_1:\widetilde{X}_1\to X\)</span> and <span class="math inline">\(p_2:\widetilde{X}_2 \to X\)</span> be two connected covering spaces of <span class="math inline">\(X\)</span> with respective basepoint lifts <span class="math inline">\(\widetilde{x_1}, \widetilde{x_2}\)</span>.</p>
+<p>Then, <span class="math inline">\(p_1,p_2\)</span> are isomorphic with an isomorphism <span class="math inline">\(f\)</span> sending <span class="math inline">\(\widetilde{x_1}\mapsto \widetilde{x_2}\)</span> iff <span class="math display">\[{p_1}_*(\pi_1(\widetilde{X}_1,\widetilde{x_1})) = {p_2}_*(\pi_1(\widetilde{X}_2,\widetilde{x_2})).\]</span></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Assume that <span class="math inline">\(p_1,p_2\)</span> are isomorphic. Then, we have a homeomorphism <span class="math inline">\(f: X,x \to X,x\)</span> such that <span class="math display">\[p_1 \circ f = p_2,\]</span> so the induced map <span class="math inline">\(f_*\)</span> will be an isomorphism of <span class="math inline">\(\mathop{\mathrm{im}}(p_1)_*\)</span> and <span class="math inline">\(\mathop{\mathrm{im}}(p_2)_*\)</span>.</p>
+<p>Next, assume that <span class="math display">\[{p_1}_*(\pi_1(\widetilde{X}_1,\widetilde{x_1})) = {p_2}_*(\pi_1(\widetilde{X}_2,\widetilde{x_2})).\]</span> By the lifting criterion theorem 17, there exist a unique lifts <span class="math display">\[\begin{aligned}
+        \widetilde{p_1}: \widetilde{X_1}, \widetilde{x_1} &amp;\longrightarrow \widetilde{X_2}, \widetilde{x_2}\\
+        \widetilde{p_2}: \widetilde{X_2}, \widetilde{x_2} &amp;\longrightarrow \widetilde{X_1}, \widetilde{x_1}.
+    \end{aligned}\]</span> We claim that <span class="math inline">\(\widetilde{p_1},\widetilde{p_2}\)</span> are inverse to each other. We look at the composition <span class="math display">\[\widetilde{p_2} \circ \widetilde{p_1}: \widetilde{X_1},\widetilde{x}_1 \longrightarrow \widetilde{X_1},\widetilde{x}_1.\]</span> This is a lift of <span class="math inline">\(p_1\)</span> to <span class="math inline">\(\widetilde{X_1}\)</span> fixing <span class="math inline">\(\widetilde{x}_1\)</span>. The identity map <span class="math inline">\(\mathop{\mathrm{id}}_{\widetilde{X_1}}\)</span> is also a lift, so by uniqueness in proposition 18, we must have <span class="math display">\[\widetilde{p_2} \circ \widetilde{p_1} = \mathop{\mathrm{id}}_{\widetilde{X_1}}.\]</span> Similarly, <span class="math inline">\(\widetilde{p_1} \circ \widetilde{p_2} = \mathop{\mathrm{id}}_{\widetilde{X_2}}\)</span>, and these maps <span class="math inline">\(\widetilde{p_1},\widetilde{p_2}\)</span> are morphisms between covering spaces <span class="math inline">\(p_1,p_2\)</span> by construction.</p>
+<p>Thus, <span class="math inline">\(p_1,p_2\)</span> are isomorphic. ◻</p>
+</div>
+<p>We can then combine the previous results to get the following correspondence.</p>
+<div class="theorem">
+<p><strong>Theorem 25</strong>.  Let <span class="math inline">\(X\)</span> be locally path connected, connected, and semi-locally simply connected. Let <span class="math inline">\(x\in X\)</span>. Then, there is a bijection <span class="math display">\[\begin{aligned}
+        \{\text{covering spaces $p:\widetilde{X},\widetilde{x}\to X,x$}\} &amp;\longrightarrow \{\text{subgroups of $\pi_1(X,x)$}\}\\
+        p &amp;\longmapsto p_*(\pi_1(\widetilde{X},\widetilde{x})).
+    \end{aligned}\]</span></p>
+</div>
+<h1 id="deck-transformations">Deck Transformations</h1>
+<p>We can view the universal cover of a space <span class="math inline">\(X\)</span> as a way of getting rid of the fundamental group, making it trivial. We essentially unwrap the space.</p>
+<p>What if we wanted to do something backwards? Start with a (maybe locally path connected) space, and make its fundamental group more complicated? In this direction, we want to wrap the space, or more precisely quotient it by a group action.</p>
+<div class="example">
+<p><strong>Example 26</strong>.  Let’s start with an example before building the theory. The space <span class="math inline">\(\mathbb{R}^2\)</span> is contractible (straight line homotopy), so it has trivial fundamental group. Let’s wrap it up to make it have non trivial fundamental group.</p>
+<p>The group <span class="math inline">\(\mathbb{Z}^2\)</span> acts on <span class="math inline">\(\mathbb{R}^2\)</span> by translation, i.e., <span class="math display">\[\begin{aligned}
+        \mathbb{Z}^2 \times \mathbb{R}^2 &amp;\longrightarrow \mathbb{R}^2\\
+        (n,m), (x,y) &amp;\longmapsto (x+n, y+m).
+    \end{aligned}\]</span> Then, we can consider the quotient space <span class="math inline">\(\mathbb{R}^2/\mathbb{Z}^2\)</span>, i.e., <span class="math inline">\(\mathbb{R}^2/\sim\)</span> where <span class="math inline">\((x,y)\sim (x&#39;,y&#39;)\)</span> if and only if there exists <span class="math inline">\((n,m)\in \mathbb{Z}^2\)</span> such that <span class="math inline">\((x+n,y+m) = (x&#39;,y&#39;)\)</span>.</p>
+<p>We can think of this group action as wrapping <span class="math inline">\(\mathbb{R}^2\)</span> both vertically and horizontally—one direction wraps it into a cylinder, and the second direction wraps it into a torus. We could prove that <span class="math inline">\(\mathbb{R}^2/\mathbb{Z}^2 \cong S^1\times S^1\)</span>, using the fact that <span class="math inline">\(S^1 = [0,1]/\sim\)</span> where <span class="math inline">\(0\sim 1\)</span>. Then, we could define <span class="math display">\[\begin{aligned}
+^2/\sim \;&amp;\longrightarrow \mathbb{R}^2/\mathbb{Z}^2\\
+        \overline{(x,y)} &amp;\longmapsto \overline{(x,y)}.
+    \end{aligned}\]</span> using the universal property of quotient spaces, and prove that this map is a continuous bijection from a compact space to a Hausdorff space.</p>
+<p>Then, the torus <span class="math inline">\(S^1\times S^1\)</span> has fundamental group <span class="math inline">\(\mathbb{Z}^2\)</span>. Notice that the fundamental group is the same as the group by which we quotiented. We will see that this is not a coincidence.</p>
+</div>
+<p>We’re going to start by getting the appropriate group out of a covering space <span class="math inline">\(p: \widetilde{X}\to X\)</span>. Then, we will study quotients by sufficiently nice group actions.</p>
+<p>Let <span class="math inline">\(X\)</span> be a topological space, and let <span class="math inline">\(\widetilde{X}\)</span> be the universal cover. We’ve seen how the fundamental group somehow “counts” extra points in <span class="math inline">\(\widetilde{X}\)</span> sitting above each point in <span class="math inline">\(X\)</span>, i.e., proposition 14. In some sense, the fundamental group tells us about how <span class="math inline">\(X\)</span> fits inside <span class="math inline">\(\widetilde{X}\)</span>. More generally, we want a group that we can associate to <em>any</em> covering space <span class="math inline">\(q: \widetilde{Y}\to Y\)</span>, no matter if <span class="math inline">\(\widetilde{Y}\)</span> is the universal cover or not (i.e., a more relative notion). This group will be what we will call the group of <em>deck transformations</em>, which (under certain conditions) will be isomorphic to quotients of the fundamental group of <span class="math inline">\(Y\)</span>.</p>
+<div class="definition">
+<p><strong>Definition 27</strong>.  A <strong>deck transformation</strong> or <strong>covering transformation</strong> of a covering space <span class="math inline">\(p: \widetilde{X}\to X\)</span> is an isomorphism <span class="math inline">\(f: \widetilde{X}\to \widetilde{X}\)</span>, i.e., a homeomorphism satisfying</p>
+<div class="center">
+<p><img src="tikz-images/ea3ef0f887415ecb5272a2c134290e919875ae57.svg" style="display:block; margin:auto; height: 130px;" /></p>
+<p>.</p>
+</div>
+<p>The collection of deck transformations of <span class="math inline">\(\widetilde{X}\)</span> is denoted by <span class="math inline">\(G(\widetilde{X})\)</span>, which is group under composition, called the <strong>group of deck transformations</strong>.</p>
+<p><span class="math inline">\(G(\widetilde{X}) \subseteq \operatorname{Homeo}(\widetilde{X})\)</span> acts on <span class="math inline">\(\widetilde{X}\)</span> just by <span class="math inline">\(f\cdot \widetilde{x} = f(\widetilde{x})\)</span>.</p>
+</div>
+<p>We also define a nice condition for describing when things are most convenient.</p>
+<div class="definition">
+<p><strong>Definition 28</strong>.  A <strong>normal</strong> covering space <span class="math inline">\(p: \widetilde{X}\to X\)</span> is a covering space such that for each <span class="math inline">\(x\in X\)</span> and each pair of lifts <span class="math inline">\(\widetilde{x},\widetilde{x}&#39;\)</span>, there is a deck transformation <span class="math inline">\(f\)</span> mapping <span class="math inline">\(\widetilde{x}\mapsto \widetilde{x}&#39;\)</span>.</p>
+</div>
+<p>Now, we relate the fundamental group to deck transformations. In the process, we get a way for the fundamental group to act on a space. Then, we will be in a position to discuss the effect of quotienting by group actions on the fundamental group.</p>
+<p>We first need a lemma about changing basepoint for covering maps.</p>
+<div id="conjugation" class="lemma">
+<p><strong>Lemma 29</strong>.  Let <span class="math inline">\(p: \widetilde{X} \to X\)</span> be a path-connected covering space. Fix <span class="math inline">\(x\in X\)</span>, and let <span class="math inline">\(\widetilde{x},\widetilde{x}&#39; \in p^{-1}(x)\)</span> be two preimages. Let <span class="math inline">\(\widetilde{\gamma}\)</span> be a path from <span class="math inline">\(\widetilde{x}\)</span> to <span class="math inline">\(\widetilde{x}&#39;\)</span>, and denote <span class="math inline">\(\gamma= p\circ \widetilde{\gamma}\)</span>. Then, <span class="math display">\[p_*(\pi_1(\widetilde{X},\widetilde{x}&#39;)) = [\gamma]^{-1} \cdot p_*(\pi_1(\widetilde{X},\widetilde{x})) \cdot [\gamma]\]</span></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> We only need to show one inclusion of the equality, since the other inclusion comes from reversing <span class="math inline">\(\widetilde{x},\widetilde{x}&#39;\)</span>. Let <span class="math inline">\(\alpha\in \pi_1(\widetilde{X},\widetilde{x})\)</span>. Then, <span class="math display">\[\overline{\gamma} \cdot (p\circ \alpha) \cdot \gamma = p\circ (\overline{\widetilde{\gamma}} \cdot \alpha \cdot \widetilde{\gamma}),\]</span> so indeed we get <span class="math inline">\([\gamma]^{-1} \cdot p_*([\alpha]) \cdot [\gamma] \in p_*(\pi_1(\widetilde{X},\widetilde{x}&#39;))\)</span> ◻</p>
+</div>
+<div id="deck" class="proposition">
+<p><strong>Proposition 30</strong>.  Let <span class="math inline">\(p: \widetilde{X},\widetilde{x} \to X, x\)</span> be a connected covering space of a path-connected, locally path-connected space <span class="math inline">\(X\)</span>. Let <span class="math display">\[H = p_*(\pi_1(\widetilde{X},\widetilde{x})) \subseteq \pi_1(X,x),\]</span> i.e., the subgroup corresponding to the covering. Then,</p>
+<ol>
+<li><p>There exists a deck transformation <span class="math inline">\(f:\widetilde{X},\widetilde{x} \to \widetilde{X},\widetilde{x}&#39;\)</span> iff there exists path <span class="math inline">\(\widetilde{\gamma}\)</span> from <span class="math inline">\(\widetilde{x}\)</span> to <span class="math inline">\(\widetilde{x}&#39;\)</span> with <span class="math inline">\([p\circ \widetilde{\gamma}] \in N(H)\)</span>. Furthermore, such a deck transformation mapping <span class="math inline">\(\widetilde{x}\mapsto\widetilde{x}&#39;\)</span> is unique (being the lift of the covering map), and any path <span class="math inline">\(\widetilde{\gamma}\)</span> will work.</p></li>
+<li><p><span class="math inline">\(p\)</span> is normal iff <span class="math inline">\(H\trianglelefteq\pi_1(X,x)\)</span>.</p></li>
+<li><p><span class="math inline">\(G(\widetilde{X}) \cong N(H)/H\)</span>.</p></li>
+</ol>
+<p>In particular, if <span class="math inline">\(p\)</span> is normal, <span class="math display">\[G(\widetilde{X}) \cong \pi_1(X,x)/H.\]</span> For the universal cover, <span class="math inline">\(G(\widetilde{X})\cong \pi_1(X,x)\)</span>.</p>
+</div>
+<p><em>Strategy.</em> By lemma 29, we should regard changing basepoint in the covering space as conjugating the subgroup corresponding to the cover. Then, we will see that we can change basepoint <span class="math inline">\(\widetilde{x}\mapsto\widetilde{x}&#39;\)</span> without changing the subgroup if there exists a deck transformation mapping <span class="math inline">\(\widetilde{x}\mapsto\widetilde{x}&#39;\)</span>. Thus, the existence of a deck transformation says something about how conjugation does nothing, i.e., a loop is in the normalizer.</p>
+<div class="proof">
+<p><em>Proof of (a)..</em> Assume there exists a deck transformation <span class="math inline">\(f:\widetilde{X},\widetilde{x} \to \widetilde{X},\widetilde{x}&#39;\)</span>. Let <span class="math inline">\(\widetilde{\gamma}\)</span> be any path from <span class="math inline">\(\widetilde{x}\)</span> to <span class="math inline">\(\widetilde{x}&#39;\)</span>, and denote <span class="math inline">\(\gamma = p\circ \widetilde{\gamma}\)</span>. We show that <span class="math inline">\([\gamma] \in N(H)\)</span>, i.e., for any <span class="math inline">\(p_*([\alpha]) \in H\)</span>, <span class="math display">\[[\gamma]^{-1} \cdot p_*([\alpha]) \cdot [\gamma] \in H.\]</span> By lemma 29, we can write <span class="math display">\[[\gamma]^{-1} \cdot p_*([\alpha]) \cdot [\gamma] = p_*([\beta])\]</span> for some <span class="math inline">\(\beta\in \pi_1(\widetilde{X},\widetilde{x}&#39;)\)</span> for some <span class="math inline">\(\widetilde{x}&#39;\)</span> which is another lift of <span class="math inline">\(x\)</span>. Using the fact that <span class="math inline">\(f\)</span> is a deck transformation, we can insert <span class="math inline">\(f\)</span> to get <span class="math display">\[p_*([\beta]) = p_*(f_*([\beta])),\]</span> so we get <span class="math display">\[[\gamma]^{-1} \cdot p_*([\alpha]) \cdot [\gamma] = p_*([\beta]) \in H.\]</span></p>
+<p>Conversely, assume that there exists a path <span class="math inline">\(\widetilde{\gamma}\)</span> from <span class="math inline">\(\widetilde{x}\)</span> to <span class="math inline">\(\widetilde{x}&#39;\)</span> such that for <span class="math inline">\(\gamma=p\circ \widetilde{\gamma}\)</span>, we have <span class="math inline">\([p\circ \widetilde{\gamma}]\in N(H)\)</span>. Then, to get the desired deck transformation, we try to lift <span class="math inline">\(p:\widetilde{X},\widetilde{x}\to X,x\)</span> to the covering space <span class="math inline">\(p:\widetilde{X},\widetilde{x}&#39;\to X,x\)</span>. There indeed exists a lift <span class="math inline">\(f:\widetilde{X},\widetilde{x} \to \widetilde{X},\widetilde{x}&#39;\)</span> by the lifting criterion theorem 17 because <span class="math display">\[H=p_*(\pi_1(\widetilde{X},\widetilde{x})) \subseteq p_*(\pi_1(\widetilde{X},\widetilde{x}&#39;)),\]</span> since by lemma 29, for <span class="math inline">\(\widetilde{\gamma}\)</span> a path <span class="math inline">\(\widetilde{x}\)</span> to <span class="math inline">\(\widetilde{x}&#39;\)</span> and <span class="math inline">\(\gamma=p\circ \overline{\gamma}\)</span>, we have <span class="math display">\[p_*(\pi_1(\widetilde{X},\widetilde{x}&#39;)) = [\gamma]^{-1} \cdot p_*(\pi_1(\widetilde{X},\widetilde{x})) \cdot [\gamma] = [\gamma]^{-1} \cdot H \cdot [\gamma],\]</span> and by assumption <span class="math inline">\([\gamma]^{-1}\cdot H \cdot [\gamma] = H\)</span> because <span class="math inline">\([\gamma]\in N(H)\)</span>.</p>
+<p>Additionally, this deck transformation is unique, since for another deck transformation <span class="math inline">\(g\)</span> mapping <span class="math inline">\(\widetilde{x}\mapsto \widetilde{x}&#39;\)</span>, we have that <span class="math inline">\(g\)</span> is also a lift of <span class="math inline">\(p:\widetilde{X},\widetilde{x}\to X,x\)</span> to the covering space <span class="math inline">\(p:\widetilde{X},\widetilde{x}&#39;\to X,x\)</span>, since <span class="math inline">\(p\circ g = p\)</span>. Therefore, by uniqueness in proposition 18, we must have <span class="math inline">\(g=f\)</span>. ◻</p>
+</div>
+<div class="proof">
+<p><em>Proof of (b)..</em> Assume <span class="math inline">\(p\)</span> is normal. Then, for any <span class="math inline">\([\gamma]\in \pi_1(X,x)\)</span>, denote <span class="math inline">\(\widetilde{\gamma}\)</span> the lift starting at <span class="math inline">\(\widetilde{x}\)</span>, and let <span class="math inline">\(\widetilde{x}&#39;=\widetilde{\gamma}(1)\)</span> its other endpoint. Since <span class="math inline">\(p\)</span> is normal, there is a deck transformation <span class="math display">\[f:\widetilde{X},\widetilde{x} \longrightarrow \widetilde{X},\widetilde{x}&#39;,\]</span> so by part (a), we get <span class="math inline">\([\gamma] \in N(H)\)</span>. Therefore, <span class="math inline">\(N(H)=\pi_1(X,x)\)</span> so <span class="math inline">\(H\trianglelefteq\pi_1(X,x)\)</span>.</p>
+<p>Conversely, assume that <span class="math inline">\(H\trianglelefteq\pi_1(X,x)\)</span>. A priori, we should show for any <span class="math inline">\(y\in X\)</span> and two pairs of lifts <span class="math inline">\(\widetilde{y},\widetilde{y}&#39;\)</span>, there exists a deck transformation sending <span class="math inline">\(\widetilde{y} \mapsto \widetilde{y}&#39;\)</span>. However, we can assume <span class="math inline">\(y=x\)</span>, since otherwise we could use lemma 29 to switch to <span class="math inline">\(y\)</span> as our basepoint, while still getting <span class="math inline">\(H\)</span> a normal subgroup. Additionally, we can assume <span class="math inline">\(\widetilde{y}=\widetilde{x}\)</span> because we can compose multiple deck transformations to map between arbitrary lifts of <span class="math inline">\(x\)</span>.</p>
+<p>Therefore, we just need to show the existence of a deck transformation mapping <span class="math inline">\(\widetilde{x}\mapsto \widetilde{x}&#39;\)</span>. Let <span class="math inline">\(\widetilde{\gamma}\)</span> be a path from <span class="math inline">\(\widetilde{x}\)</span> to <span class="math inline">\(\widetilde{x}&#39;\)</span>. Since <span class="math inline">\(H\)</span> is a normal subgroup, we have <span class="math inline">\([p\circ \widetilde{\gamma}] \in N(H)\)</span>. Thus, by part (a) there exists the desired deck transformation. ◻</p>
+</div>
+<div class="proof">
+<p><em>Proof of (c)..</em> We construct a (surjective) group homomorphism <span class="math inline">\(\varphi: N(H)\to G(\widetilde{X})\)</span>, and show the kernel is <span class="math inline">\(H\)</span>. For <span class="math inline">\([\gamma]\in N(H)\)</span>, lift the loop to a path <span class="math inline">\(\widetilde{\gamma}\)</span> starting at <span class="math inline">\(\widetilde{x}\)</span> and define <span class="math inline">\(\widetilde{x}&#39;=\widetilde{\gamma}(1)\)</span>. By part (a), there exists a unique deck transformation <span class="math inline">\(f\)</span> mapping <span class="math inline">\(\widetilde{x}\mapsto \widetilde{x}&#39;\)</span>, so define <span class="math inline">\(\varphi([\gamma]) = f\)</span>.</p>
+<p>The function <span class="math inline">\(\varphi\)</span> is indeed a homomorphism, since <span class="math inline">\(\varphi([\beta])\circ \varphi([\alpha])\)</span> is still a deck transformation, and it maps <span class="math inline">\(\widetilde{x}\)</span> to <span class="math inline">\(\widetilde{\beta\cdot \alpha}(1)\)</span>, so we must have <span class="math display">\[\varphi([\beta])\circ \varphi([\alpha]) = \varphi([\beta][\alpha]).\]</span></p>
+<p>The surjectivity of <span class="math inline">\(\varphi\)</span> is immediate from part (a). Finally, <span class="math inline">\([\gamma]\in \ker{\varphi}\)</span> if and only if <span class="math inline">\(\varphi([\gamma])\)</span> maps <span class="math inline">\(\widetilde{x}\mapsto \widetilde{x}\)</span>, which occurs exactly when <span class="math inline">\([\gamma]\)</span> lifts to a loop at <span class="math inline">\(\widetilde{x}\)</span>, i.e., <span class="math inline">\([\gamma] \in H\)</span>.</p>
+<p>Thus, by the first isomorphism theorem <span class="math display">\[N(H)/H \cong G(\widetilde{X}).\]</span> ◻</p>
+</div>
+<p>The type of group action we get from covering spaces are very particular. This isn’t standard terminology, but it’s what Hatcher uses.</p>
+<div class="definition">
+<p><strong>Definition 31</strong>.  A group action <span class="math inline">\(\mu: G \to \operatorname{Homeo}(Y)\)</span> is called a <strong>covering space action</strong> if for each <span class="math inline">\(y\in Y\)</span>, there exists a neighborhood <span class="math inline">\(U\)</span> such that the images <span class="math inline">\(g(U)\)</span> for all <span class="math inline">\(g\in G\)</span> are disjoint. In other words, <span class="math inline">\(g_1(U)\cap g_2(U)\neq \emptyset\)</span> implies <span class="math inline">\(g_1=g_2\)</span>.</p>
+</div>
+<p>One can think of this definition as saying that the orbits <span class="math inline">\(G\cdot x\)</span> of the group action are uniformly discrete, in the sense that there is an open set of “equal size” separating each point in the orbit. Additionally, the definition implies a covering space action needs to be <em>free</em>, i.e., all non identity group elements have no fixed points. In particular, this means that the homomorphism <span class="math inline">\(\mu: G\to \operatorname{Homeo}(Y)\)</span> is injective, so we might as well consider <span class="math inline">\(G\subseteq \operatorname{Homeo}(Y)\)</span>.</p>
+<div class="proposition">
+<p><strong>Proposition 32</strong>.  If <span class="math inline">\(G\)</span> has a covering space action on <span class="math inline">\(Y\)</span>, then</p>
+<ol>
+<li><p>The quotient map <span class="math inline">\(p: Y\to Y/G\)</span> is a normal covering space.</p></li>
+<li><p>If <span class="math inline">\(Y\)</span> is path-connected and locally path-connected, then <span class="math inline">\(G \cong G(Y)\)</span>, i.e., <span class="math inline">\(G\)</span> is the group of deck transformations of the covering space <span class="math inline">\(Y\to Y/G\)</span>.</p></li>
+<li><p>If <span class="math inline">\(Y\)</span> is path-connected and locally path-connected, then <span class="math inline">\(G\cong \pi_1(Y/G)/p_*(\pi_1(Y))\)</span>.</p></li>
+</ol>
+</div>
+<div class="proof">
+<p><em>Proof of (a)..</em> We first show that <span class="math inline">\(p\)</span> is a covering map. Let <span class="math inline">\(G\cdot y \in Y/G\)</span>. Choose <span class="math inline">\(U\)</span> to be a neighborhood of <span class="math inline">\(y\)</span> as given by the definition of <span class="math inline">\(G\)</span> being a covering space action. Then, <span class="math inline">\(G\cdot U \subseteq Y/G\)</span> has preimage <span class="math inline">\(\{g\cdot U \operatorname{\big|}g\in G\}\)</span> which is a disjoint union of sets homeomorphic to <span class="math inline">\(U\)</span> (since <span class="math inline">\(g\)</span> acts as a homeomorphism, and by assumption the <span class="math inline">\(g\cdot U\)</span> are disjoint). Thus, <span class="math inline">\(U\)</span> is an evenly covered neighborhood, so <span class="math inline">\(p\)</span> is a covering map.</p>
+<p>Next, we show <span class="math inline">\(p: Y\to Y/G\)</span> is a normal covering space. For <span class="math inline">\(y&#39;,y\in G\cdot y\)</span>, by definition there is a <span class="math inline">\(g\in G\)</span> such that <span class="math inline">\(g\cdot y = y&#39;\)</span>, and this <span class="math inline">\(g\)</span> acts as a deck transformation. ◻</p>
+</div>
+<div class="proof">
+<p><em>Proof of (b)..</em> Identifying <span class="math inline">\(G\)</span> as a subset of <span class="math inline">\(\operatorname{Homeo}(Y)\)</span>, we can quickly get <span class="math inline">\(G\subseteq G(Y)\)</span>. Conversely, let <span class="math inline">\(f\in G(Y)\)</span> and <span class="math inline">\(y\in Y\)</span>. Since <span class="math inline">\(f\)</span> is a deck transformation <span class="math inline">\(f(y)\in G\cdot y\)</span>, so there exists <span class="math inline">\(g\in G\)</span> such that <span class="math inline">\(g\cdot y = f(y)\)</span>. By proposition 30 (a), <span class="math inline">\(f=g\)</span> because <span class="math inline">\(Y\)</span> is path connected and both map <span class="math inline">\(y\mapsto g\cdot y\)</span>. Thus, <span class="math inline">\(f\in G\)</span>, so <span class="math inline">\(G\cong G(Y)\)</span> by the map that includes <span class="math inline">\(G\hookrightarrow \operatorname{Homeo}(Y)\)</span>. ◻</p>
+</div>
+<p><em>Note</em>. For (b), we don’t actually have to assume <span class="math inline">\(Y\)</span> is locally path-connected (as would suggest the hypotheses of proposition 30). Local path-connectedness helps get existence of lifts, but only path-connectedness is needed for uniqueness. We already have existence, we only needed uniqueness.</p>
+<div class="proof">
+<p><em>Proof of (c)..</em> This follows from (a), (b), and proposition 30. ◻</p>
+</div>
+<h1 id="point-set-topology-lemmas">Point-Set Topology Lemmas</h1>
+<p>I’ve collected proofs of point-set topology lemmas that are used earlier.</p>
+<div class="lemma">
+<p><strong>Lemma 33</strong> (Lebesgue’s Number Lemma).  Let <span class="math inline">\(X\)</span> be a compact metric space, and let <span class="math inline">\(\{U_i \operatorname{\big|}i \in I\}\)</span> be an open cover of <span class="math inline">\(X\)</span>. Then, there is a <span class="math inline">\(\delta&gt;0\)</span> such that every <span class="math inline">\(\delta\)</span>-ball in <span class="math inline">\(X\)</span> is contained in some <span class="math inline">\(U_i\)</span>. This <span class="math inline">\(\delta\)</span> is called a <strong>Lebesgue number</strong> for the cover <span class="math inline">\(\{U_i \operatorname{\big|}i\in I\}\)</span>.</p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Suppose, to the contrary, that there is no such <span class="math inline">\(\delta\)</span>. Therefore, for <span class="math inline">\(\delta=\frac{1}{n}\)</span>, there exists <span class="math inline">\(x_n\in X\)</span> with <span class="math inline">\(B_{\frac{1}{n}}(x_n)\)</span> not contained in any <span class="math inline">\(U_i\)</span>. By compactness, take a convergent subsequence <span class="math inline">\(\{x_{n_k}\}\)</span> converging to <span class="math inline">\(x\in X\)</span>. Since <span class="math inline">\(x\in X\)</span>, it is in some open set in the cover, say <span class="math inline">\(U_{i_0}\)</span>. Therefore, there exists <span class="math inline">\(\delta&gt;0\)</span> such that <span class="math inline">\(B_{\delta}(x) \subseteq U_{i_0}\)</span>.</p>
+<p>However, we can choose <span class="math inline">\(k\in \mathbb{N}\)</span> large so that <span class="math display">\[d(x_{n_k}, x) &lt; \frac{\delta}{2}\]</span> and at the same time we can choose <span class="math inline">\(k\geq \frac{2}{\delta}\)</span> so that <span class="math inline">\(n_k \geq \frac{2}{\delta}\)</span>. By our construction of the sequence, this means that <span class="math display">\[B_{\frac{1}{n_k}}(x_{n_k}) \not\subseteq U_{i_0},\]</span> but on the other hand we have <span class="math display">\[B_{\frac{1}{n_k}}(x_{n_k}) \subseteq B_{\frac{\delta}{2}}(x_{n_k}) \subseteq B_{\delta}(x)\]</span> because for any <span class="math inline">\(y\in B_{\frac{\delta}{2}}(x_{n_k})\)</span>, <span class="math inline">\(d(x,y)\leq d(x,x_{n_k}) + d(x_{n_k},y) &lt; \delta\)</span>, so <span class="math inline">\(y\in B_{\delta}(x)\)</span>.</p>
+<p>However, this gives us <span class="math inline">\(B_{\frac{1}{n_k}}(x_{n_k}) \subseteq B_{\delta}(x)\subseteq U_{i_0}\)</span>, which is a contradiction.</p>
+<p>Thus, there does exist a <span class="math inline">\(\delta&gt;0\)</span> such that every <span class="math inline">\(\delta\)</span>-ball in <span class="math inline">\(X\)</span> is contained in some <span class="math inline">\(U_i\)</span>. ◻</p>
+</div>
+<div class="lemma">
+<p><strong>Lemma 34</strong> (Pasting Lemma for Closed Sets).  Let <span class="math inline">\(A, B\)</span> be both closed subsets of a topological space <span class="math inline">\(X\)</span> such that <span class="math inline">\(X=A\cup B\)</span> (<span class="math inline">\(A,B\)</span> need not be disjoint). For <span class="math inline">\(f:X\to Y\)</span>, if <span class="math display">\[f|_A: A\to Y, \quad f|_B: B\to Y\]</span> are both continuous, then <span class="math inline">\(f\)</span> is continuous.</p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Let <span class="math inline">\(E\subseteq Y\)</span> be closed. It suffices to show that <span class="math inline">\(f^{-1}(E)\)</span> is closed. We have <span class="math display">\[\begin{aligned}
+        f^{-1}(E) &amp;= f^{-1}(E) \cap (A\cup B)\\
+        &amp;= (f^{-1}(E)\cap A) \cup (f^{-1}(E)\cap B)\\
+        &amp;= (f|_A)^{-1}(E) \cup (f|_B)^{-1}(E).
+    \end{aligned}\]</span> Since <span class="math inline">\(A,B\)</span> are closed, the fact that <span class="math display">\[(f|_A)^{-1}|(E), \quad (f|_B)^{-1}|(E)\]</span> are closed in the subspace topologies implies that they are closed in all of <span class="math inline">\(X\)</span> as well because they are intersections closed subsets of <span class="math inline">\(X\)</span> with <span class="math inline">\(A,B\)</span> (which already closed).</p>
+<p>(This is the point of the proof—we are using the closed definition of continuity rather than the open definition because of this). ◻</p>
+</div>
+<div class="lemma">
+<p><strong>Lemma 35</strong> (Pasting Lemma for Open Sets).  Let <span class="math inline">\(\{U_i\}_{i\in I}\)</span> be an open cover of a space <span class="math inline">\(X\)</span>, and assume the function <span class="math inline">\(f:X\to Y\)</span> is such that <span class="math display">\[f|_{U_i}: U_i \to Y\]</span> is continuous for all <span class="math inline">\(i\in I\)</span>. Then, <span class="math inline">\(f\)</span> is continuous.</p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Let <span class="math inline">\(V\subseteq Y\)</span> be open. Then, <span class="math display">\[\begin{aligned}
+        f^{-1}(V) &amp;= \bigcup_{i\in I} f|_{U_i}^{-1}(V).
+    \end{aligned}\]</span> Each <span class="math inline">\(f|_{U_i}\)</span> is continuous, so by the subspace topology <span class="math display">\[f|_{U_i}^{-1}(V) = W_i \cap U_i\]</span> for some open set <span class="math inline">\(W_i\)</span>. Then, <span class="math display">\[f^{-1}(V) = \bigcup_{i\in I} W_i\cap U_i,\]</span> so <span class="math inline">\(f^{-1}(V)\)</span> is the union of open sets and hence open. Thus, <span class="math inline">\(f\)</span> is continuous. ◻</p>
+</div>
+
+            </div>
+    </section>
+
+<footer class="footer">
+    <div class="content has-text-centered">
+        <p>
+            <label class="checkbox">
+            <input type="checkbox" id="dark-mode">
+                Dark Mode
+                <span class="icon is-small"><i class="fas fa-moon" aria-hidden="true"></i></span>
+            </label>
+        </p>
+        <p>
+            © 2023 Joseph Sullivan
+            <a href="https://github.com/JosephSullivan256"><span class="icon is-small"><i class="fab fa-github" aria-hidden="true"></i></span></a>&nbsp;
+            <a href="mailto: partiallyordered@gmail.com"><span class="icon is-small"><i class="fas fa-envelope" aria-hidden="true"></i></span></a>
+        </p>
+    </div>
+</footer>
+</body>
+</html>

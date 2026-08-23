@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        let darkmode = false;
+        if(localStorage.getItem('dark-mode')){
+            darkmode = localStorage.getItem('dark-mode')=='enabled';
+        }
+
+        if(darkmode) {
+            document.documentElement.classList.toggle("dark-mode")
+        }
+
+        window.addEventListener("load", ()=>{
+            let darkcheckbox = document.getElementById("dark-mode");
+            darkcheckbox.checked = darkmode;
+
+            darkcheckbox.addEventListener("change", ()=>{
+                darkmode = !darkmode;
+                if(darkmode) {
+                    localStorage.setItem('dark-mode', 'enabled')
+                } else {
+                    localStorage.setItem('dark-mode', 'disabled')
+                }
+
+                document.documentElement.classList.toggle("dark-mode");
+            });
+        })
+
+    </script>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/mystyles.css">
+    <link rel="stylesheet" href="/static/node_modules/%40fortawesome/fontawesome-free/css/all.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="author" content="Joseph Sullivan">
+<title>Relations, Well-Foundedness, and Noetherian Induction</title>
+<style>
+header {
+  margin-bottom: 4em;
+  text-align: center;
+}
+hr {
+  background-color: #1a1a1a;
+  border: none;
+  height: 1px;
+  margin: 1em 0
+}
+#TOC {
+	line-height: 100%;
+}
+</style>
+<script>
+	window.MathJax = {
+		tex: {
+			tags: "ams",
+			inlineMath: [ ["\\\(","\\\)"] ],
+			displayMath: [ ['$$','$$'],["\\[","\\]"] ],
+			processEscapes: true,
+			processEnvironments: true,
+			packages: ['base', 'color', 'ams', 'physics']
+		},
+		loader: {
+			load: ['[tex]/color', '[tex]/ams', '[tex]/physics']
+		}
+	};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+
+
+</head>
+<body>
+
+    
+<section class="hero">
+    <div class="hero-body">
+        <nav class="breadcrumb is-centered is-medium" aria-label="breadcrumbs">
+            <ul>
+                
+                    
+                        <li><a href="/">index</a></li>
+                    
+                
+                    
+                        <li><a href="/posts">posts</a></li>
+                    
+                
+                    
+                        <li class="is-active"><a href="#">Relations, Well-Foundedness, and Noetherian Induction</a></li>
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</section>
+
+    <section class="section post">
+            <div class="content serif reading-margins">
+                <header id="title-block-header">
+<h1 class="title">Relations, Well-Foundedness, and Noetherian Induction</h1>
+<p class="author">Joseph Sullivan</p>
+<p class="date">August 2020</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Contents</h2>
+<ul>
+<li><a href="#introduction">Introduction</a>
+<ul>
+<li><a href="#induction">Induction</a></li>
+<li><a href="#strong-induction">Strong Induction</a></li>
+</ul></li>
+<li><a href="#relations">Relations</a>
+<ul>
+<li><a href="#properties">Properties</a></li>
+</ul></li>
+<li><a href="#partial-orders">Partial Orders</a>
+<ul>
+<li><a href="#hasse-diagrams">Hasse Diagrams</a></li>
+</ul></li>
+<li><a href="#well-foundedness">Well-Foundedness</a>
+<ul>
+<li><a href="#examples">Examples</a></li>
+</ul></li>
+<li><a href="#noetherian-induction">Noetherian Induction</a>
+<ul>
+<li><a href="#example-2">Example</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="introduction">Introduction</h1>
+<h2 id="induction">Induction</h2>
+<p>If you’re acquainted with math, you’ve definitely seen induction before. To prove some property <span class="math inline">\(P(n)\)</span> for all natural numbers <span class="math inline">\(n\)</span>, it’s sufficient to prove these two things:</p>
+<ol>
+<li><p><span class="math inline">\(P(1)\)</span> is true. This is referred to as our base case.</p></li>
+<li><p><span class="math inline">\(P(n)\implies P(n+1)\)</span>. That is, by assuming <span class="math inline">\(P(n)\)</span> true, we can show <span class="math inline">\(P(n+1)\)</span>. This is referred to as our induction step.</p></li>
+</ol>
+<p>Let’s do an example. We’ll prove that for any natural number <span class="math inline">\(n\)</span>, a suitcase can be packed with <span class="math inline">\(n\)</span> shirts.</p>
+<p><em>Proof.</em> We perform induction on <span class="math inline">\(n\)</span>, the number of shirts. Clearly a suitcase can be packed with one shirt, so our base case is satisfied. Now, suppose we can pack a suitcase with <span class="math inline">\(n\)</span> shirts for a particular <span class="math inline">\(n\)</span>. Obviously we can always pack just one more shirt. Thus, we’ve proved our claim.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>Okay, clearly this proof is invalid since we cannot pack arbitrarily many shirts in a suitcase. Our induction step is flawed: there’s a point where we cannot add just one more shirt. Nonetheless, the idea is there—we manually show that a claim is true for <span class="math inline">\(n=1\)</span>, then we show that we can always pack one more shirt, regardless of <span class="math inline">\(n\)</span>. Let’s talk about a different type of induction, one that’s a bit... stronger.</p>
+<h2 id="strong-induction">Strong Induction</h2>
+<p>As before, we want to prove a property <span class="math inline">\(P(n)\)</span> for all natural numbers. It turns out that it’s also sufficient to prove the following:</p>
+<ol>
+<li><p><span class="math inline">\(P(1)\)</span> is true.</p></li>
+<li><p><span class="math inline">\(P(1) \land \dots \land P(n-1) \implies P(n)\)</span>. That is, by assuming our property is true for all <span class="math inline">\(k&lt;n\)</span>, we can show our property for <span class="math inline">\(n\)</span>.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p></li>
+</ol>
+<p>Intuitively, strong induction feels like it should work. If we prove <span class="math inline">\(P(1)\)</span>, then by our induction step we then deduce <span class="math inline">\(P(2)\)</span>. Thus, we have <span class="math inline">\(P(1)\)</span> and <span class="math inline">\(P(2)\)</span>, so by our induction step we then deduce <span class="math inline">\(P(3)\)</span>. Thus, we have <span class="math inline">\(P(1),P(2),\)</span> and <span class="math inline">\(P(3)\)</span>, so... You get the idea.</p>
+<p>Of course “...” doesn’t constitute a mathematically rigorous proof. Later in this post we’ll prove that the <em>Principle of Strong Induction</em> follows from regular induction when we start talking about well-founded relations.</p>
+<h3 id="example">Example</h3>
+<p>For the sake of completeness, let’s do an example of strong induction. We’ll prove that a tree with <span class="math inline">\(n\)</span> vertices has <span class="math inline">\(n-1\)</span> edges. A <em>tree</em> is a type of connected graph that has no cycles in it, e.g.</p>
+<div class="center">
+<p><img src="tikz-images/b6e4e3cf4a9d0f0a0cc14449f1e048765375b26f.svg" style="display:block; margin:auto;" /></p>
+</div>
+<p>Now let’s prove our claim, using induction.</p>
+<p><em>Proof.</em> We perform induction on the number of vertices <span class="math inline">\(n\)</span>. For our base case, we consider a tree with one vertex. It must have zero edges, since otherwise there would be at least two vertices. Thus, our base case holds.</p>
+<p>For our induction step, we assume that all trees with <span class="math inline">\(k&lt;n\)</span> vertices have <span class="math inline">\(k-1\)</span> edges. Now, we consider an arbitrary tree with <span class="math inline">\(n\)</span> vertices.</p>
+<p>We can assume that <span class="math inline">\(n\geq 2\)</span>, since if <span class="math inline">\(n=1\)</span>, then we know our property is true by the base case. Therefore, we assume this tree has at least two vertices and likewise at least one edge. We choose an arbitrary edge in our tree, and we delete it. Since trees have no cycles, deleting this edge will break the tree into two components. Each component is a tree as well, since if either component contained a cycle, then the original tree would contain a cycle.</p>
+<div class="center">
+<p><img src="tikz-images/2c94675e38f6d9f400e874d4e4380f1daa6c0c7b.svg" style="display:block; margin:auto;" /></p>
+</div>
+<p>Let <span class="math inline">\(n_1\)</span> be the number of vertices of the first component, and <span class="math inline">\(n_2\)</span> the number of vertices of the other component. We know <span class="math inline">\(n=n_1+n_2\)</span> since the component together with the deleted edge form the original tree. Likewise, by our induction hypothesis the first component tree has <span class="math inline">\(n_1-1\)</span> edges, and the other contains <span class="math inline">\(n_2-1\)</span> edges. Therefore, the original tree, containing both components and the extra edge, has <span class="math display">\[(n_1-1) + (n_2-1) + 1 = n-1\]</span> edges. Thus, our claim is true.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>Induction on natural numbers is really powerful, especially since a lot of things are natural numbers—e.g. the number of leaves on a tree, the number of edges in a graph, the number of characters in a formula, etc.</p>
+<p>But let’s spice it up a little bit.</p>
+<h1 id="relations">Relations</h1>
+<p>So far we’ve been doing induction on the natural numbers. Don’t get me wrong—numbers are pretty cool. But like, math is so much more than numbers, you feel me? We want to generalize induction to a much larger class of problems.</p>
+<p>We note that induction, in the forms that we’ve seen, takes advantage of the ordering of natural numbers. That is, we prove a property true for the minimum natural number, then we build upward from there. Thus, for us to generalize induction we first have to generalize ordering and relations.</p>
+<p>For natural numbers, there are various well-known <em>relations</em>, e.g. <span class="math inline">\(&lt;,\leq,&gt;,\geq,=,\)</span> and more. You might have also seen <span class="math inline">\(\mid\)</span>, the divides relation. For example, <span class="math inline">\(2\mid 4\)</span>, that is, <span class="math inline">\(2\)</span> divides—or goes into—<span class="math inline">\(4\)</span>. On the other hand, <span class="math inline">\(3 \nmid 5\)</span>, and also <span class="math inline">\(5\nmid 3\)</span>.</p>
+<p>We can also have relations on other sets, not just natural numbers. For example, if we have a graph, we can define a relation on the set of vertices:</p>
+<div class="center">
+<p><img src="tikz-images/a228e8026917ec67cf9dcdc9c30331c41d613fce.svg" style="display:block; margin:auto;" /></p>
+</div>
+<p>For any two vertices <span class="math inline">\(u,v\)</span>, we either have <span class="math inline">\(u\)</span> is adjacent to <span class="math inline">\(v\)</span>, or <span class="math inline">\(u\)</span> is not adjacent to <span class="math inline">\(v\)</span>. For succinctness, we could say <span class="math inline">\(u A v\)</span> to say <span class="math inline">\(u\)</span> is adjacent to <span class="math inline">\(v\)</span>, and we call <span class="math inline">\(A\)</span> our relation. For example, in our particular graph we have <span class="math inline">\(a A d\)</span>, but not <span class="math inline">\(a A e\)</span>.</p>
+<p>Even more, we can have a relation relate objects that don’t even belong to the same set <span class="citation" data-cites="relation2">(<span>“Heterogenuous Relation,”</span> n.d.)</span>. For example, if <span class="math inline">\(A\)</span> is the set of oceans on the Earth, and <span class="math inline">\(B\)</span> is the set of continents, then we could have the relation <span class="math inline">\(R\)</span>, where an ocean <span class="math inline">\(a\in A\)</span> relates to a continent <span class="math inline">\(b\in B\)</span>—that is, <span class="math inline">\(a R b\)</span>—if the ocean <span class="math inline">\(a\)</span> borders the continent <span class="math inline">\(b\)</span>.</p>
+<p>We see that a relation, call it <span class="math inline">\(R\)</span>, on sets <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> is some sort of mechanism that tells us whether an object <span class="math inline">\(x\in X\)</span> relates to <span class="math inline">\(y\in Y\)</span>. That is, a relation tells us either <span class="math inline">\(x R y\)</span>, or it tells us that it tells us that not <span class="math inline">\(x R y\)</span>.</p>
+<p>This is the jist of it, but mathematicians have a somewhat unintuitive formalism for talking about relations. Let <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> be sets, and let <span class="math inline">\(X\times Y\)</span> be the cartesian product, i.e. all possible pairs <span class="math inline">\((x,y)\)</span> where <span class="math inline">\(x\in X\)</span> and <span class="math inline">\(y\in Y\)</span>. Then, <span class="math inline">\(R\)</span> is a subset of <span class="math inline">\(X\times Y\)</span>, where <span class="math inline">\((x,y)\)</span> is contained in <span class="math inline">\(R\)</span> if and only if <span class="math inline">\(x R y\)</span>.</p>
+<p>For example, let’s consider <span class="math inline">\(\leq\)</span> on the natural numbers. In an odd way we say that <span class="math inline">\(\leq\hspace{0.03cm} \subseteq \mathbb{N}\times \mathbb{N}\)</span>. Is <span class="math inline">\((4,6)\)</span> an element of <span class="math inline">\(\leq\)</span>? Yes, because <span class="math inline">\(4\leq 6\)</span>. Is <span class="math inline">\((5,5)\in \leq\)</span>? Again, yes, because <span class="math inline">\(5\leq 5\)</span>. However, <span class="math inline">\((6,4)\)</span> is not an element of <span class="math inline">\(\leq\)</span>, since <span class="math inline">\(6\not\leq 4\)</span>.</p>
+<p>As we’ve seen in our examples, relations have a wide variety of forms. Let’s define some properties to classify relations.</p>
+<h2 id="properties">Properties</h2>
+<p>From here onward, we’re going to be considering only relations that act on a single set, i.e. we consider <span class="math inline">\(R\subseteq X\times X\)</span>. These are referred to as homogeneous relations, and seem to show up the most frequently.</p>
+<p>In the interest of time, I’m going to list a bunch of properties with brief definitions, then focus in on a few of them <span class="citation" data-cites="relation">(<span>“Binary Relation,”</span> n.d.)</span>.</p>
+<ul>
+<li><p><em>reflexive</em>: for all <span class="math inline">\(x\in X\)</span>, <span class="math inline">\(x R x\)</span>.</p></li>
+<li><p><em>irreflexive</em>: for all <span class="math inline">\(x\in X\)</span>, not <span class="math inline">\(x R x\)</span>.</p></li>
+<li><p><em>symmetric</em>: <span class="math inline">\(x R y\)</span> implies <span class="math inline">\(y R x\)</span>.</p></li>
+<li><p><em>asymmetric</em>: <span class="math inline">\(x R y\)</span> implies not <span class="math inline">\(y R x\)</span>.</p></li>
+<li><p><em>antisymmetric</em>: <span class="math inline">\(x R y\)</span> and <span class="math inline">\(y R x\)</span> implies <span class="math inline">\(x = y\)</span>.</p></li>
+<li><p><em>transitive</em>: <span class="math inline">\(x R y\)</span> and <span class="math inline">\(y R z\)</span> implies <span class="math inline">\(x R z\)</span>.</p></li>
+<li><p><em>total</em>: for all <span class="math inline">\(x,y\in X\)</span>, either <span class="math inline">\(x R y\)</span> or <span class="math inline">\(y R x\)</span>, or both. In other words, all elements are comparable.</p></li>
+</ul>
+<h3 id="example-1">Example</h3>
+<p>One particularly important relation, the <span class="math inline">\(\leq\)</span> relation on the natural numbers, is reflexive, antisymmetric, transitive, and total. It’s reflexive because <span class="math inline">\(n\leq n\)</span>. It’s antisymmetric because <span class="math inline">\(n\leq m\)</span> and <span class="math inline">\(m\leq n\)</span> implies <span class="math inline">\(n=m\)</span>. It’s transitive because <span class="math inline">\(n\leq m\)</span> and <span class="math inline">\(m\leq k\)</span> implies <span class="math inline">\(n\leq k\)</span>. Finally, it’s total because for all natural numbers <span class="math inline">\(n,m\)</span>, one of them is larger, or they are both equal. If <span class="math inline">\(m\)</span> is larger, then <span class="math inline">\(n\leq m\)</span>. Otherwise, <span class="math inline">\(m\leq n\)</span>.</p>
+<h1 id="partial-orders">Partial Orders</h1>
+<p>The first three properties from the previous example—reflexivity, antisymmetry, and transitivity—turn out to be really important. In fact, we call any relation that obeys those three properties, a <em>partial order</em>. A set that has an associated partial order, is called a <strong><em>partially ordered</em></strong> set, or a poset for short. If <span class="math inline">\(X\)</span> is our set in question and <span class="math inline">\(\preceq\)</span> is our partial order, notationally we refer to <span class="math inline">\((X,\preceq)\)</span> as our poset. For simplicity we often call the set <span class="math inline">\(X\)</span> itself a poset.</p>
+<p>Partial orders are a really powerful generalization of other more common orderings. We can now define concepts like <em>maximum</em> in a comprehensive way. Let <span class="math inline">\(X\)</span> be a set, and let <span class="math inline">\(\preceq\)</span> be an partial order on <span class="math inline">\(X\)</span>.</p>
+<ul>
+<li><p><em>maximum</em>: an element <span class="math inline">\(y\in X\)</span> is called the maximum if for all <span class="math inline">\(x\in X\)</span>, <span class="math inline">\(x\preceq y\)</span>.</p></li>
+<li><p><em>minimum</em>: an element <span class="math inline">\(y\in X\)</span> is called the minimum if for all <span class="math inline">\(x\in X\)</span>, <span class="math inline">\(y\preceq x\)</span>.</p></li>
+</ul>
+<p>It turns out, however, that the terms maximum and minimum can be too restrictive, because partial orders can be somewhat weird.</p>
+<p>For example, let <span class="math inline">\(N_2\)</span> be the set of all natural numbers greater than or equal to <span class="math inline">\(2\)</span>, i.e. <span class="math inline">\(N_2=\{2,3,4,\dots\}\)</span>. Then, consider the relation <span class="math inline">\(\mid\)</span>, “divides.” You might have noticed that “divides” is reflexive, antisymmetric, and transitive, so therefore it’s a partial order. Does <span class="math inline">\(N_2\)</span> have a minimum element with respect to this ordering?</p>
+<p>We know that <span class="math inline">\(3,4,5,\dots\)</span> can <em>not</em> be minimum elements, since <span class="math inline">\(k\nmid 2\)</span> if <span class="math inline">\(k&gt;2\)</span> with respect to the traditional ordering. However, <span class="math inline">\(2\)</span> is not a minimum element, because <span class="math inline">\(2\nmid 3\)</span>. Thus, <span class="math inline">\(N_2\)</span> has no minimum element. At the same time, we did observe that there is nothing “below” <span class="math inline">\(2\)</span>, that for all <span class="math inline">\(k\in N_2\)</span> <span class="math inline">\(k\neq 2\)</span>, <span class="math inline">\(k\nmid 2\)</span>. In fact, the same can be said for every prime number, since prime numbers are only divisible by themselves and <span class="math inline">\(1\)</span>, but <span class="math inline">\(1\not\in N_2\)</span>.</p>
+<p>As stated above, a minimum element is smaller than every other element with respect to the partial order. Inspired by our example, however, we also define the term <em>minimal</em> and <em>maximal</em>:</p>
+<ul>
+<li><p><em>maximal</em>: an element <span class="math inline">\(y\in X\)</span> is called maximal if for all <span class="math inline">\(x\in X\)</span> such that <span class="math inline">\(x\neq y\)</span>, <span class="math inline">\(y\not\preceq x\)</span>.</p></li>
+<li><p><em>minimal</em>: an element <span class="math inline">\(y\in X\)</span> is called minimal if for all <span class="math inline">\(x\in X\)</span> such that <span class="math inline">\(x\neq y\)</span>, <span class="math inline">\(x\not\preceq y\)</span>.</p></li>
+</ul>
+<p>In our example, the prime numbers are are minimal, since no other elements in <span class="math inline">\(N_2\)</span> come before them. One thing to note is that minimal/maximal elements are not necessarily unique (e.g. the prime numbers), but minimum/maximum elements are unique, if they exist. This can be proved pretty quickly:</p>
+<p><em>Proof.</em> Let <span class="math inline">\((X,\preceq)\)</span> be a partially ordered set with a maximum, and let <span class="math inline">\(x,y\)</span> be (not necessarily distinct) maximum elements. Since <span class="math inline">\(x\)</span> is maximum, in particular <span class="math inline">\(y\preceq x\)</span>. Likewise, because <span class="math inline">\(y\)</span> is maximum, <span class="math inline">\(x\preceq y\)</span>. By antisymmetry, <span class="math inline">\(x=y\)</span>, so the maximum is unique.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>The proof for the uniqueness of a minimum element is similar. It’s also worth mentioning that a minimum is automatically minimal and likewise a maximum is maximal. Likewise, if the minimum exists, there is only one minimal element—the minimum. Dually, if the maximum exists, there is only one maximal element—the maximum.</p>
+<p>One more interesting fact—in a total order (a partial order that is total), an element is maximal if and only if it is the maximum, and an element is minimal if and only if it is the minimum.</p>
+<p>Finally, it’s also worth mentioning that a partial order <span class="math inline">\(\preceq\)</span> also has an associated strict partial order <span class="math inline">\(\prec\)</span>. If <span class="math inline">\((X,\preceq)\)</span> is a poset, we say <span class="math inline">\(x\prec y\)</span> if <span class="math inline">\(x\preceq y\)</span> and <span class="math inline">\(x\neq y\)</span>. You can check for yourself that consequently <span class="math inline">\(\prec\)</span> must be asymmetric, and transitive. Now let’s see some examples of these concepts in action.</p>
+<h2 id="hasse-diagrams">Hasse Diagrams</h2>
+<p>For finite sets, it’s often convenient to specify a partial order through a directed graph. For example, let our set be <span class="math inline">\(X=\{a,b,c,d,e,f,g,h\}\)</span>, and we say that for arbitrary elements <span class="math inline">\(u,v\in X\)</span>, <span class="math inline">\(u\preceq v\)</span> if and only if there is an arrow from the vertex associated with <span class="math inline">\(u\)</span> to the vertex associated with <span class="math inline">\(v\)</span> in the following directed graph:</p>
+<div class="center">
+<p><img src="tikz-images/a766c141a44e9b102d777154b7256d24d6cb4e6b.svg" style="display:block; margin:auto;" /></p>
+</div>
+<p>Three things of note: (1) it’s implied that <span class="math inline">\(u\preceq u\)</span> for all vertices <span class="math inline">\(u\in X\)</span>, (2) not all directed graphs give rise to a partial order since some graphs might not obey transitivity or antisymmetry, and (3) this graph is really ugly. Mathematicians figured out a nice way to mostly fix (2) and definitely help out (3), through what’s referred to as a <em>Hasse Diagram</em> <span class="citation" data-cites="hasse">(<span>“Hasse Diagram,”</span> n.d.)</span>.</p>
+<p>If you look at our directed graph, a lot of the arrows could be removed if we infer transitivity. For example, in our graph we have arrows <span class="math inline">\(\overrightarrow{ab}\)</span>, <span class="math inline">\(\overrightarrow{be}\)</span>, and <span class="math inline">\(\overrightarrow{ae}\)</span>. However, if we chose to infer transitivity, we could take away <span class="math inline">\(\overrightarrow{ae}\)</span>. Continuing, we remove all unnecessary arrows in a process called <em>transitive reduction</em>. We get the following graph:</p>
+<div class="center">
+<p><img src="tikz-images/f418588680ee5edc3471e143bd6662b2a15fea2e.svg" style="display:block; margin:auto;" /></p>
+</div>
+<p>The backwards process when we infer transitivity, is called the <em>transitive closure</em>. This makes the graph a lot prettier, and this also ensures that the inferred relation is transitive. Often people remove the arrows and assume that the edges point in the upwards direction. The only problem is that our graph might not be antisymmetric. For example, on the set <span class="math inline">\(Y=\{a,b,c\}\)</span>, one might specify the graph</p>
+<div class="center">
+<p><img src="tikz-images/526ea7463745b2c0be23527e8568b986f9b5fd21.svg" style="display:block; margin:auto;" /></p>
+</div>
+<p>which represents a relation that is not antisymmetric, since <span class="math inline">\(a\preceq b\)</span> and <span class="math inline">\(b\preceq a\)</span>, but <span class="math inline">\(a\neq b\)</span>.</p>
+<p>Now that we have a convenient way to represent partial orders on finite sets, let’s visualize what it means for an element to be minimal versus a minimum. Let’s look at the set <span class="math inline">\(X=\{a,b,c,d,e,f,g\}\)</span> with the partial order on the left and the set <span class="math inline">\(X&#39;=\{b,c,d,e,f,g\}\)</span> with the partial order on the right:</p>
+<div class="center">
+<p><img src="tikz-images/d95438c5e2eb90c631371a94c7c0287cafdf34c0.svg" style="display:block; margin:auto;" /></p>
+</div>
+<p>The element <span class="math inline">\(a\in X\)</span> is the minimum of <span class="math inline">\(X\)</span>, since for all elements <span class="math inline">\(x\in X\)</span>, <span class="math inline">\(a\preceq x\)</span>. Intuitively, we can draw a path upward from <span class="math inline">\(a\)</span> to get to any other element in the graph.</p>
+<p>However, we don’t have a minimum element in <span class="math inline">\(X&#39;\)</span>. Rather, <span class="math inline">\(b,c,d\in X&#39;\)</span> are all minimal elements. None of them are the minimum, since they do not compare to each other. Nonetheless, they are all still minimal since no element precedes them.</p>
+<p>We’ve built an understanding of partial orders, but there’s still one more property of a relation that we need to discuss before we can generalize induction.</p>
+<h1 id="well-foundedness">Well-Foundedness</h1>
+<p>We started our discussion of partial orders by talking about the standard ordering <span class="math inline">\(\leq\)</span> on the natural numbers. We saw that this ordering is reflexive, symmetric, and transitive. It also has another property that we need for induction: well-foundedness.</p>
+<div class="definition">
+<p><strong>Definition 1</strong>.  A partially ordered set <span class="math inline">\((X,\preceq)\)</span> is <em>well-founded</em> if every nonempty subset contains at least one minimal element.</p>
+</div>
+<p>To motivate this definition, let’s look back regular induction. We prove a claim for the base case, i.e. <span class="math inline">\(P(1)\)</span>, and then the induction step. Then, our claim is true for all natural numbers <span class="math inline">\(n\)</span>.</p>
+<p>One way of reasoning about why induction works is because we do not have any infinite descending chains. For example, <span class="math inline">\(P(7)\)</span> is true, because have the finite descending chain <span class="math display">\[1&lt;2&lt;\dots&lt;6&lt;7.\]</span> Then, because have have the base case <span class="math inline">\(P(1)\)</span> and the induction step, we get <span class="math inline">\(P(2)\)</span>. From <span class="math inline">\(P(2)\)</span> we get <span class="math inline">\(P(3)\)</span>. From <span class="math inline">\(P(3)\)</span> we get <span class="math inline">\(P(4)\)</span>. In a finite number of steps, we get to <span class="math inline">\(P(7)\)</span>.</p>
+<p>Let’s be a little bit more formal about this. Let <span class="math inline">\((X,\preceq)\)</span> be a partially ordered set. An infinite descending chain <span class="math inline">\(C\)</span> is an infinite sequence <span class="math inline">\(\{x_n\}_{n=1}^\infty\)</span> such that <span class="math inline">\(x_{n+1}\prec x_n\)</span>. This brings us to the following theorem: <span class="citation" data-cites="noetherian proofwiki">(Klappenecker, n.d.; <span>“Condition for Well-Foundedness,”</span> n.d.)</span></p>
+<hr />
+<div class="theorem">
+<p><strong>Theorem 1</strong>.  <em>Let <span class="math inline">\((X,\preceq)\)</span> be a well-founded partially ordered set. Then <span class="math inline">\(X\)</span> has no infinite descending chain.</em></p>
+</div>
+<hr />
+<p><em>Proof.</em> Let <span class="math inline">\((X,\preceq)\)</span> be a poset. Assume that <span class="math inline">\(X\)</span> is well-founded. Suppose, to the contrary, that <span class="math inline">\(X\)</span> contains an infinite descending chain <span class="math inline">\(C\)</span>. Since <span class="math inline">\(C\)</span> is a nonempety subset of <span class="math inline">\(X\)</span> and because <span class="math inline">\(X\)</span> is well-founded, we know <span class="math inline">\(C\)</span> has a minimal element <span class="math inline">\(y\)</span>. Since <span class="math inline">\(y\in C\)</span>, for some <span class="math inline">\(n\)</span>, <span class="math inline">\(y=x_n\)</span>. However, by definition, <span class="math inline">\(x_{n+1}\preceq x_n\)</span> and <span class="math inline">\(x_{n+1}\neq x_n\)</span>, so <span class="math inline">\(y\)</span> is not a minimal element. Thus, we have a contradiction.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>Having no infinite descending chains is referred to as the <em>descending chain condition</em> (DCC). Now we have a feeling about why well-foundedness is useful—it prevents infinite descending chains, meeting the descending chain condition. In fact, the reverse implication can also be deduced with the axiom of choice, but maybe we’ll save that for another day. We first started talking about well-foundedness when discussing natural numbers, but we haven’t formally proved that they are actually well-founded. Let’s do something slightly stronger <span class="citation" data-cites="natnum">(pahio 2013)</span>.</p>
+<hr />
+<div class="theorem">
+<p><strong>Theorem 2</strong>.  <em>Let <span class="math inline">\(\mathbb{N}\)</span> be the natural numbers with the standard order <span class="math inline">\(\leq\)</span>. Then, every nonempty subset of <span class="math inline">\(\mathbb{N}\)</span> has a minimum element.</em></p>
+</div>
+<hr />
+<p><em>Proof.</em> Let <span class="math inline">\(A\)</span> be an arbitrary nonempty subset of <span class="math inline">\(\mathbb{N}\)</span>, and let <span class="math inline">\(C\)</span> be the set of natural numbers less than or equal to all elements of <span class="math inline">\(A\)</span>. That is, <span class="math display">\[C = \{x\in \mathbb{N}: x\leq a \; \forall a\in A\}.\]</span> Since <span class="math inline">\(1\leq n\)</span> for all natural numbers <span class="math inline">\(n\)</span>, we know <span class="math inline">\(1\in C\)</span>.</p>
+<p>Since <span class="math inline">\(A\)</span> is nonempty, there exists <span class="math inline">\(a\in A\)</span>, and in particular <span class="math inline">\(a+1\not\in C\)</span> because <span class="math inline">\(a+1 \not\leq a\)</span>. Therefore, <span class="math inline">\(C\neq \mathbb{N}\)</span>. Suppose, to the contrary, that for all <span class="math inline">\(c\in C\)</span>, <span class="math inline">\(c+1\in C\)</span>. By induction this implies that <span class="math inline">\(C=\mathbb{N}\)</span>, which is a contradiction.</p>
+<p>Thus, there exists <span class="math inline">\(c_0\in C\)</span> such that <span class="math inline">\(c_0+1\not\in C\)</span>. Since <span class="math inline">\(c_0+1\not\in C\)</span>, this implies that there exists <span class="math inline">\(a_0\in A\)</span> such that <span class="math inline">\(c_0+1\not\leq a_0\)</span>, i.e. <span class="math inline">\(a_0 &lt; c_0+1\)</span>. This means <span class="math inline">\(a_0\leq c_0\)</span>, and by definition of <span class="math inline">\(c_0\in C\)</span> we know <span class="math inline">\(c_0\leq a_0\)</span>. By transitivity, <span class="math inline">\(c_0=a_0\)</span>.</p>
+<p>Finally, since <span class="math inline">\(a_0\in C\)</span>, we know <span class="math inline">\(a_0\leq a\)</span> for all <span class="math inline">\(a\in A\)</span>. Therefore, <span class="math inline">\(a_0\in A\)</span> is the minimum element of <span class="math inline">\(A\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>Recall from before that minimum elements are automatically minimal. Thus, the natural numbers (with the usual ordering) are well-founded. For natural numbers we proved an even stronger condition. When a poset obeys the property that every nonempty subset has a minimum element, we say the poset is well-ordered. Thus, the natural numbers are well-ordered.</p>
+<h2 id="examples">Examples</h2>
+<p>It’s worth discussing some more eccentric well-founded partial orders. Let <span class="math inline">\(X_1,X_2,\dots,X_n\)</span> be sets with partial orders <span class="math inline">\(\preceq_1,\preceq_2,\dots,\preceq_n\)</span> respectively.</p>
+<p>We can then define an order on the Cartesian product <span class="math inline">\(\prod_{i=1}^n X_i = X_1\times \dots \times X_n\)</span>, the set of all <span class="math inline">\(n\)</span>-tuples <span class="math inline">\((x_1,\dots,x_n)\)</span> where <span class="math inline">\(x_i\in X_i\)</span>.</p>
+<p>The <em>product order</em> <span class="math inline">\(\preceq\)</span> is defined by <span class="math display">\[(x_1,\dots,x_n) \preceq (y_1,\dots,y_n)\]</span> if and only if <span class="math inline">\(x_i \preceq_i y_i\)</span> for <span class="math inline">\(i=1,\dots,n\)</span>. You can verify yourself that the product order is reflexive, antisymmetric, and transitive.</p>
+<p>For instance, consider <span class="math inline">\(\mathbb{N}\times \mathbb{N}\times \mathbb{N}\)</span> with the product order. In this example, <span class="math inline">\((2,2,2)\preceq (2,3,4)\)</span>, but <span class="math inline">\((2,2,2)\not\preceq (1,2,3)\)</span>, because in the first coordinate we have <span class="math inline">\(2\not\leq 1\)</span>.</p>
+<p>In general, when is the product order well-founded? We prove this theorem to provide a sufficient condition.</p>
+<hr />
+<div class="theorem">
+<p><strong>Theorem 3</strong>.  <em>Let <span class="math inline">\(X_1,\dots,X_n\)</span> be posets with well-founded partial orders <span class="math inline">\(\preceq_1,\dots,\preceq_n\)</span>. Then, the product order on <span class="math inline">\(\prod_{i=1}^n X_i\)</span> is well-founded.</em></p>
+</div>
+<hr />
+<p><em>Proof.</em> By induction on <span class="math inline">\(n\)</span>. When <span class="math inline">\(n=1\)</span>, the product order is just the given well-founded partial order, so it is well-founded by assumption.</p>
+<p>Then, assume that the theorem is true for <span class="math inline">\(n\)</span>, that when <span class="math inline">\(X_1,\dots,X_n\)</span> are well-founded partially ordered sets, then <span class="math inline">\(\prod_{i=1}^n X_i\)</span> with the product order is a well-founded partial order.</p>
+<p>Now, let <span class="math inline">\(X_1,\dots,X_n,X_{n+1}\)</span> be well-founded partially ordered sets. The product order <span class="math inline">\(\prod_{i=1}^{n+1} X_i\)</span> is in fact<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> the same as the product order on <span class="math inline">\(\left(\prod_{i=1}^n X_i\right) \times X_{n+1}\)</span>. Both terms here are well-founded: the left by our induction hypothesis, and the right by assumption. Thus, it suffices to show the well-foundedness of the product order of a pair of well-founded partial orders in order to show the <span class="math inline">\(n+1\)</span> case.</p>
+<p>We refer to our pair of well-founded posets as <span class="math inline">\(X_1,X_2\)</span> and prove <span class="math inline">\(X_1\times X_2\)</span> is a well-founded poset with the product order. Let <span class="math inline">\(S\)</span> be a nonempty subset of <span class="math inline">\(X_1\times X_2\)</span>, and let <span class="math inline">\(S_1\)</span> be the projection of <span class="math inline">\(S\)</span> onto the first coordinate, that is, <span class="math display">\[S_1 = \{y\in X_1 : \exists x_2 (y,x_2)\in S\}.\]</span> Since <span class="math inline">\(S_1 \subseteq X_1\)</span> and <span class="math inline">\(S_1\)</span> is nonempty because <span class="math inline">\(S\)</span> is nonempty, we know <span class="math inline">\(S_1\)</span> has a minimal element, call it <span class="math inline">\(y_1\)</span>, because <span class="math inline">\(X_1\)</span> is well-founded. Then, let <span class="math inline">\(S_2\)</span> be the set of <span class="math inline">\(x_2\in X_2\)</span> such that <span class="math inline">\((y_1,x_2)\in S\)</span>.</p>
+<p>We note that <span class="math inline">\(S_2\)</span> is a nonempty subset of <span class="math inline">\(X_2\)</span>, because if <span class="math inline">\(y_1\in S_1\)</span>, then there must be some pair <span class="math inline">\((y_1,x_2)\in S\)</span> by definition. Furthermore, because <span class="math inline">\(S_2\subseteq X_2\)</span> and <span class="math inline">\(X_2\)</span> is well-founded, there must be a minimal element <span class="math inline">\(y_2\in S_2\)</span>. This then implies that <span class="math inline">\((y_1,y_2)\in S\)</span>. We claim that this element is minimal in <span class="math inline">\(X_1\times X_2\)</span> with the product order.</p>
+<p>Suppose that <span class="math inline">\((z_1,z_2) \preceq (y_1,y_2)\)</span>. This implies that <span class="math inline">\(z_1\preceq_1 y_1\)</span> and <span class="math inline">\(z_2\preceq_2 y_2\)</span>. Recall our definition of set <span class="math inline">\(S_1\)</span>. Since <span class="math inline">\(z_1\in S_1\)</span> and <span class="math inline">\(y_1\)</span> is a minimal element, we cannot have <span class="math inline">\(z_1\preceq y_1\)</span> unless <span class="math inline">\(z_1=y_1\)</span>. Thus, <span class="math inline">\(z_1=y_1\)</span>, and we are now considering <span class="math inline">\((y_1,z_2)\preceq (y_1,y_2)\)</span>.</p>
+<p>Now, recall our definition of <span class="math inline">\(S_2\)</span>. Since <span class="math inline">\(z_2\)</span> is paired with <span class="math inline">\(y_1\)</span> in <span class="math inline">\(S\)</span>, we know <span class="math inline">\(z_2\in S_2\)</span>. Additionally, we know that <span class="math inline">\(y_2\)</span> is a minimal element in <span class="math inline">\(S_2\)</span>. Therefore, <span class="math inline">\(z_2\preceq_2 y_2\)</span> likewise implies <span class="math inline">\(z_2=y_2\)</span>.</p>
+<p>Thus, <span class="math inline">\((z_1,z_2)\preceq (y_1,y_2)\)</span> implies <span class="math inline">\((z_1,z_2)=(y_1,y_2)\)</span>. Therefore, <span class="math inline">\((y_1,y_2)\)</span> is minimal, and our theorem is proved.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>There are several other examples of well-founded partial orders: the lexicographic ordering on the Cartesian product of well-founded orders, the set of finite subsets of natural numbers with inclusion as the ordering, etc <span class="citation" data-cites="noetherian">(Klappenecker, n.d.)</span>. Finally, now that we have a grasp on well-foundedness, we can generalize induction.</p>
+<h1 id="noetherian-induction">Noetherian Induction</h1>
+<p>Let <span class="math inline">\((X,\preceq)\)</span> be a set with a well-founded partial order. The Principle of Noetherian Induction states, to prove a property <span class="math inline">\(P(x)\)</span> for all <span class="math inline">\(x\in X\)</span>, it suffices to prove</p>
+<ol>
+<li><p><em>Induction basis</em>. <span class="math inline">\(P(x)\)</span> is true for all minimal elements <span class="math inline">\(x\in X\)</span>.</p></li>
+<li><p><em>Induction step</em>. <span class="math inline">\(P(y)\)</span> is true assuming <span class="math inline">\(P(x)\)</span> for all <span class="math inline">\(x\prec y\)</span>, for all non-minimal <span class="math inline">\(y\in X\)</span>.</p></li>
+</ol>
+<p>Let’s prove that Noetherian induction works, that proving these two statements is sufficient <span class="citation" data-cites="noetherian">(Klappenecker, n.d.)</span>.</p>
+<p><em>Proof.</em> Let <span class="math inline">\((X,\preceq)\)</span> be a set with a well-founded partial order, and let <span class="math inline">\(P(x)\)</span> be a property. Suppose that we have proved (1) and (2). We want to show that <span class="math inline">\(P(x)\)</span> is true for all <span class="math inline">\(x\in X\)</span>. Let <span class="math inline">\(C\)</span> be the set of counterexamples to our property <span class="math inline">\(P(x)\)</span>. That is, <span class="math display">\[C=\{x\in X : P(x) \text{ is false.}\}.\]</span> Suppose, to the contrary, that <span class="math inline">\(C\)</span> is not empty. Then, because <span class="math inline">\(C\subseteq X\)</span> and <span class="math inline">\(X\)</span> is well-founded, this implies <span class="math inline">\(C\)</span> has a minimal element <span class="math inline">\(y\)</span>. If <span class="math inline">\(y\)</span> is also minimal in the entirety of <span class="math inline">\(X\)</span>, then we know <span class="math inline">\(P(y)\)</span> by (1) so <span class="math inline">\(y\not\in C\)</span> and we have a contradiction.</p>
+<p>Otherwise, we know that for all <span class="math inline">\(x\in X\)</span> such that <span class="math inline">\(x\prec y\)</span>, <span class="math inline">\(x\not\in C\)</span>. In other words, because <span class="math inline">\(y\)</span> is a minimal counterexample, anything that precedes <span class="math inline">\(y\)</span> is not a counterexample.</p>
+<p>Therefore, we know <span class="math inline">\(P(x)\)</span> for all <span class="math inline">\(x\prec y\)</span>, so by (2) we know <span class="math inline">\(P(y)\)</span>. This implies <span class="math inline">\(y\not\in C\)</span>, which is a contradiction.</p>
+<p>Thus, the set of counterexamples is empty, so <span class="math inline">\(P(x)\)</span> is true for all <span class="math inline">\(x\in X\)</span>.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>This all might seem a little abstract and vague, but it turns out to be really useful. Let’s run through an example.</p>
+<h2 id="example-2">Example</h2>
+<p>Let’s prove that any natural number greater than or equal to 2 can be written as a product of primes. Recall from our discussion of partial orders, that <span class="math inline">\(N_2=\{2,3,4,\dots\}\)</span> is a poset with the relation <span class="math inline">\(\mid\)</span>, “divides.” This poset is in fact well-founded, with an element being minimal if and only if it is prime. We leave proving these two statements as an exercise to the reader.</p>
+<p>As a result of these two properties, to prove our claim we can perform Noetherian induction on <span class="math inline">\(N_2\)</span> with respect to the <span class="math inline">\(\mid\)</span> order. Let’s do that.</p>
+<p><em>Proof.</em> By Noetherian induction on <span class="math inline">\(n\in N_2\)</span>. All of our minimal elements can be written as a product of primes trivially, since a prime number <span class="math inline">\(p\)</span> can be simply written as itself.</p>
+<p>Now, let <span class="math inline">\(n\)</span> be a non-minimal (i.e. composite) natural number, and assume that all numbers <span class="math inline">\(m\)</span> preceding <span class="math inline">\(n\)</span> (i.e. all divisors of <span class="math inline">\(n\)</span>) can be written as a product of primes. Since <span class="math inline">\(n\)</span> is composite, it can be written as product <span class="math inline">\(xy\)</span>. Thus, <span class="math inline">\(x \mid n\)</span> and <span class="math inline">\(y \mid n\)</span>. By our induction hypothesis, we know <span class="math inline">\(x,y\)</span> can be written as product of primes, i.e. <span class="math inline">\(x = p_{x_1} \cdots p_{x_k}\)</span> and <span class="math inline">\(y=p_{y_1}\cdots p_{y_j}\)</span>, where each <span class="math inline">\(p_{x_i}\)</span> or <span class="math inline">\(p_{y_i}\)</span> are not necessarily distinct.</p>
+<p>Therefore, since <span class="math inline">\(n=xy\)</span>, we know <span class="math inline">\(n=p_{x_1} \cdots p_{x_k}p_{y_1}\cdots p_{y_j}\)</span>, so <span class="math inline">\(n\)</span> is a product of primes.</p>
+<p><span class="math inline">\(\square\)</span></p>
+<p>To be fair, this proof is overly complicated. We could have gotten away with strong induction, using the fact that <span class="math inline">\(x,y&lt;n\)</span>. However, you might have realized that strong induction is, in fact, a special case of Noetherian Induction, using the regular ordering of the natural numbers, which we had proved earlier is well-founded.</p>
+<p>I hope to showcase more applications of Noetherian induction in the future. Maybe I’ll explain how to prove that a certain strategy is optimal in a game called Nim.</p>
+<p></p>
+<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography">
+<div id="ref-relation" class="csl-entry" role="doc-biblioentry">
+<span>“Binary Relation.”</span> n.d. Wikipedia. <a href="https://en.wikipedia.org/wiki/Binary_relation">https://en.wikipedia.org/wiki/Binary_relation</a>.
+</div>
+<div id="ref-proofwiki" class="csl-entry" role="doc-biblioentry">
+<span>“Condition for Well-Foundedness.”</span> n.d. Proof Wiki. <a href="https://proofwiki.org/wiki/Condition_for_Well-Foundedness">https://proofwiki.org/wiki/Condition_for_Well-Foundedness</a>.
+</div>
+<div id="ref-hasse" class="csl-entry" role="doc-biblioentry">
+<span>“Hasse Diagram.”</span> n.d. Wikipedia. <a href="https://en.wikipedia.org/wiki/Hasse_diagram">https://en.wikipedia.org/wiki/Hasse_diagram</a>.
+</div>
+<div id="ref-relation2" class="csl-entry" role="doc-biblioentry">
+<span>“Heterogenuous Relation.”</span> n.d. Wikipedia. <a href="https://en.wikipedia.org/wiki/Heterogeneous_relation">https://en.wikipedia.org/wiki/Heterogeneous_relation</a>.
+</div>
+<div id="ref-induction" class="csl-entry" role="doc-biblioentry">
+Huang, Guan-Shieng. 2008. <span>“Fundamentals of Mathematics Lecture 5: Induction.”</span> National Chi Nan University, Taiwan. 2008. <a href="http://staffweb.ncnu.edu.tw/shieng/courses/Math962/5-induction.pdf">http://staffweb.ncnu.edu.tw/shieng/courses/Math962/5-induction.pdf</a>.
+</div>
+<div id="ref-noetherian" class="csl-entry" role="doc-biblioentry">
+Klappenecker, Andreas. n.d. <span>“Noetherian Induction.”</span> <a href="https://pdfs.semanticscholar.org/62b9/1469bbb0a6f9f568a6d223931525ebd58b24.pdf">https://pdfs.semanticscholar.org/62b9/1469bbb0a6f9f568a6d223931525ebd58b24.pdf</a>.
+</div>
+<div id="ref-natnum" class="csl-entry" role="doc-biblioentry">
+pahio. 2013. <span>“Natural Numbers Are Well-Ordered.”</span> 2013. <a href="https://planetmath.org/naturalnumbersarewellordered">https://planetmath.org/naturalnumbersarewellordered</a>.
+</div>
+</div>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p>the symbol <span class="math inline">\(\land\)</span> means “and”<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p>Proof is left as exercise to the reader.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+            </div>
+    </section>
+
+<footer class="footer">
+    <div class="content has-text-centered">
+        <p>
+            <label class="checkbox">
+            <input type="checkbox" id="dark-mode">
+                Dark Mode
+                <span class="icon is-small"><i class="fas fa-moon" aria-hidden="true"></i></span>
+            </label>
+        </p>
+        <p>
+            © 2023 Joseph Sullivan
+            <a href="https://github.com/JosephSullivan256"><span class="icon is-small"><i class="fab fa-github" aria-hidden="true"></i></span></a>&nbsp;
+            <a href="mailto: partiallyordered@gmail.com"><span class="icon is-small"><i class="fas fa-envelope" aria-hidden="true"></i></span></a>
+        </p>
+    </div>
+</footer>
+</body>
+</html>

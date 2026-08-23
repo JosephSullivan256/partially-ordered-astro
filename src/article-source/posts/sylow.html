@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        let darkmode = false;
+        if(localStorage.getItem('dark-mode')){
+            darkmode = localStorage.getItem('dark-mode')=='enabled';
+        }
+
+        if(darkmode) {
+            document.documentElement.classList.toggle("dark-mode")
+        }
+
+        window.addEventListener("load", ()=>{
+            let darkcheckbox = document.getElementById("dark-mode");
+            darkcheckbox.checked = darkmode;
+
+            darkcheckbox.addEventListener("change", ()=>{
+                darkmode = !darkmode;
+                if(darkmode) {
+                    localStorage.setItem('dark-mode', 'enabled')
+                } else {
+                    localStorage.setItem('dark-mode', 'disabled')
+                }
+
+                document.documentElement.classList.toggle("dark-mode");
+            });
+        })
+
+    </script>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/mystyles.css">
+    <link rel="stylesheet" href="/static/node_modules/%40fortawesome/fontawesome-free/css/all.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="author" content="Joseph Sullivan">
+<title>Sylow Theorems</title>
+<style>
+header {
+  margin-bottom: 4em;
+  text-align: center;
+}
+hr {
+  background-color: #1a1a1a;
+  border: none;
+  height: 1px;
+  margin: 1em 0
+}
+#TOC {
+	line-height: 100%;
+}
+.lemma, .proposition, .definition, .theorem {
+    border-style: solid;
+    border-width: 2px;
+    margin: 10px 0px;
+    padding: 0px 4px;
+}
+
+</style>
+<script>
+	window.MathJax = {
+		tex: {
+			tags: "ams",
+			inlineMath: [ ["\\\(","\\\)"] ],
+			displayMath: [ ['$$','$$'],["\\[","\\]"] ],
+			processEscapes: true,
+			processEnvironments: true,
+			packages: ['base', 'color', 'ams', 'physics']
+		},
+		loader: {
+			load: ['[tex]/color', '[tex]/ams', '[tex]/physics']
+		}
+	};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+
+
+</head>
+<body>
+
+    
+<section class="hero">
+    <div class="hero-body">
+        <nav class="breadcrumb is-centered is-medium" aria-label="breadcrumbs">
+            <ul>
+                
+                    
+                        <li><a href="/">index</a></li>
+                    
+                
+                    
+                        <li><a href="/posts">posts</a></li>
+                    
+                
+                    
+                        <li class="is-active"><a href="#">Sylow Theorems</a></li>
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</section>
+
+    <section class="section post">
+            <div class="content serif reading-margins">
+                <header id="title-block-header">
+<h1 class="title">Sylow Theorems</h1>
+<p class="author">Joseph Sullivan</p>
+<p class="date">December 2021</p>
+</header>
+<p>My first time going through the Sylow theorems was not a good time. I really didn’t get what was going on, and I think that a lot of this struggle could have been avoided if the lectures/textbooks didn’t treat the Sylow theorems as one big bundle, but rather as independent results that are all useful in discovering the structure of a group of finite order.</p>
+<p>For this reason, my notes will be structured as follows:</p>
+<ul>
+<li><p>Study theorems about group actions.</p></li>
+<li><p>Prove the existence Sylow theorem.</p></li>
+<li><p>Prove the remaining Sylow theorems.</p></li>
+</ul>
+<h1 id="group-actions">Group Actions</h1>
+<div class="definition">
+<p><strong>Definition 1</strong>.  A <strong>group action</strong> of a group <span class="math inline">\(G\)</span> on a set <span class="math inline">\(X\)</span> is a homomorphism <span class="math display">\[\mu: G\to \mathop{\mathrm{Perm}}(X),\]</span> where <span class="math inline">\(\mathop{\mathrm{Perm}}(X)\)</span> denotes the permutation group (set of bijections under composition) of <span class="math inline">\(X\)</span>. Then, we use the notation <span class="math display">\[g\cdot x = \mu(g)(x)\]</span> for <span class="math inline">\(g\in G\)</span>, <span class="math inline">\(x\in X\)</span>.</p>
+</div>
+<div class="definition">
+<p><strong>Definition 2</strong>.  We define some notions related to a group action. Let <span class="math inline">\(G\)</span> act on <span class="math inline">\(X\)</span>.</p>
+<ul>
+<li><p>For <span class="math inline">\(x\in X\)</span>, define the <strong>stabilizer</strong> of <span class="math inline">\(x\)</span> <span class="math display">\[\mathop{\mathrm{Stab}}(x) = \{g\in G \operatorname{\big|}g\cdot x = x\},\]</span> i.e., the set of <span class="math inline">\(g\in G\)</span> that fix <span class="math inline">\(x\)</span>.</p></li>
+<li><p>For <span class="math inline">\(x\in X\)</span>, define the <strong>orbit</strong> of <span class="math inline">\(x\)</span> <span class="math display">\[G\cdot x = \{g\cdot x \in X \operatorname{\big|}g\in G\},\]</span> i.e., the set of <span class="math inline">\(G\)</span>-translations of <span class="math inline">\(x\)</span>.</p></li>
+<li><p>We say the action is <strong>transitive</strong> if there is only one orbit.</p></li>
+</ul>
+</div>
+<div class="proposition">
+<p><strong>Proposition 1</strong>.  Let <span class="math inline">\(G\)</span> act on <span class="math inline">\(X\)</span>. For all <span class="math inline">\(x\in X\)</span>, <span class="math inline">\(\mathop{\mathrm{Stab}}(x)\)</span> is a subgroup of <span class="math inline">\(G\)</span>.</p>
+</div>
+<div class="remark">
+<p><strong>Remark 1</strong>.  In finite group theory, one very important result on group actions is the Orbit Stabilizer Theorem. It allows us to go between the study of orbits and stabilizer subgroups.</p>
+</div>
+<div class="theorem">
+<p><strong>Theorem 1</strong> (Orbit Stabilizer Theorem).  Let <span class="math inline">\(G\)</span> be a group which acts on <span class="math inline">\(X\)</span>. Then, <span class="math display">\[|G\cdot x| = [G: \mathop{\mathrm{Stab}}(x)].\]</span></p>
+</div>
+<div class="remark">
+<p><strong>Remark 2</strong>.  Before proving the Orbit Stabilizer Theorem, let’s talk about why it should <em>feel</em> true. The size of an orbit is the number of distinct <span class="math inline">\(G\)</span>-translations of <span class="math inline">\(x\)</span>. The orbit stabilizer theorem just says that the number of distinct <span class="math inline">\(G\)</span>-translations is the size of <span class="math inline">\(G\)</span> (number of possibly redundant translations) divided by redundancies (the size of the stabilizer).</p>
+<p>In this sense, the Orbit Stabilizer Theorem is very much like the First Isomorphism Theorem—the orbit is like the image of a homomorphism, the group <span class="math inline">\(G\)</span> is like the domain, and the stabilizer is like the kernel.</p>
+<p>Let’s now prove the theorem.</p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> We define a bijection between <span class="math inline">\(G\cdot x\)</span> and the set of (left) <span class="math inline">\(\mathop{\mathrm{Stab}}(x)\)</span> cosets, which we denote by <span class="math inline">\(G/\mathop{\mathrm{Stab}}(x)\)</span>, <span class="math display">\[\begin{aligned}
+        f: G/\mathop{\mathrm{Stab}}(x) &amp;\longrightarrow G\cdot x\\
+        g\mathop{\mathrm{Stab}}(x) &amp;\longmapsto g\cdot x.
+    \end{aligned}\]</span> We have to show that <span class="math inline">\(f\)</span> is well-defined on coset representatives, that <span class="math inline">\(f\)</span> is injective, and that <span class="math inline">\(f\)</span> is surjective.</p>
+<p>First, <span class="math inline">\(f\)</span> is well-defined because if <span class="math inline">\(g\mathop{\mathrm{Stab}}(x) = h\mathop{\mathrm{Stab}}(x)\)</span>, then <span class="math inline">\(h^{-1}g\in \mathop{\mathrm{Stab}}(x)\)</span>, so <span class="math inline">\(h^{-1}g \cdot x = x\)</span>. Therefore, <span class="math inline">\(g\cdot x = h\cdot x\)</span>, so <span class="math inline">\(g\mathop{\mathrm{Stab}}(x), h\mathop{\mathrm{Stab}}(x)\)</span> have the same image.</p>
+<p>Next, we show <span class="math inline">\(f\)</span> is injective. Assume <span class="math inline">\(g\cdot x = h\cdot x\)</span>. Then, <span class="math inline">\(h^{-1}g\cdot x = x\)</span>, so <span class="math inline">\(h^{-1}g\in \mathop{\mathrm{Stab}}(x)\)</span> and <span class="math inline">\(g\mathop{\mathrm{Stab}}(x) = h\mathop{\mathrm{Stab}}(x)\)</span>.</p>
+<p>Finally, <span class="math inline">\(f\)</span> is surjective because if <span class="math inline">\(g\cdot x \in G\cdot x\)</span>, then <span class="math inline">\(g\cdot x\)</span> is the image of <span class="math inline">\(g\mathop{\mathrm{Stab}}(x)\)</span>.</p>
+<p>Thus, <span class="math inline">\(f\)</span> is a bijection, so <span class="math display">\[\begin{aligned}
+        |G/\mathop{\mathrm{Stab}}(x)| &amp;= |G\cdot x|\\
+        [G:\mathop{\mathrm{Stab}}(x)] &amp;= |G\cdot x|.
+    \end{aligned}\]</span> ◻</p>
+</div>
+<p>Let’s take a moment to talk about a few group actions that important for studying the structure of groups. We’ll see these examples later when we try to prove the Sylow theorems.</p>
+<div class="example">
+<p><strong>Example 1</strong>.  For <span class="math inline">\(g\in G\)</span>, let <span class="math inline">\(c_g: G\to G\)</span> denote conjugation by <span class="math inline">\(g\)</span>. Then, we have a group action of <span class="math inline">\(G\)</span> on itself by conjugation, i.e., <span class="math display">\[\begin{aligned}
+        \varphi: G &amp;\longrightarrow \mathop{\mathrm{Perm}}(G)\\
+        g &amp;\longmapsto c_g,
+    \end{aligned}\]</span> so <span class="math inline">\(g\cdot h = ghg^{-1}\)</span>. For <span class="math inline">\(g\in G\)</span>, <span class="math display">\[\mathop{\mathrm{Stab}}(g) = C_G(g),\]</span> the centralizer of <span class="math inline">\(g\)</span>, i.e., the elements that commute with <span class="math inline">\(g\)</span>. Then, <span class="math display">\[G\cdot g = \mathop{\mathrm{Cl}}(g),\]</span> the conjugacy class of <span class="math inline">\(g\)</span>. We can then write <span class="math inline">\(G\)</span> as the disjoint union of its distinct orbits (the conjugacy classes). Let <span class="math inline">\(g_1,\dots,g_n\)</span> represent the conjugacy classes. We then have <span class="math display">\[G = \bigsqcup_{i=1}^n \mathop{\mathrm{Cl}}(g_i).\]</span> If <span class="math inline">\(g\in Z(G)\)</span> (the center, the set of elements that commute with all of <span class="math inline">\(G\)</span>), then <span class="math inline">\(\mathop{\mathrm{Cl}}(g)=\{g\}\)</span>. Therefore, if we let <span class="math inline">\(h_1,\dots,h_m\)</span> represent the non-center conjugacy classes, then <span class="math display">\[G = Z(G) \sqcup \bigsqcup_{i=1}^m \mathop{\mathrm{Cl}}(h_i),\]</span> so <span class="math display">\[|G| = |Z(G)| + \sum_{i=1}^m |\mathop{\mathrm{Cl}}(g_i)|.\]</span> By the Orbit Stabilizer Theorem, <span class="math inline">\(|\mathop{\mathrm{Cl}}(h_i)| = [G: C_G(h_i)]\)</span>, so <span class="math display">\[|G| = |Z(G)| + \sum_{i=1}^m [G: C_G(h_i)].\]</span> This equation is referred to as the <strong>class equation</strong>, and it very useful for deducing things about the center or centralizers.</p>
+</div>
+<div class="example">
+<p><strong>Example 2</strong>.  Let <span class="math inline">\(H_1,\dots,H_n\)</span> be subgroups of <span class="math inline">\(G\)</span> that are conjugate to each other and closed under conjugation (i.e., for all <span class="math inline">\(g\in G\)</span>, <span class="math inline">\(i=1,\dots,n\)</span>, <span class="math inline">\(gH_ig^{-1} = H_j\)</span> for some <span class="math inline">\(j\)</span>). Then, <span class="math display">\[\mathop{\mathrm{Stab}}(H_i) = N_G(H_i),\]</span> the normalizer of <span class="math inline">\(H_i\)</span>, i.e. the elements <span class="math inline">\(g\in G\)</span> such that <span class="math inline">\(gH_ig^{-1} = H_i\)</span>.</p>
+</div>
+<h1 id="existence-of-sylow-subgroups">Existence of Sylow Subgroups</h1>
+<p>Our entire focus right now is to guarantee the existence of certain subgroups called Sylow subgroups. These large subgroups are very useful for classifying groups of finite order or deducing properties like simplicity.</p>
+<div class="definition">
+<p><strong>Definition 3</strong>.  Let <span class="math inline">\(p\)</span> be a prime, <span class="math inline">\(G\)</span> a group of order <span class="math inline">\(mp^\alpha\)</span>, <span class="math inline">\(p\nmid m\)</span>.</p>
+<ul>
+<li><p>A <strong><span class="math inline">\(p\)</span>-group</strong> is a group <span class="math inline">\(P\)</span> of order <span class="math inline">\(p^\beta\)</span> for some <span class="math inline">\(\beta\in \mathbb{N}\)</span>.</p></li>
+<li><p>A <strong><span class="math inline">\(p\)</span>-subgroup</strong> of <span class="math inline">\(G\)</span> is a subgroup of <span class="math inline">\(G\)</span> which is a <span class="math inline">\(p\)</span>-group.</p></li>
+<li><p>A <strong>Sylow <span class="math inline">\(p\)</span>-subgroup</strong> of <span class="math inline">\(G\)</span> is a <span class="math inline">\(p\)</span>-subgroup of <span class="math inline">\(G\)</span> of order <span class="math inline">\(p^\alpha\)</span> (i.e., the highest power of <span class="math inline">\(p\)</span> possible).</p></li>
+</ul>
+</div>
+<div class="theorem">
+<p><strong>Theorem 2</strong> (Sylow Theorem 1).  Let <span class="math inline">\(G\)</span> be a group. Then, there exists a Sylow <span class="math inline">\(p\)</span>-subgroup.</p>
+</div>
+<p>We outline the strategy. We will prove this theorem by induction on the size of <span class="math inline">\(G\)</span>. Therefore, we need to show how to reduce the problem of finding a Sylow <span class="math inline">\(p\)</span>-subgroup of <span class="math inline">\(G\)</span> to finding a Sylow <span class="math inline">\(p\)</span>-subgroup of a group of smaller order.</p>
+<p>There are two strategies that we could try to reduce the size of <span class="math inline">\(G\)</span>.</p>
+<ol>
+<li><p>Take a nontrivial normal subgroup <span class="math inline">\(N\)</span> of order <span class="math inline">\(p\)</span>, apply our induction hypothesis to the quotient <span class="math inline">\(G/N\)</span>, and then try to pull back a Sylow <span class="math inline">\(p\)</span>-subgroup of <span class="math inline">\(G\)</span>.</p></li>
+<li><p>Find a proper subgroup <span class="math inline">\(H\)</span> of <span class="math inline">\(G\)</span> with the same power of <span class="math inline">\(p\)</span>, and apply the induction hypothesis to <span class="math inline">\(H\)</span>.</p></li>
+</ol>
+<p>We will show that we can always do one of these two strategies. We will start with some lemmas that will help us implement strategy 1. Feel free to skip the lemmas/proofs, and go back once you see that it is necessary.</p>
+<div class="lemma">
+<p><strong>Lemma 1</strong>.  Let <span class="math inline">\(G\)</span> be a group, <span class="math inline">\(x\in G\)</span> of order <span class="math inline">\(n&lt;\infty\)</span>, <span class="math inline">\(a\in \mathbb{Z}\setminus \{0\}\)</span>. Then, <span class="math display">\[|x^a|=\frac{n}{\gcd(n,a)}\]</span></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Let <span class="math inline">\(d=|\gcd(n,a)|\)</span>, so we can write <span class="math display">\[n=db, \qquad a=dc\]</span> for <span class="math inline">\(b,c\)</span> coprime. We want to show that <span class="math inline">\(|x^a| = b\)</span>. We will show that <span class="math display">\[|x^a| \operatorname{\big|}b, \qquad b \operatorname{\big|}|x^a|.\]</span> First, we have <span class="math display">\[(x^{a})^b = x^{dcb} = (x^{db})^c = (x^n)^c = 1.\]</span> This implies <span class="math inline">\(|x^a| \operatorname{\big|}b\)</span>.</p>
+<p>Next, we have <span class="math display">\[(x^{a})^{|x^a|} = x^{a|x^a|}= 1,\]</span> so <span class="math inline">\(n\operatorname{\big|}a|x^a|\)</span>, and (removing a factor of <span class="math inline">\(d\)</span>) we get <span class="math display">\[b \operatorname{\big|}c|x^a|.\]</span> By construction <span class="math inline">\(b,c\)</span> are coprime, so <span class="math inline">\(b\operatorname{\big|}|x^a|\)</span>. Thus, <span class="math inline">\(|x^a| = b\)</span>. ◻</p>
+</div>
+<div class="lemma">
+<p><strong>Lemma 2</strong> (Cauchy’s Theorem for Abelian Groups).  Let <span class="math inline">\(G\)</span> be an abelian group such that <span class="math inline">\(p \operatorname{\big|}|G|\)</span>. Then, there exists an element of order <span class="math inline">\(p\)</span>.</p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> We prove by strong induction on <span class="math inline">\(|G|\)</span>. The base case <span class="math inline">\(|G|=p\)</span> is trivial, just take any non-identity element. Otherwise, assume <span class="math inline">\(|G|&gt;p\)</span>, and take some non-identity element <span class="math inline">\(x\in G\)</span>. Either <span class="math inline">\(x\)</span> will have order which is a multiple of <span class="math inline">\(p\)</span> (this case is nice), or we will have to pass to a quotient, apply our induction hypothesis, and pull back an element from the quotient.</p>
+<p>In our first case, assume <span class="math inline">\(p \operatorname{\big|}|x|\)</span>. Then <span class="math inline">\(|x|=pn\)</span>, so <span class="math inline">\(x^n \in G\)</span> has order <span class="math inline">\(p\)</span> by our lemma.</p>
+<p>Otherwise, assume <span class="math inline">\(p \nmid |x|\)</span>, and let <span class="math inline">\(N=\left\langle x\right\rangle\)</span>. Since <span class="math inline">\(G\)</span> is abelian, <span class="math inline">\(N\)</span> is normal (all subgroups are normal in an abelian group), so we can consider the quotient <span class="math inline">\(G/N\)</span>. If we write <span class="math inline">\(|G|=mp\)</span>, then <span class="math display">\[|G/N| = \frac{mp}{|N|}.\]</span> Since <span class="math inline">\(p\nmid |x|\)</span>, we will still have <span class="math inline">\(p\operatorname{\big|}|G/N|\)</span>. Since <span class="math inline">\(x\)</span> is not the identity, <span class="math inline">\(G/N\)</span> is strictly smaller in size for <span class="math inline">\(G\)</span>.</p>
+<p>Thus, we can apply the induction hypothesis and get an element <span class="math inline">\(\overline{y} \in G/N\)</span> of order <span class="math inline">\(p\)</span>. Choose a preimage <span class="math inline">\(y\in G\)</span>. We now argue that <span class="math inline">\(p \operatorname{\big|}|y|\)</span>. We know <span class="math inline">\(\left\langle y^p\right\rangle &lt; \left\langle y\right\rangle\)</span> because <span class="math inline">\(y^p \in \left\langle y\right\rangle\)</span>, but <span class="math inline">\(\left\langle y^p\right\rangle\neq \left\langle y\right\rangle\)</span> because <span class="math inline">\(y^p \in N\)</span> (i.e., <span class="math inline">\(\overline{y^p} = 1\)</span>) but <span class="math inline">\(y\not\in N\)</span>. Therefore, <span class="math inline">\(|y^p|\)</span> strictly divides <span class="math inline">\(|y|\)</span>, so <span class="math display">\[\frac{|y|}{\gcd(|y|,p)} \neq |y|,\]</span> so <span class="math inline">\(\gcd(|y|,p)\neq 1\)</span>, so <span class="math inline">\(p\operatorname{\big|}|y|\)</span>. This puts us back in the first case, so always have an element of order <span class="math inline">\(p\)</span>. ◻</p>
+</div>
+<div class="proof">
+<p><em>Proof of Sylow Theorem 1.</em> We prove the theorem by induction on the order of <span class="math inline">\(G\)</span>. For our base case, if <span class="math inline">\(|G|=1\)</span>, then <span class="math inline">\(G\)</span> itself is a Sylow <span class="math inline">\(p\)</span>-subgroup.</p>
+<p>Now, assume <span class="math inline">\(G\)</span> has order <span class="math inline">\(mp^\alpha\)</span> (such that <span class="math inline">\(p\nmid m\)</span>).</p>
+<p>In order to apply strategy 1, we would like to find a normal subgroup of order <span class="math inline">\(p\)</span> so that when we pull back a Sylow <span class="math inline">\(p\)</span>-subgroup, we would already be done. To “find” such a subgroup, we’ll try looking in the center. We consider two cases: <span class="math inline">\(p \operatorname{\big|}|Z(G)|\)</span> and <span class="math inline">\(p \nmid |Z(G)|\)</span>.</p>
+<p><strong>Case 1.</strong> <span class="math inline">\(p\operatorname{\big|}|Z(G)|\)</span>. By our lemma, there is then an element <span class="math inline">\(x\in Z(G)\)</span> of order <span class="math inline">\(p\)</span>, and because <span class="math inline">\(x\)</span> is in the center, <span class="math inline">\(N=\left\langle x\right\rangle\)</span> is a normal subgroup. Then, <span class="math inline">\(G/N\)</span> is a group of order <span class="math inline">\(mp^{\alpha-1}\)</span>. By induction <span class="math inline">\(G/N\)</span> has a Sylow <span class="math inline">\(p\)</span>-subgroup <span class="math inline">\(\overline{P}\)</span>, which has preimage <span class="math inline">\(P\)</span> under projection. Then, <span class="math inline">\(P/N = \overline{P}\)</span>, so <span class="math inline">\(P\)</span> has order <span class="math inline">\(p^{\alpha-1}\cdot p = p^\alpha\)</span>. Thus, <span class="math inline">\(P\)</span> is a Sylow <span class="math inline">\(p\)</span>-subgroup of <span class="math inline">\(G\)</span>.</p>
+<p><strong>Case 2.</strong> <span class="math inline">\(p\nmid |Z(G)|\)</span>. Letting <span class="math inline">\(g_1,\dots,g_r\)</span> be representatives of the non-central conjugacy classes, we have by rearranging the class equation <span class="math display">\[|G| - \sum_{i=1}^r [G: C_G(g_i)] =  |Z(G)|.\]</span> We then cannot have <span class="math inline">\(p\operatorname{\big|}|G|\)</span> and <span class="math inline">\(p\operatorname{\big|}[G: C_G(g_i)]\)</span> for all <span class="math inline">\(i=1,\dots,r\)</span> because this would imply <span class="math inline">\(p\operatorname{\big|}|Z(G)|\)</span>. Thus, either <span class="math inline">\(p\nmid |G|\)</span> and the trivial subgroup is a normal subgroup, or for some <span class="math inline">\(i\)</span>, <span class="math inline">\(p\nmid [G:C_G(g_i)]\)</span>. Then, <span class="math display">\[[G:C_G(g_i)] \cdot |C_G(g_i)| = mp^\alpha,\]</span> so <span class="math inline">\(p^\alpha \operatorname{\big|}|C_G(g_i)|\)</span>. Additionally, <span class="math inline">\(|C_G(g_i)| &lt; |G|\)</span> because <span class="math inline">\(g_i\not\in Z(G)\)</span>, so some element of <span class="math inline">\(G\)</span> does not commute with <span class="math inline">\(g_i\)</span> and is not in <span class="math inline">\(C_G(g_i)\)</span>. Therefore, we can apply our induction hypothesis to get a Sylow <span class="math inline">\(p\)</span>-subgroup <span class="math inline">\(P\)</span> of <span class="math inline">\(C_G(g_i)\)</span> which has order <span class="math inline">\(p^\alpha\)</span>. Then, <span class="math inline">\(P\)</span> is a Sylow <span class="math inline">\(p\)</span>-subgroup of <span class="math inline">\(G\)</span> itself. ◻</p>
+</div>
+<h1 id="acting-on-the-sylow-subgroups">Acting on the Sylow Subgroups</h1>
+<p>Now that we have established the existence of Sylow <span class="math inline">\(p\)</span>-subgroups, we want to deduce the remaining Sylow theorems by studying group actions on Sylow <span class="math inline">\(p\)</span>-subgroups. First, we define some notation.</p>
+<div class="definition">
+<p><strong>Definition 4</strong>.  Let <span class="math inline">\(p\)</span> be a prime, <span class="math inline">\(G\)</span> a group. We denote <span class="math inline">\(\mathrm{Syl}_p(G)\)</span> to be the collection of Sylow <span class="math inline">\(p\)</span>-subgroups, and <span class="math inline">\(n_p=|\mathrm{Syl}_p(G)|\)</span> the number of Sylow <span class="math inline">\(p\)</span>-subgroups.</p>
+</div>
+<div class="proposition">
+<p><strong>Proposition 2</strong>.  For any subgroup <span class="math inline">\(H\leq G\)</span>, <span class="math inline">\(H\)</span> acts on <span class="math inline">\(\mathrm{Syl}_p(G)\)</span> by conjugation. The stabilizer of <span class="math inline">\(P\in \mathrm{Syl}_p(G)\)</span> under this action is <span class="math inline">\(N_H(P)=N_G(P)\cap H\)</span>.</p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Assume <span class="math inline">\(G\)</span> has order <span class="math inline">\(mp^\alpha\)</span>, <span class="math inline">\(p\nmid m\)</span>. Since conjugation is a group automorphism, for any <span class="math inline">\(h\in H\)</span> and <span class="math inline">\(P\in \mathrm{Syl}_p(G)\)</span>, we know the image of conjugation <span class="math inline">\(hPh^{-1}\)</span> is still a subgroup of <span class="math inline">\(G\)</span>, and it has order <span class="math inline">\(p^\alpha\)</span> because conjugation is an isomorphism (in particular bijection).</p>
+<p>Thus, conjugation maps Sylow <span class="math inline">\(p\)</span>-subgroups to Sylow <span class="math inline">\(p\)</span>-subgroups, so the action is well-defined. It is not difficult to then show conjugation satisfies the axioms for an action, and that the stabilizers are the appropriate normalizers. ◻</p>
+</div>
+<div class="theorem">
+<p><strong>Theorem 3</strong> (Sylow Theorems 2, 3).  Let <span class="math inline">\(p\)</span> be a prime, and let <span class="math inline">\(G\)</span> be a group of order <span class="math inline">\(mp^\alpha\)</span>, where <span class="math inline">\(p\nmid m\)</span>. Then,</p>
+<ol>
+<li><p>If <span class="math inline">\(P\)</span> is a Sylow <span class="math inline">\(p\)</span>-subgroup of <span class="math inline">\(G\)</span> and <span class="math inline">\(Q\)</span> is any <span class="math inline">\(p\)</span>-subgroup of <span class="math inline">\(G\)</span>, then there exists <span class="math inline">\(g\in G\)</span> such that <span class="math inline">\(Q\leq gPg^{-1}\)</span>.</p></li>
+<li><p><span class="math inline">\(n_p \equiv 1 \pmod{p}\)</span> and <span class="math inline">\(n_p \operatorname{\big|}m\)</span>.</p></li>
+</ol>
+<p>(These statements are taken from Dummit and Foote).</p>
+</div>
+<div class="remark">
+<p><strong>Remark 3</strong>.  The second Sylow theorem has two important corollaries: we can extend <span class="math inline">\(p\)</span>-subgroups to Sylow <span class="math inline">\(p\)</span>-subgroups, and the conjugation action on <span class="math inline">\(\mathrm{Syl}_p(G)\)</span> is transitive. Both of these facts are extremely useful for deducing information about the structure of a group given its order.</p>
+</div>
+<p>Before proving Sylow Theorems 2 and 3, we prove the following lemma that will help us count the size of orbits under the conjugation action of <span class="math inline">\(\mathrm{Syl}_p(G)\)</span> by a <span class="math inline">\(p\)</span>-subgroup <span class="math inline">\(Q\)</span>.</p>
+<div class="lemma">
+<p><strong>Lemma 3</strong>.  Let <span class="math inline">\(P\in \mathrm{Syl}_p(G)\)</span>, and <span class="math inline">\(Q\)</span> a <span class="math inline">\(p\)</span>-subgroup. Then, <span class="math display">\[Q\cap N_G(P) = Q\cap P.\]</span></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> We know <span class="math inline">\(Q\cap P \subseteq Q\cap N_G(P)\)</span> because <span class="math inline">\(P\leq N_G(P)\)</span>. Let <span class="math inline">\(H=Q\cap P\)</span>. We now need to show <span class="math inline">\(H \subseteq P\)</span> (since we already know <span class="math inline">\(H\subseteq Q\)</span>).</p>
+<p>Our strategy is to show <span class="math inline">\(PH=P\)</span>, since normalizers are the thing that lets us talk about <span class="math inline">\(PH\)</span> as a subgroup.</p>
+<p>First, <span class="math inline">\(PH\)</span> is a subgroup of <span class="math inline">\(G\)</span> because <span class="math inline">\(H\leq N_G(P)\)</span>. We know <span class="math inline">\(P\leq PH\)</span>, so <span class="math inline">\(p^\alpha \operatorname{\big|}|PH|\)</span>. We want to argue that <span class="math inline">\(PH\)</span> is a <span class="math inline">\(p\)</span>-group, so <span class="math inline">\(|PH| \operatorname{\big|}p^\alpha\)</span>. We know <span class="math display">\[|PH| = \frac{|P||H|}{|P\cap H|},\]</span> so <span class="math inline">\(|PH|\)</span> is a power of <span class="math inline">\(p\)</span>, since <span class="math inline">\(P,H,P\cap H\)</span> are all <span class="math inline">\(p\)</span>-subgroups (by Lagrange’s theorem). Thus, <span class="math inline">\(|PH|=p^\alpha\)</span> and contains <span class="math inline">\(P\)</span>, which has order <span class="math inline">\(p^\alpha\)</span>. Thus, <span class="math inline">\(PH=P\)</span>, and <span class="math inline">\(H\leq P\)</span>. ◻</p>
+</div>
+<br>
+<div class="proof">
+<p><em>Proof of Sylow Theorems 2,3.</em> We break the proof into a few sections.</p>
+<p><strong>(a) Action by Arbitrary <span class="math inline">\(p\)</span>-subgroup <span class="math inline">\(Q\)</span>.</strong> We first prove a general lemma about the action of <span class="math inline">\(p\)</span>-subgroups on <span class="math inline">\(\mathrm{Syl}_p(G)\)</span> by conjugation (as in Proposition 2). By Sylow theorem 1, there exists a Sylow <span class="math inline">\(p\)</span>-subgroup <span class="math inline">\(P\)</span>. We consider the orbit of <span class="math inline">\(P\)</span> under conjugation by <span class="math inline">\(G\)</span>, which we denote <span class="math display">\[\mathcal{S}= \{P_1,\dots, P_r\}\]</span> (We do not yet know that <span class="math inline">\(r=n_p\)</span>, i.e. that the conjugation action is transitive. We will establish this later).</p>
+<p>Then, let <span class="math inline">\(Q\)</span> be any <span class="math inline">\(p\)</span>-subgroup of <span class="math inline">\(G\)</span>. This subgroup acts on <span class="math inline">\(\mathcal{S}\subseteq \mathrm{Syl}_p(G)\)</span> by conjugation, but when conjugating by elements of <span class="math inline">\(Q\)</span> we might have smaller orbits. We can write <span class="math inline">\(\mathcal{S}\)</span> as the disjoint union of <span class="math inline">\(Q\)</span>-orbits, which we denote <span class="math display">\[\mathcal{S}= \mathcal{O}_1 \sqcup \cdots \sqcup \mathcal{O}_s.\]</span> In particular, <span class="math inline">\(r=|\mathcal{O}_1| + \dots + |\mathcal{O}_s|\)</span>. Renumber the elements of <span class="math inline">\(\mathcal{S}\)</span> (the elements <span class="math inline">\(P_1,\dots,P_r\)</span>) so that the first <span class="math inline">\(i=1,\dots,s\)</span> represent the <span class="math inline">\(Q\)</span>-orbits <span class="math inline">\(\mathcal{O}_i\)</span>. Then, by the Orbit Stabilizer theorem <span class="math display">\[|\mathcal{O}_i| = [Q: N_Q(P_i)].\]</span> We know <span class="math inline">\(N_Q(P_i)=Q\cap N_G(P_i)\)</span>, and by our lemma <span class="math inline">\(Q\cap N_G(P_i) = Q\cap P_i\)</span>. Thus, <span class="math display">\[|\mathcal{O}_i| = [Q: Q\cap P_i]. \tag{Orbit Size}\]</span></p>
+<p><strong>(b) Modular Relation.</strong> We now prove that <span class="math inline">\(r\equiv 1 \pmod{p}\)</span>, which will allow us to establish Sylow Theorems 2 and 3. Choose <span class="math inline">\(Q=P_1\)</span>, so that <span class="math inline">\(|\mathcal{O}_1|=1\)</span>. We now show that all of the other <span class="math inline">\(|\mathcal{O}_i|\)</span> has a factor of <span class="math inline">\(p\)</span>. We have by (Orbit Size) that <span class="math display">\[|\mathcal{O}_i| = [P_1 : P_1 \cap P_i],\]</span> so for <span class="math inline">\(i\neq 1\)</span>, we have <span class="math inline">\(P_1\neq P_i\)</span>, so <span class="math inline">\(|P_1\cap P_i|\)</span> must be missing at least one factor of <span class="math inline">\(p\)</span>, so <span class="math display">\[\frac{p^\alpha}{p^{\alpha-1}} \operatorname{\big|}[P_1 : P_1 \cap P_i].\]</span> Thus, <span class="math display">\[\begin{aligned}
+        r &amp;\equiv |\mathcal{O}_1| + \sum_{i=2}^s |\mathcal{O}_i| \pmod{p}\\
+        &amp;\equiv 1 + \sum_{i=2}^s 0 \pmod{p},
+    \end{aligned}\]</span> which establishes <span class="math inline">\(r\equiv 1 \pmod{p}\)</span>.</p>
+<p><strong>(c) Sylow Theorem 2.</strong> Let <span class="math inline">\(Q\)</span> be any <span class="math inline">\(p\)</span>-subgroup of <span class="math inline">\(G\)</span>. Suppose, to the contrary, that <span class="math inline">\(Q\not\in P_i\)</span> for any <span class="math inline">\(P_i\)</span>. We will try to contradict our new-found modular relation. By our assumption, <span class="math inline">\(Q\cap P_i\)</span> (a <span class="math inline">\(p\)</span>-subgroup) is strictly smaller than <span class="math inline">\(Q\)</span>, so <span class="math inline">\([Q: Q\cap P_i]\)</span> has a factor of <span class="math inline">\(p\)</span>. By (Orbit Size), we then have <span class="math inline">\(p \operatorname{\big|}|\mathcal{O}_i|\)</span> for each <span class="math inline">\(i\)</span>, which implies <span class="math inline">\(r\equiv 0 \pmod{0}\)</span>. This is a contradiction, so <span class="math inline">\(Q\)</span> is in some <span class="math inline">\(P_i\)</span>, which is a conjugation of our original fixed Sylow <span class="math inline">\(p\)</span>-subgroup <span class="math inline">\(P\)</span>. Thus, <span class="math display">\[Q \leq gPg^{-1}\]</span> for some <span class="math inline">\(g\)</span>.</p>
+<p><strong>(d) Sylow Theorem 3.</strong> First, we use Sylow Theorem 2 to show <span class="math inline">\(G\)</span> acting by conjugation is transitive. Let <span class="math inline">\(Q\)</span> be a Sylow <span class="math inline">\(p\)</span>-subgroup, which we wish to show conjugation to <span class="math inline">\(P\)</span>. By Sylow Theorem 2, <span class="math inline">\(Q\leq gPg^{-1}\)</span>. Then, <span class="math inline">\(|Q|=|gPg^{-1}|=p^\alpha\)</span>, so <span class="math inline">\(Q=gPg^{-1}\)</span>. Thus, conjugation is transitive.</p>
+<p>Therefore, <span class="math inline">\(r=n_p\)</span>, since <span class="math inline">\(r=|\mathcal{S}|\)</span> is the order of the orbit of <span class="math inline">\(P\)</span>, which is all of <span class="math inline">\(\mathrm{Syl}_p(G)\)</span>. This tells us <span class="math display">\[n_p \equiv 1 \pmod{p}.\]</span></p>
+<p>Next, <span class="math inline">\(n_p \operatorname{\big|}m\)</span> because by the Orbit Stabilizer theorem applied to the conjugation action of <span class="math inline">\(G\)</span> on <span class="math inline">\(\mathrm{Syl}_p(G)\)</span>, we get <span class="math display">\[n_p = [G: N_G(P)] = \frac{|G|}{|N_G(P)|},\]</span> and <span class="math inline">\(P\leq N_G(P)\)</span> and <span class="math inline">\(|P|=p^\alpha\)</span>, so <span class="math inline">\(|G|/|N_G(P)|\)</span> is a factor of <span class="math inline">\(m\)</span>. ◻</p>
+</div>
+
+            </div>
+    </section>
+
+<footer class="footer">
+    <div class="content has-text-centered">
+        <p>
+            <label class="checkbox">
+            <input type="checkbox" id="dark-mode">
+                Dark Mode
+                <span class="icon is-small"><i class="fas fa-moon" aria-hidden="true"></i></span>
+            </label>
+        </p>
+        <p>
+            © 2023 Joseph Sullivan
+            <a href="https://github.com/JosephSullivan256"><span class="icon is-small"><i class="fab fa-github" aria-hidden="true"></i></span></a>&nbsp;
+            <a href="mailto: partiallyordered@gmail.com"><span class="icon is-small"><i class="fas fa-envelope" aria-hidden="true"></i></span></a>
+        </p>
+    </div>
+</footer>
+</body>
+</html>

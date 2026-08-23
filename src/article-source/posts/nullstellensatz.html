@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        let darkmode = false;
+        if(localStorage.getItem('dark-mode')){
+            darkmode = localStorage.getItem('dark-mode')=='enabled';
+        }
+
+        if(darkmode) {
+            document.documentElement.classList.toggle("dark-mode")
+        }
+
+        window.addEventListener("load", ()=>{
+            let darkcheckbox = document.getElementById("dark-mode");
+            darkcheckbox.checked = darkmode;
+
+            darkcheckbox.addEventListener("change", ()=>{
+                darkmode = !darkmode;
+                if(darkmode) {
+                    localStorage.setItem('dark-mode', 'enabled')
+                } else {
+                    localStorage.setItem('dark-mode', 'disabled')
+                }
+
+                document.documentElement.classList.toggle("dark-mode");
+            });
+        })
+
+    </script>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/mystyles.css">
+    <link rel="stylesheet" href="/static/node_modules/%40fortawesome/fontawesome-free/css/all.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="author" content="Joseph Sullivan">
+<title>Nullstellensatz</title>
+<style>
+header {
+  margin-bottom: 4em;
+  text-align: center;
+}
+hr {
+  background-color: #1a1a1a;
+  border: none;
+  height: 1px;
+  margin: 1em 0
+}
+#TOC {
+	line-height: 100%;
+}
+.lemma, .proposition, .definition, .remark, .theorem, .example {
+    border-style: solid;
+    border-width: 2px;
+    margin: 10px 0px;
+    padding: 0px 4px;
+}
+
+</style>
+<script>
+	window.MathJax = {
+		tex: {
+			tags: "ams",
+			inlineMath: [ ["\\\(","\\\)"] ],
+			displayMath: [ ['$$','$$'],["\\[","\\]"] ],
+			processEscapes: true,
+			processEnvironments: true,
+			packages: ['base', 'color', 'ams', 'physics']
+		},
+		loader: {
+			load: ['[tex]/color', '[tex]/ams', '[tex]/physics']
+		}
+	};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+
+
+</head>
+<body>
+
+    
+<section class="hero">
+    <div class="hero-body">
+        <nav class="breadcrumb is-centered is-medium" aria-label="breadcrumbs">
+            <ul>
+                
+                    
+                        <li><a href="/">index</a></li>
+                    
+                
+                    
+                        <li><a href="/posts">posts</a></li>
+                    
+                
+                    
+                        <li class="is-active"><a href="#">Nullstellensatz</a></li>
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</section>
+
+    <section class="section post">
+            <div class="content serif reading-margins">
+                <header id="title-block-header">
+<h1 class="title">Nullstellensatz</h1>
+<p class="author">Joseph Sullivan</p>
+<p class="date">July 2022</p>
+</header>
+<h1 id="introduction">Introduction</h1>
+<p>These notes are a paraphrase/clarification/obfuscation of Gathmann’s
+notes on Commutative Algebra, covering most of the essentials to proving
+Hilbert’s Nullstellensatz.</p>
+<div class="defn">
+<p><strong>Definition 1</strong>. Let <span
+class="math inline">\(K\)</span> be a field. We define</p>
+<ul>
+<li><p><span class="math inline">\(\mathbb{A}_K^n = \mathbb{A}^n =
+K^n\)</span>.</p></li>
+<li><p><span class="math inline">\(I(a) = (x_1-a_1,\dots,x_n-a_n)
+\trianglelefteq K[x_1,\dots,x_n]\)</span>,</p></li>
+<li><p>For <span class="math inline">\(S\subseteq
+K[x_1,\dots,x_n]\)</span>, <span class="math inline">\(V(S) = \{a\in
+\mathbb{A}^n \mid f(a)=0 \text{ for all } f\in S\}\)</span></p></li>
+<li><p>For <span class="math inline">\(X\subseteq K^n\)</span>, <span
+class="math inline">\(I(X) = \{f\in K[x_1,\dots,x_n] \mid f(a)=0 \text{
+for all } a\in X\}\)</span></p></li>
+</ul>
+<p>In words, <span class="math inline">\(V(S)\)</span> is the set of
+points where all of <span class="math inline">\(S\)</span> is zero, and
+<span class="math inline">\(I(X)\)</span> are the functions that are
+zero on at least <span class="math inline">\(X\)</span>.</p>
+</div>
+<h1 id="cayley-hamilton">Cayley-Hamilton</h1>
+<div id="cayham" class="thm">
+<p><strong>Theorem 2</strong> (Cayley-Hamilton). <em>Let <span
+class="math inline">\(M\)</span> be a finitely generated <span
+class="math inline">\(R\)</span>-module, <span
+class="math inline">\(I\)</span> an ideal of <span
+class="math inline">\(R\)</span>, and <span
+class="math inline">\(\varphi: M\to M\)</span> an <span
+class="math inline">\(R\)</span>-module homomorphism with <span
+class="math inline">\(\varphi(M)\subseteq IM\)</span>. Then there is a
+monic polynomial <span class="math display">\[\chi = x^n + a_{n-1}
+x^{n-1} + \cdots + a_0 \in R[x]\]</span> with <span
+class="math inline">\(a_0,\dots,a_{n-1}\in I\)</span> and <span
+class="math display">\[\chi(\varphi) :=\varphi^n + a_{n-1}\varphi^{n-1}
++ \cdots + a_0 \mathrm{id}= 0 \quad \in \mathrm{Hom}_R(M,M)\]</span>
+where <span class="math inline">\(\varphi^i\)</span> denotes the <span
+class="math inline">\(i\)</span>-fold composition of <span
+class="math inline">\(\varphi\)</span> with itself.</em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Let <span
+class="math inline">\(m_1,\dots,m_n\)</span> be generators of <span
+class="math inline">\(M\)</span>. We can then represent <span
+class="math inline">\(\varphi\)</span> in this generating set, i.e.,
+write <span class="math display">\[\varphi(m_i) = \sum_{j=1}^n a_{i, j}
+m_i\]</span> for some <span class="math inline">\(a_{i,j} \in
+I\)</span>, so we can write <span class="math display">\[\begin{bmatrix}
+            \varphi(m_1)\\ \vdots \\ \varphi(m_n)
+        \end{bmatrix} =
+        \begin{bmatrix}
+            a_{1,1} &amp; \cdots &amp; a_{1,n}\\
+            \vdots &amp; \ddots &amp; \vdots\\
+            a_{n,1} &amp; \cdots &amp; a_{n,n}
+        \end{bmatrix}
+        \begin{bmatrix}
+            m_1\\ \vdots \\ m_n
+        \end{bmatrix}.\]</span> We denote this matrix by <span
+class="math inline">\(A \in M_n(R)\)</span>, and we denote our column of
+<span class="math inline">\(m_i\)</span> by <span
+class="math inline">\(\mathbf{m} \in M^n\)</span>. Upgrading our module
+<span class="math inline">\(M\)</span> to an <span
+class="math inline">\(R[x]\)</span>-module by defining <span
+class="math inline">\(x\cdot m = \varphi(m)\)</span>, we also get <span
+class="math display">\[\begin{bmatrix}
+            \varphi(m_1)\\ \vdots \\ \varphi(m_n)
+        \end{bmatrix} =
+        \begin{bmatrix}
+            x &amp;  &amp; 0 \\
+             &amp; \ddots &amp; \\
+            0 &amp;  &amp; x
+        \end{bmatrix}
+        \begin{bmatrix}
+            m_1\\ \vdots \\ m_n
+        \end{bmatrix} = xI_n \mathbf{m}\]</span> Thus, we have <span
+class="math display">\[(xI_n - A)\mathbf{m} = 0.\]</span> Multiplying by
+the adjugate matrix in <span class="math inline">\(M_n(R[x])\)</span>,
+we get <span class="math display">\[\det(xI_n - A)\mathbf{m} =
+0.\]</span> Expanding the determinant, we get that <span
+class="math inline">\(\det(xI_n - A)\)</span> is a monic polynomial in
+<span class="math inline">\(R[x]\)</span> with non-leading coefficients
+in <span class="math inline">\(\left\langle a_{i,j}\right\rangle
+\subseteq I\)</span>. Then, since it annihilates <span
+class="math inline">\(m_1,\dots,m_n\)</span> which are generators for
+<span class="math inline">\(M\)</span>, so it annihilates all of <span
+class="math inline">\(M\)</span>. Thus, <span class="math inline">\(\chi
+:= \det(xI_n - A)\)</span> is the zero homomorphism in <span
+class="math inline">\(\mathrm{Hom}_R(M,M)\)</span>. ◻</p>
+</div>
+<div class="rmk">
+<p><em>Remark 3</em>. If we take <span
+class="math inline">\(R=K\)</span> a field and <span
+class="math inline">\(I=K\)</span>, <span
+class="math inline">\(M=V\)</span> a finite dimensional <span
+class="math inline">\(K\)</span> vector space, and <span
+class="math inline">\(m_i=e_i\)</span> a <span
+class="math inline">\(K\)</span>-basis for <span
+class="math inline">\(V\)</span>—then we get the classical
+Cayley-Hamilton with <span class="math inline">\(\chi =
+p_\varphi(\lambda) = \det(\lambda I - \varphi)\)</span>.</p>
+</div>
+<h1 id="localization">Localization</h1>
+<div id="getpoint" class="prop">
+<p><strong>Proposition 4</strong>. <em>Let <span
+class="math inline">\(S\)</span> be a multiplicative subset in a ring
+<span class="math inline">\(R\)</span>, and let <span
+class="math inline">\(I\trianglelefteq R\)</span> be an ideal with <span
+class="math inline">\(I\cap S = \emptyset\)</span>. Then, there exists a
+prime ideal <span class="math inline">\(P\)</span> of <span
+class="math inline">\(R\)</span> containing <span
+class="math inline">\(I\)</span> with <span class="math inline">\(P\cap
+S = \emptyset\)</span> and <span class="math inline">\(S^{-1} P\)</span>
+is a maximal ideal in <span class="math inline">\(S^{-1}
+R\)</span>.</em></p>
+</div>
+<p>When we take <span
+class="math inline">\(S=\{1,f,f^2,\dots\}\)</span>, we can interpret
+this theorem geometrically in scheme language. It tells us in particular
+that <span class="math inline">\(D(f)\cap V(I)\)</span> is nonempty.</p>
+<div class="proof">
+<p><em>Proof.</em> The ideal <span class="math inline">\(S^{-1} I
+\trianglelefteq S^{-1} R\)</span> is proper because <span
+class="math inline">\(I\cap S = \emptyset\)</span>. In more detail,
+otherwise we would have <span class="math inline">\(1\in S^{-1}
+I\)</span>, so there exists <span class="math inline">\(a\in I, s\in
+S\)</span> so that <span class="math inline">\(\frac{a}{s}=1\)</span>.
+Then, this implies there exists <span class="math inline">\(v\in
+S\)</span> such that <span class="math inline">\(va=vs\)</span>.
+However, this element would be in <span class="math inline">\(I\cap
+S\)</span>.</p>
+<p>Then, since <span class="math inline">\(S^{-1} I\)</span> is proper,
+it can be extended to a maximal ideal in <span
+class="math inline">\(S^{-1} R\)</span>. The contraction <span
+class="math inline">\(P\)</span> will then be a prime (not necessarily
+maximal) ideal disjoint from <span
+class="math inline">\(S\)</span>. ◻</p>
+</div>
+<h1 id="integrality">Integrality</h1>
+<div class="defn">
+<p><strong>Definition 5</strong> (Integral and finite ring extensions).
+</p>
+<ul>
+<li><p>If <span class="math inline">\(R\subseteq R&#39;\)</span>, we
+call <span class="math inline">\(R&#39;\)</span> an <strong>extension
+ring</strong> of <span class="math inline">\(R\)</span>, and we call
+<span class="math inline">\(R\subseteq R&#39;\)</span> a ring
+extension.</p></li>
+<li><p>An element <span class="math inline">\(a\in R&#39;\supseteq
+R\)</span> is called <strong>integral</strong> over <span
+class="math inline">\(R\)</span> if there is a monic polynomial <span
+class="math inline">\(f\in R[x]\)</span> with <span
+class="math inline">\(f(a)=0\)</span>. We say <span
+class="math inline">\(R&#39;\)</span> is <strong>integral</strong> over
+<span class="math inline">\(R\)</span> if every elements of <span
+class="math inline">\(R&#39;\)</span> is integral over <span
+class="math inline">\(R\)</span>.</p></li>
+<li><p>A ring extension <span class="math inline">\(R\subseteq
+R&#39;\)</span> is called <strong>finite</strong> if <span
+class="math inline">\(R&#39;\)</span> is finitely generated as an <span
+class="math inline">\(R\)</span>-module.</p></li>
+</ul>
+</div>
+<div class="rmk">
+<p><em>Remark 6</em>. For integrality, we require the existence of a
+<em>monic</em> polynomial because for purposes of finite generation we
+want to be able to write <span class="math inline">\(a^n\)</span> in
+terms of lower powers of <span class="math inline">\(a\)</span> for
+sufficiently large <span class="math inline">\(n\)</span>. In a field,
+we can always make polynomials monic to accomplish this, but for rings
+we need the monic condition.</p>
+</div>
+<div id="integral" class="prop">
+<p><strong>Proposition 7</strong>. <em>An extension ring <span
+class="math inline">\(R&#39;\)</span> is finite over <span
+class="math inline">\(R\)</span> if and only if <span
+class="math inline">\(R&#39;=R[a_1,\dots,a_n]\)</span> for integral
+elements <span class="math inline">\(a_1,\dots, a_n\in R&#39;\)</span>
+over <span class="math inline">\(R\)</span>.</em></p>
+<p><em>Moreover, in this case the whole ring extension <span
+class="math inline">\(R\subseteq R&#39;\)</span> is integral.</em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Assume <span class="math inline">\(R&#39; =
+\left\langle a_1,\dots,a_n\right\rangle\)</span> (is finitely generated)
+as an <span class="math inline">\(R\)</span>-module. In particular,
+<span class="math inline">\(R&#39;=R[a_1,\dots,a_n]\)</span>. We now
+just need to show that <span class="math inline">\(R&#39;\)</span> is
+integral over <span class="math inline">\(R\)</span> to get the
+“moreover” and that <span class="math inline">\(a_1,\dots,a_n\)</span>
+are integral over <span class="math inline">\(R\)</span>. Let <span
+class="math inline">\(a\in R&#39;\)</span>. Applying Cayley-Hamltion
+theorem <a href="#cayham" data-reference-type="ref"
+data-reference="cayham">2</a> to the <span
+class="math inline">\(R\)</span>-module homomorphism <span
+class="math display">\[\begin{aligned}
+        m_a: R&#39; &amp;\longrightarrow R&#39;\\
+        x &amp;\longmapsto ax
+    
+\end{aligned}\]</span> to get a monic polynomial equation <span
+class="math display">\[m_a^k + c_{k-1} m_a^{k-1} + \cdots + c_0 =
+0,\]</span> for some <span class="math inline">\(c_0,\dots,c_{k-1}\in
+R\)</span>, which applied to <span class="math inline">\(1\in R\)</span>
+gives us <span class="math display">\[a^k + c_{k-1} a^{k-1} + \cdots +
+c_0 = 0.\]</span> Thus, <span class="math inline">\(a\)</span> is
+integral over <span class="math inline">\(R\)</span>.</p>
+<p>Now, assume <span class="math inline">\(R&#39; =
+R[a_1,\dots,a_n]\)</span> with <span
+class="math inline">\(a_1,\dots,a_n\)</span> integral over <span
+class="math inline">\(R\)</span>. Thus, each <span
+class="math inline">\(a_i\)</span> satisfies a monic relation of degree
+<span class="math inline">\(d_i\)</span>. Therefore, we can write every
+element of <span class="math inline">\(R&#39;\)</span> as a sum <span
+class="math display">\[\sum_{0\leq k_i \leq d_i} c_{k_1,\dots,k_n}
+a_1^{k_1}\cdots a_n^{k_n}\]</span> since the homomorphism <span
+class="math inline">\(R[x_1,\dots,x_n]\to R[a_1,\dots,a_n]\)</span> is
+surjective and we can rewrite any higher degree terms in terms of lower
+degrees using our monic relation. Thus, <span
+class="math inline">\(R&#39;=\left\langle a_1^{k_1}\cdots
+a_n^{k_n}\right\rangle\)</span> for <span
+class="math inline">\(k_i=0,\dots,n\)</span> as an <span
+class="math inline">\(R\)</span>-module. Therefore, <span
+class="math inline">\(R&#39;\)</span> is a finitely generated module
+over <span class="math inline">\(R\)</span>. ◻</p>
+</div>
+<div id="transint" class="lem">
+<p><strong>Lemma 8</strong>. <em>Let <span
+class="math inline">\(R\subseteq R&#39; \subseteq R&#39;&#39;\)</span>
+be ring extensions.</em></p>
+<ol type="a">
+<li><p><em>If <span class="math inline">\(R\subseteq R&#39;\)</span> and
+<span class="math inline">\(R&#39;\subseteq R&#39;&#39;\)</span> are
+finite, then so is <span class="math inline">\(R\subseteq
+R&#39;&#39;\)</span>.</em></p></li>
+<li><p><em>If <span class="math inline">\(R\subseteq R&#39;\)</span> and
+<span class="math inline">\(R&#39;\subseteq R&#39;&#39;\)</span> are
+integral, then so is <span class="math inline">\(R\subseteq
+R&#39;&#39;\)</span>.</em></p></li>
+</ol>
+</div>
+<div class="proof">
+<p><em>Proof of (a)..</em> By proposition <a href="#integral"
+data-reference-type="ref" data-reference="integral">7</a>, we can write
+<span class="math inline">\(R&#39;=R[a_1,\dots,a_n]\)</span> and <span
+class="math inline">\(R&#39;&#39;=R&#39;[b_1,\dots,b_m]\)</span>. Then,
+we can write <span class="math inline">\(R&#39;&#39;=R[a_ib_j \mid
+i=1,\dots,n, j=1,\dots,m]\)</span>, so <span
+class="math inline">\(R&#39;&#39;\)</span> is finite over <span
+class="math inline">\(R\)</span>. ◻</p>
+</div>
+<div class="proof">
+<p><em>Proof of (b)..</em> Let <span class="math inline">\(a\in
+R&#39;&#39;\)</span>. Since <span
+class="math inline">\(R&#39;&#39;\)</span> is integral over <span
+class="math inline">\(R&#39;\)</span>, there exists monic polynomial
+<span class="math display">\[a^n + c_{n-1} a^{n-1} + \cdots + c_1 a^1 +
+c_0 = 0,\]</span> for <span class="math inline">\(c_0,\dots,c_{n-1} \in
+R&#39;\)</span>, so <span class="math display">\[a\in
+R[c_0,\dots,c_{n-1}].\]</span> Since <span
+class="math inline">\(R&#39;\)</span> is integral over <span
+class="math inline">\(R\)</span>, each of <span
+class="math inline">\(c_0,\dots,c_{n-1}\)</span> are integral over <span
+class="math inline">\(R\)</span>. Therefore, <span
+class="math inline">\(R[c_0,\dots,c_{n-1}]\)</span> is a finite
+extension of <span class="math inline">\(R\)</span>, so <span
+class="math inline">\(a\in R[c_0,\dots,c_{n-1}]\)</span> is integral
+over <span class="math inline">\(R\)</span>. Thus, <span
+class="math inline">\(R&#39;&#39;\)</span> is integral over <span
+class="math inline">\(R\)</span>. ◻</p>
+</div>
+<div id="intquot" class="lem">
+<p><strong>Lemma 9</strong>. <em>Let <span
+class="math inline">\(R\subseteq R&#39;\)</span> be an integral ring
+extension. If <span class="math inline">\(I\trianglelefteq
+R&#39;\)</span>, then <span class="math inline">\(R&#39;/I\)</span> is
+an integral ring extension of <span
+class="math inline">\(R/I\)</span>.</em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Let <span class="math inline">\(\overline{a}\in
+R&#39;\)</span>. Then, <span class="math inline">\(a\in R&#39;\)</span>
+satisfies some monic relation <span class="math display">\[a^n +
+c_{n-1}a^{n-1} + \cdots + c_1 a + c_0 = 0\]</span> for <span
+class="math inline">\(c_0,\dots,c_{n-1}\in R\)</span>, so <span
+class="math inline">\(\overline{a}\)</span> satisfies the relation <span
+class="math display">\[\overline{a}^n +
+\overline{c_{n-1}}\overline{a}^{n-1} + \cdots + \overline{c_1}
+\overline{a} + \overline{c_0} = 0\]</span> for <span
+class="math inline">\(\overline{c_0},\dots,\overline{c_{n-1}} \in
+R/(I\cap R)\)</span> (identified with subring of <span
+class="math inline">\(R&#39;/I\)</span>), so <span
+class="math inline">\(\overline{a}\)</span> is integral over <span
+class="math inline">\(R/(I\cap R)\)</span>. ◻</p>
+</div>
+<div id="lyingover" class="prop">
+<p><strong>Proposition 10</strong> (Lying Over). <em>Let <span
+class="math inline">\(R\subseteq R&#39;\)</span> be a ring extension,
+and <span class="math inline">\(P\trianglelefteq R\)</span>
+prime.</em></p>
+<ol type="a">
+<li><p><em>There is a prime ideal <span
+class="math inline">\(P&#39;\trianglelefteq R&#39;\)</span> with <span
+class="math inline">\(P&#39;\cap R = P\)</span> if and only if <span
+class="math inline">\(PR&#39; \cap R \subseteq P\)</span>.</em></p></li>
+<li><p><em>If <span class="math inline">\(R\subseteq R&#39;\)</span> is
+integral, then this is always the case.</em></p></li>
+</ol>
+<p><em>We say in this case that <span
+class="math inline">\(P&#39;\)</span> is lying over <span
+class="math inline">\(P\)</span>.</em></p>
+</div>
+<p>The condition in (a) is saying that the extension <span
+class="math inline">\(P^e\)</span> isn’t too large, i.e., that when we
+contract to get <span class="math inline">\(P^{ec}\)</span> we are
+bounded by <span class="math inline">\(P\)</span>. Geometrically, (b)
+says that the map <span class="math inline">\(\mathrm{Spec}R&#39; \to
+\mathrm{Spec}R\)</span> is surjective when <span
+class="math inline">\(R\subseteq R&#39;\)</span> is integral.</p>
+<div class="proof">
+<p><em>Proof of (a)..</em> Assume there exists <span
+class="math inline">\(P&#39; \trianglelefteq R&#39;\)</span> such that
+<span class="math inline">\(P&#39;\cap R = P\)</span>. Then, <span
+class="math display">\[PR&#39; \cap R = (P&#39;\cap R)R&#39; \cap R
+\subseteq P&#39;R&#39; \cap RR&#39; \cap R = P&#39; \cap R \cap R =
+P\]</span> (watch out that product and intersection need not commute
+exactly).</p>
+<p>Now, assume that <span class="math inline">\(PR&#39;\cap R \subseteq
+P\)</span>. We are looking for a prime ideal <span
+class="math inline">\(P&#39;\trianglelefteq R\)</span> containing <span
+class="math inline">\(PR&#39;\)</span> and not much more. By proposition
+<a href="#getpoint" data-reference-type="ref"
+data-reference="getpoint">4</a>, since for <span
+class="math inline">\(S=R\setminus P\)</span>, we have <span
+class="math display">\[PR&#39; \cap S = PR&#39;\cap R\setminus P =
+\emptyset,\]</span> there exists a prime ideal <span
+class="math inline">\(P&#39;\trianglelefteq R&#39;\)</span> containing
+<span class="math inline">\(PR&#39;\supseteq P\)</span> with <span
+class="math inline">\(P&#39; \cap S = \emptyset\)</span>. This means
+<span class="math inline">\(P&#39;\cap (R\setminus P) =
+\emptyset\)</span>, and since <span class="math inline">\(P\subseteq
+P&#39;\)</span>, this means <span class="math inline">\(P&#39;\cap R =
+P\)</span>. ◻</p>
+</div>
+<div class="proof">
+<p><em>Proof of (b)..</em> We show that <span
+class="math inline">\(PR&#39; \cap R \subseteq P\)</span>. Let <span
+class="math inline">\(a\in PR&#39; \cap R\)</span>. In particular, <span
+class="math inline">\(a\in PR&#39;\)</span>, so we have <span
+class="math inline">\(R\)</span>-module homomoprhism <span
+class="math display">\[\begin{aligned}
+        m_a: R&#39; &amp;\longrightarrow PR&#39;\\
+        x &amp;\longmapsto ax.
+    
+\end{aligned}\]</span> By Cayley Hamilton theorem <a href="#cayham"
+data-reference-type="ref" data-reference="cayham">2</a>, there exist
+<span class="math inline">\(c_0,\dots,c_{n-1} \in P\)</span> such that
+<span class="math display">\[\begin{aligned}
+        m_a^n + c_{n-1}m_a^{n-1} + \cdots + c_1m_a + c_0 &amp;= 0\\
+        a^n = -(c_{n-1}a^{n-1} + \cdots + c_1 a + c_0).
+    
+\end{aligned}\]</span> Since <span class="math inline">\(a\in
+R\)</span>, the left hand expression is in <span
+class="math inline">\(RP=P\)</span>, so <span
+class="math inline">\(a^n\in P\)</span>. Since <span
+class="math inline">\(P\)</span> is prime, <span
+class="math inline">\(a^n\in P\)</span> implies <span
+class="math inline">\(a\in P\)</span>. Thus, <span
+class="math inline">\(PR&#39; \cap R\subseteq P\)</span>. ◻</p>
+</div>
+<div id="incomp" class="prop">
+<p><strong>Proposition 11</strong> (Incomparability). <em>Let <span
+class="math inline">\(R\subseteq R&#39;\)</span> be an integral ring
+extension. If <span class="math inline">\(P&#39;\)</span> and <span
+class="math inline">\(Q&#39;\)</span> are distinct prime ideals in <span
+class="math inline">\(R&#39;\)</span> with <span
+class="math inline">\(P&#39;\cap R= Q&#39; \cap R\)</span> then <span
+class="math inline">\(P&#39;\not\subseteq Q&#39;\)</span> and <span
+class="math inline">\(Q&#39;\not\subseteq P&#39;\)</span>.</em></p>
+</div>
+<p>Geometrically, we are saying that for the map <span
+class="math inline">\(\mathrm{Spec}R&#39; \to \mathrm{Spec}R\)</span>,
+if points <span class="math inline">\(P&#39;,Q&#39;\)</span> are mapped
+to the same point, then neither is contained in each other—i.e., <span
+class="math inline">\(P&#39;\)</span> doesn’t correspond to an
+irreducible closed subscheme containing <span
+class="math inline">\(Q&#39;\)</span> and vice versa. In particular, the
+fiber of a closed point does not contain a closed subscheme, so we have
+some sort of finite fiber condition here.</p>
+<div class="proof">
+<p><em>Proof.</em> Assume <span class="math inline">\(P&#39; \cap R =
+Q&#39; \cap R\)</span> and <span class="math inline">\(P&#39;\subseteq
+Q&#39;\)</span>. We prove that <span
+class="math inline">\(Q&#39;\subseteq P&#39;\)</span> so that <span
+class="math inline">\(P&#39;=Q&#39;\)</span>.</p>
+<p>Suppose, to the contrary, that there exists <span
+class="math inline">\(a\in Q&#39;\setminus P&#39;\)</span>. Then, we
+consider <span class="math inline">\(\overline{a}\in
+R&#39;/P&#39;\)</span>, which is integral over <span
+class="math inline">\(R/(P&#39;\cap R)\)</span> by lemma <a
+href="#intquot" data-reference-type="ref"
+data-reference="intquot">9</a>. Our strategy is to show that this
+relation on <span class="math inline">\(\overline{a}\)</span> has to be
+trivial, so <span class="math inline">\(\overline{a}=0\)</span> and
+<span class="math inline">\(a\in P&#39;\)</span>.</p>
+<p>Take a relation of minimal degree, and since <span
+class="math inline">\(a\not\in P&#39;\)</span> the degree is at least 2.
+We have <span class="math display">\[\begin{aligned}
+        \overline{a}^n + \overline{c_{n-1}}\overline{a}^{n-1} + \cdots +
+\overline{c_1} \overline{a} + \overline{c_0} &amp;= 0\\
+        \overline{a}^n + \overline{c_{n-1}}\overline{a}^{n-1} + \cdots +
+\overline{c_1} \overline{a} &amp;= -\overline{c_0}
+    
+\end{aligned}\]</span> for some <span
+class="math inline">\(c_0,\dots,c_{n-1} \in R\)</span>. Since <span
+class="math inline">\(a\in Q&#39;\)</span>, the left hand side is in
+<span class="math inline">\(Q&#39;/P&#39;\)</span>, so <span
+class="math inline">\(\overline{c_0}\in Q&#39;/P&#39;\)</span>. Since
+<span class="math inline">\(c_0\in R\)</span>, we get <span
+class="math display">\[c_0 \in (R \cap Q&#39;)/(R\cap P&#39;) =
+0\]</span> (by our original assumption). Thus, we have no constant term
+in the relation, but since we are in an integral domain <span
+class="math inline">\(R&#39;/P&#39;\)</span>, we can cancel out a factor
+of <span class="math inline">\(\overline{a}\)</span> to get a monic
+relation of strictly smaller degree.</p>
+<p>Thus, we have a contradiction, so <span class="math inline">\(a\in
+P&#39;\)</span> and <span
+class="math inline">\(P&#39;=Q&#39;\)</span>. ◻</p>
+</div>
+<div id="intfield" class="cor">
+<p><strong>Corollary 12</strong>. <em>Let <span
+class="math inline">\(R\subseteq R&#39;\)</span> be an integral ring
+extension of integral domains. Then, <span
+class="math inline">\(R\)</span> is a field if and only if <span
+class="math inline">\(R&#39;\)</span> is a field.</em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Assume that <span class="math inline">\(R\)</span> is
+a field. Let <span class="math inline">\(P&#39;\trianglelefteq
+R&#39;\)</span> be a maximal ideal. Then, <span
+class="math inline">\(P&#39;\)</span> must contract to the <span
+class="math inline">\(0\)</span> ideal, since the contraction is a prime
+ideal. Therefore, <span class="math display">\[0\cap R = P&#39; \cap
+R,\]</span> so by incomparability, <span
+class="math inline">\(P&#39;=0\)</span>. Thus, <span
+class="math inline">\(R&#39;\)</span> has only maximal ideal <span
+class="math inline">\(0\)</span>, so it is a field.</p>
+<p>Now, assume that <span class="math inline">\(R\)</span> is not a
+field, so there exists a non-zero maximal ideal <span
+class="math inline">\(\mathfrak{m}\trianglelefteq R\)</span>. By Lying
+Over proposition <a href="#lyingover" data-reference-type="ref"
+data-reference="lyingover">10</a>, there exists a prime ideal <span
+class="math inline">\(P&#39;\trianglelefteq R&#39;\)</span> with <span
+class="math inline">\(P&#39;\cap R = \mathfrak{m}\)</span>. In
+particular, <span class="math inline">\(P&#39; \neq 0\)</span>, so <span
+class="math inline">\(R&#39;\)</span> has a nontrivial proper ideal and
+is not a field. ◻</p>
+</div>
+<h1 id="normalization">Normalization</h1>
+<div class="rmk">
+<p><em>Remark 13</em>. The idea of Noether Normalization is very nice.
+In one sentence, for any affine variety, we can pick coordinates <span
+class="math inline">\(z_1,\dots,z_r\)</span> such that projection is a
+finite morphism. See Gathmann’s Example 10.1.</p>
+</div>
+<div id="noether" class="prop">
+<p><strong>Proposition 14</strong> (Noether Normalization). <em>Let
+<span class="math inline">\(R\)</span> be a finitely generated algebra
+over a field <span class="math inline">\(K\)</span> with generators
+<span class="math inline">\(x_1,\dots,x_n \in R\)</span>. Then there is
+an injective <span class="math inline">\(K\)</span>-algebra
+homomorphisms <span class="math inline">\(K[z_1,\dots,z_r]\to R\)</span>
+from a polynomial ring over <span class="math inline">\(K\)</span> to
+<span class="math inline">\(R\)</span> that makes <span
+class="math inline">\(R\)</span> into a finite extension ring of <span
+class="math inline">\(K[z_1,\dots,z_r]\)</span>.</em></p>
+<p><em>Moreover, if <span class="math inline">\(K\)</span> is an
+infinite field the images of <span
+class="math inline">\(z_1,\dots,z_r\)</span> in <span
+class="math inline">\(R\)</span> can be chosen to be <span
+class="math inline">\(K\)</span>-linear combinations of <span
+class="math inline">\(x_1, \dots, x_n\)</span>.</em></p>
+</div>
+<p>We first give the proof idea, before going to some necessary lemmas
+and the actual detailed proof. The idea is as follows: Pick generators
+<span class="math inline">\(x_1,\dots,x_n\)</span>. Check if there is an
+algebraic relation among <span
+class="math inline">\(x_1,\dots,x_n\)</span>, i.e., a nonzero polynomial
+<span class="math inline">\(f\)</span> in <span
+class="math inline">\(x_1,\dots,x_n\)</span> over <span
+class="math inline">\(K\)</span> with <span
+class="math inline">\(f(x_1,\dots,x_n)=0\)</span>. If there is no
+algebraic relation, then <span class="math inline">\(R\)</span> is
+isomorphic the polynomial ring <span
+class="math inline">\(K[z_1,\dots,z_n]\)</span>. Otherwise, we use some
+lemmas to choose new coordinates <span
+class="math inline">\(y_1,\dots,y_n\)</span> such that <span
+class="math inline">\(y_n\)</span> is redundant, in the sense that <span
+class="math inline">\(y_n\)</span> is integral over <span
+class="math inline">\(K[y_1,\dots,y_{n-1}]\subseteq R\)</span>. We keep
+adjusting our coordinates until <span
+class="math inline">\(y_1,\dots,y_r\)</span> have no algebraic
+relations, in which case we have found our copy of the polynomial ring
+<span class="math inline">\(K[z_1,\dots,z_r]\)</span> inside <span
+class="math inline">\(R\)</span>.</p>
+<p>We give two lemmas to showcase two strategies for picking new
+coordinates—one that is linear but only works for infinite fields, and
+one that works in general.</p>
+<div id="newcoordsinf" class="lem">
+<p><strong>Lemma 15</strong> (Linear Coordinate Change for Infinite
+Fields). <em>Let <span class="math inline">\(f\in
+K[x_1,\dots,x_n]\)</span> be a nonzero polynomial over an infinite field
+<span class="math inline">\(K\)</span>. Then there exists <span
+class="math inline">\(\lambda\in K\)</span> (to get rid of scalar) and
+<span class="math inline">\(a_1,\dots,a_{n-1}\in K\)</span> such that
+<span class="math display">\[\lambda f(y_1+a_1 y_n, y_2 + a_2 y_n,
+\dots, y_{n-1} + a_{n-1}y_n, y_n) \quad \in K[y_1,\dots,y_n]\]</span> is
+monic in <span class="math inline">\(y_n\)</span> (i.e., as an element
+of <span
+class="math inline">\((K[y_1,\dots,y_{n-1}])[y_n]\)</span>).</em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Let <span class="math inline">\(\lambda,
+a_1,\dots,a_n \in K\)</span> be arbitrary. We compute <span
+class="math inline">\(f\)</span> written in our new coordinates, and
+then we determine how to choose our parameters. Writing <span
+class="math display">\[f = \sum_{k_1,\dots,k_n} c_{k_1,\dots,k_n}
+x_1^{k_1}\cdots x_n^{k_n},\]</span> we get <span
+class="math display">\[\begin{aligned}
+        \lambda f(y_1+a_1 &amp;y_n, y_2 + a_2 y_n, \dots, y_{n-1} +
+a_{n-1}y_n, y_n)\\
+        &amp;= \lambda \sum_{k_1,\dots,k_n} c_{k_1,\dots,k_n}
+(y_1+a_1y_n)^{k_1}\cdots (y_{n-1}+a_{n-1}y_n)^{k_{n-1}} y_n^{k_n}.
+    
+\end{aligned}\]</span> Let <span class="math inline">\(d=\deg
+f\)</span>. Then, the maximum <span class="math inline">\(y_n\)</span>
+degree is <span class="math inline">\(d\)</span>. Compute an expression
+for the <span class="math inline">\(y_n\)</span> degree <span
+class="math inline">\(d\)</span> part, we get <span
+class="math display">\[\lambda \sum_{\substack{k_1,\dots,k_n\\
+k_1+\cdots+k_n=d}} c_{k_1,\dots,k_n} a_1^{k_1}\cdots a_{n-1}^{k_{n-1}}
+y_n^{k_1+\dots+k_n} = \lambda f_d(a_1,\dots,a_{n-1},1) y^d,\]</span>
+where <span class="math inline">\(f_d\)</span> is the degree <span
+class="math inline">\(d\)</span> part of <span
+class="math inline">\(f\)</span>. We can therefore guarantee <span
+class="math inline">\(f\)</span> in the new coordinates to be monic, as
+long as we can choose <span
+class="math inline">\(f_d(a_1,\dots,a_{n-1},1) \in K\)</span> nonzero
+and <span class="math inline">\(\lambda\)</span> to be the inverse. The
+next lemma guarantees such a choice of <span
+class="math inline">\(a_1,\dots,a_{n-1}\)</span> is possible. ◻</p>
+</div>
+<div class="lem">
+<p><strong>Lemma 16</strong>. <em>Let <span class="math inline">\(f\in
+K[x_1,\dots,x_n]\)</span> be a nonzero homogeneous polynomial over an
+infinite field <span class="math inline">\(K\)</span>. Then, there are
+<span class="math inline">\(a_1,\dots,a_{n-1}\in K\)</span> such that
+<span class="math inline">\(f(a_1,\dots,a_{n-1},1)\neq
+0\)</span>.</em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> We prove the lemma by induction on <span
+class="math inline">\(n\)</span>. If <span
+class="math inline">\(n=1\)</span>, then <span
+class="math inline">\(f=cx\)</span> for <span class="math inline">\(c\in
+K\)</span> nonzero, so <span class="math inline">\(f(1)=c\)</span>. Now,
+assume <span class="math inline">\(n&gt;1\)</span>. We can view <span
+class="math inline">\(f\)</span> as a polynomial in <span
+class="math inline">\((K[x_2,\dots,x_n])[x_1]\)</span> and write <span
+class="math display">\[f=\sum_{i=0}^d f_i x_1^i,\]</span> where <span
+class="math inline">\(d\)</span> is the degree of <span
+class="math inline">\(f\)</span>, and the (potentially zero) <span
+class="math inline">\(f_i\)</span> are homogeneous degree <span
+class="math inline">\(d-i\)</span> polynomials in <span
+class="math inline">\(K[x_2,\dots,x_n]\)</span>. At least one <span
+class="math inline">\(f_i\)</span> is nonzero because <span
+class="math inline">\(f\)</span> is nonzero. Then, by induction we can
+choose <span class="math inline">\(a_2,\dots,a_{n-1}\in K\)</span> such
+that for this <span class="math inline">\(i\)</span>, <span
+class="math display">\[f_i(a_2,\dots,a_{n-1},1)\neq 0.\]</span> Fixing
+these <span class="math inline">\(a_2,\dots,a_{n-1}\in K\)</span>, we
+get <span class="math display">\[f(x_1,a_2,\dots,a_{n-1},1) \in
+K[x_1]\]</span> a nonzero polynomial. It has at most finitely many roots
+(i.e., bounded by degree), and since <span
+class="math inline">\(K\)</span> is infinite, we can choose <span
+class="math inline">\(x_1=a_1\)</span> to not be a root. ◻</p>
+</div>
+<div id="newcoordsfin" class="lem">
+<p><strong>Lemma 17</strong> (Coordinate Change for Arbitrary Fields).
+<em>Let <span class="math inline">\(f\in K[x_1,\dots,x_n]\)</span> be a
+nonzero polynomial over an arbitrary field <span
+class="math inline">\(K\)</span>. Then there exists <span
+class="math inline">\(\lambda\in K\)</span> and <span
+class="math inline">\(a_1,\dots,a_{n-1}\in \mathbb{N}\)</span> such that
+<span class="math display">\[\lambda f(y_1+ y_n^{a_1}, y_2 + y_n^{a_2},
+\dots, y_{n-1} + y_n^{a_{n-1}}, y_n) \quad \in K[y_1,\dots,y_n]\]</span>
+is monic in <span class="math inline">\(y_n\)</span> (i.e., as an
+element of <span
+class="math inline">\((K[y_1,\dots,y_{n-1}])[y_n]\)</span>).</em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> We prove the claim by induction on <span
+class="math inline">\(n\)</span>. For <span
+class="math inline">\(n=1\)</span>, <span class="math inline">\(f=c_n
+x^n + \cdots + c_1 x + c_0\)</span>. We can then choose <span
+class="math inline">\(\lambda = \frac{1}{c_n}\)</span>.</p>
+<p>Now, assume that <span class="math inline">\(\deg f &gt; 1\)</span>.
+Let <span class="math inline">\(d=\deg_{x_1} f\)</span>. Then, we can
+write <span class="math display">\[f = gx_1^d + h,\]</span> where <span
+class="math inline">\(g\in K[x_2,\dots,x_n]\)</span> and <span
+class="math inline">\(h\in K[x_1,\dots,x_n]\)</span> with <span
+class="math inline">\(\deg_{x_1} h \leq d-1\)</span>. By our induction
+hypothesis, we can choose <span class="math inline">\(\lambda \in
+K\)</span> and <span class="math inline">\(a_2,\dots,a_{n-1}\in
+\mathbb{N}\)</span> such that <span class="math display">\[\lambda
+g(y_2+y_n^{a_2},\dots,y_{n-1}+y_n^{a_n}, y_n)\]</span> is monic in <span
+class="math inline">\(y_n\)</span>. Denote its leading <span
+class="math inline">\(y_n\)</span> term by <span
+class="math inline">\(y_n^k\)</span>. Fix <span
+class="math inline">\(a_1\)</span>, we will see how to choose it later.
+We write <span class="math inline">\(\tilde{f}\)</span> to denote the
+evaluation of <span class="math inline">\(f\)</span> at our new
+coordinates, i.e., the image of <span class="math inline">\(f\)</span>
+under the homomorphism <span class="math display">\[\begin{aligned}
+        \varphi: K[x_1,\dots,x_n] &amp;\longrightarrow
+K[y_1,\dots,y_n]\\
+        x_i &amp;\longmapsto y_i + y_n^{a_i} \qquad i\neq n\\
+        x_n &amp;\longmapsto y_n.
+    
+\end{aligned}\]</span> Then, we have <span
+class="math display">\[\tilde{f} = \tilde{g}(y_1+y_n^{a_1})^d +
+\tilde{h}.\]</span> The leading <span class="math inline">\(y_n\)</span>
+term of <span class="math inline">\(\tilde{g}(y_1+y_n^{a_1})\)</span> is
+just <span class="math inline">\(\frac{1}{\lambda} y_n^{k+a_1
+d}\)</span>. On the other hand, writing the <span
+class="math inline">\(y_n\)</span> degree of <span
+class="math inline">\(\tilde{h}\)</span> is bounded a function of <span
+class="math inline">\(a_2,\dots,a_{n-1}\)</span> plus a term <span
+class="math inline">\(a_1 (d-1)\)</span>. Therefore, we can choose <span
+class="math inline">\(a_1\)</span> sufficiently large so <span
+class="math inline">\(\frac{1}{\lambda} y_n^{k+a_1 d}\)</span> dominates
+<span class="math inline">\(\tilde{h}\)</span> in <span
+class="math inline">\(y_n\)</span> degree (e.g., choose <span
+class="math inline">\(a_1&gt; a_2\cdots a_{n-1}\deg f\)</span>), giving
+us a choice of <span class="math inline">\(a_1,\dots,a_{n-1}\in
+\mathbb{N}\)</span> and <span class="math inline">\(\lambda\in
+K\)</span>. ◻</p>
+</div>
+<p>Finally, with our two strategies for picking coordinates, we are in a
+position to prove Noether Normalization.</p>
+<div class="proof">
+<p><em>Proof of Noether Normalization <a href="#noether"
+data-reference-type="ref" data-reference="noether">14</a>.</em> By
+induction on the given number of generators, <span
+class="math inline">\(n\)</span>. For <span
+class="math inline">\(n=0\)</span>, we get <span
+class="math inline">\(R=K\)</span> and we are done.</p>
+<p>Otherwise, assume <span class="math inline">\(n&gt;0\)</span>.
+Consider the map <span class="math display">\[\begin{aligned}
+        K[z_1,\dots,z_n] &amp;\longrightarrow R\\
+        z_i &amp;\longmapsto x_i
+    
+\end{aligned}\]</span> from the polynomial ring to <span
+class="math inline">\(R\)</span>. If the map is injective (i.e., no
+algebraic relations among the <span class="math inline">\(x_i\)</span>),
+then <span class="math inline">\(R\cong K[z_1,\dots,z_r]\)</span> for
+<span class="math inline">\(r=n\)</span>, and we are done.</p>
+<p>Otherwise, the map is not injective and there is a nonzero relation
+<span class="math inline">\(f\in K[z_1,\dots,z_n]\)</span>, i.e., <span
+class="math inline">\(f(x_1,\dots,x_n)=0\)</span>. Using either lemma <a
+href="#newcoordsinf" data-reference-type="ref"
+data-reference="newcoordsinf">15</a> or lemma <a href="#newcoordsfin"
+data-reference-type="ref" data-reference="newcoordsfin">17</a>
+(depending on the size of <span class="math inline">\(K\)</span>), pick
+new generators <span class="math inline">\(y_1,\dots,y_n\)</span>,
+i.e.,</p>
+<ul>
+<li><p>For lemma <a href="#newcoordsinf" data-reference-type="ref"
+data-reference="newcoordsinf">15</a>, choose <span
+class="math inline">\(y_i :=x_i - a_i x_n\)</span> for <span
+class="math inline">\(i\neq n\)</span>, and <span
+class="math inline">\(y_n :=x_n\)</span>.</p></li>
+<li><p>For lemma <a href="#newcoordsfin" data-reference-type="ref"
+data-reference="newcoordsfin">17</a>, choose <span
+class="math inline">\(y_i :=x_i - x_n^{a_i}\)</span> for <span
+class="math inline">\(i\neq n\)</span>, and <span
+class="math inline">\(y_n :=x_n\)</span>.</p></li>
+</ul>
+<p>Now, these new generators satisfy the algebraic relation guaranteed
+by the lemmas, which is monic in <span
+class="math inline">\(y_n\)</span>. This shows that <span
+class="math inline">\(y_n\)</span> is integral over the subalgebra <span
+class="math inline">\(K[y_1,\dots,y_{n-1}]\)</span>. Therefore, <span
+class="math inline">\(R=K[y_1,\dots,y_{n-1}][y_n]\)</span> is finite
+over the subalgebra <span
+class="math inline">\(K[y_1,\dots,y_{n-1}]\)</span>. By induction, there
+exists <span class="math inline">\(r\in \mathbb{N}\)</span> and an
+injective homomorphism <span class="math display">\[K[z_1,\dots,z_r]
+\longrightarrow K[y_1,\dots,y_{n-1}]\]</span> such that <span
+class="math inline">\(K[y_1,\dots,y_{n-1}]\)</span> is finite over the
+image. Since finiteness is transitive by proposition <a href="#transint"
+data-reference-type="ref" data-reference="transint">8</a>, we get that
+<span class="math inline">\(R\)</span> is finite over the image. This
+completes the induction.</p>
+<p>If <span class="math inline">\(K\)</span> is infinite, we will always
+do linear coordinate changes to get the images of <span
+class="math inline">\(z_1,\dots,z_r\)</span> to be <span
+class="math inline">\(K\)</span>-linear combinations of <span
+class="math inline">\(x_1,\dots,x_n\)</span>. ◻</p>
+</div>
+<h1 id="nullstellensatz">Nullstellensatz</h1>
+<div id="zariski" class="cor">
+<p><strong>Corollary 18</strong> (Zariski’s Lemma). <em>Let <span
+class="math inline">\(K\)</span> be a field, and let <span
+class="math inline">\(R\)</span> be a finitely generated <span
+class="math inline">\(K\)</span>-algebra which is also a field. Then,
+<span class="math inline">\(K\subseteq R\)</span> is a finite field
+extension. In particular, if <span class="math inline">\(K\)</span> is
+algebraically closed, then <span
+class="math inline">\(R=K\)</span>.</em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> By Noether Normalization in proposition <a
+href="#noether" data-reference-type="ref"
+data-reference="noether">14</a>, we know <span
+class="math inline">\(R\)</span> is finite over a polynomial ring <span
+class="math inline">\(K[z_1,\dots,z_n]\)</span>, so it is in particular
+integral over <span class="math inline">\(K[z_1,\dots,z_n]\)</span> by
+proposition <a href="#integral" data-reference-type="ref"
+data-reference="integral">7</a>. Since <span
+class="math inline">\(R\)</span> is a field and the extension is
+integral, by corollary <a href="#intfield" data-reference-type="ref"
+data-reference="intfield">12</a>, <span
+class="math inline">\(K[z_1,\dots,z_n]\)</span> must be field. Thus,
+<span class="math inline">\(r=0\)</span> for <span
+class="math inline">\(K[z_1,\dots,z_r]\)</span> to be a field (e.g., for
+<span class="math inline">\(z_1\)</span> to be invertible).</p>
+<p>Thus, <span class="math inline">\(K\subseteq R\)</span> is a finite
+field extension, and if <span class="math inline">\(K\)</span> is
+algebraically closed, this implies <span
+class="math inline">\(R=K\)</span>. ◻</p>
+</div>
+<div id="weak" class="cor">
+<p><strong>Corollary 19</strong> (Weak Nullstellensatz). <em>Let <span
+class="math inline">\(K\)</span> be an algebraically closed field. Then
+all maximal ideals of the polynomial ring <span
+class="math inline">\(K[x_1,\dots,x_n]\)</span> are of the form <span
+class="math display">\[I(a) = (x_1-a_1, \dots, x_n-a_n)\]</span> for
+some <span class="math inline">\(a=(a_1,\dots,a_n)\in
+\mathbb{A}_K^n\)</span>.</em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> Let <span
+class="math inline">\(\mathfrak{m}\trianglelefteq
+K[x_1,\dots,x_n]\)</span> be a maximal ideal. Then, <span
+class="math inline">\(K[x_1,\dots,x_n]/\mathfrak{m}\)</span> is a field
+as well as a finitely generated <span
+class="math inline">\(K\)</span>-algebra (use cosets <span
+class="math inline">\(x_1,\dots,x_n\)</span>). Thus, by Zariski’s lemma
+<a href="#zariski" data-reference-type="ref"
+data-reference="zariski">18</a>, <span
+class="math inline">\(K[x_1,\dots,x_n]/\mathfrak{m}= K\)</span>, i.e.
+identifying <span class="math inline">\(K\)</span> with the image of
+<span class="math inline">\(K\subseteq K[x_1,\dots,x_n]\)</span> under
+the quotient map. Then, taking <span class="math inline">\(a_i\)</span>
+to be the image of <span class="math inline">\(x_i\)</span> under
+quotienting, we get <span class="math display">\[(x_1-a_1,\dots,x_n-a_n)
+\subseteq \mathfrak{m},\]</span> and since the left hand ideal is
+already maximal, we must have <span class="math display">\[\mathfrak{m}=
+I(a) = (x_1-a_1,\dots,x_n-a_n).\]</span> ◻</p>
+</div>
+<div id="radpoly" class="cor">
+<p><strong>Corollary 20</strong>. <em>For every ideal <span
+class="math inline">\(I\)</span> in a finitely generated algebra <span
+class="math inline">\(R\)</span> over a field <span
+class="math inline">\(K\)</span>, we have <span
+class="math display">\[\sqrt{I} = \bigcap_{\substack{\mathfrak{m}\text{
+maximal}\\ \mathfrak{m}\supseteq I}} \mathfrak{m}.\]</span></em></p>
+</div>
+<p>This is an upgraded version of a theorem about prime ideals instead
+of maximal ideals. In the language of schemes, we can now figure out if
+a function is nilpotent by only looking at closed points.</p>
+<div class="proof">
+<p><em>Proof.</em> The inclusion <span
+class="math inline">\(\subseteq\)</span> is immediate because maximal
+ideals are prime, so they are radical, so <span
+class="math inline">\(I\subseteq \mathfrak{m}\)</span> implies <span
+class="math inline">\(\sqrt{I}\subseteq \sqrt{\mathfrak{m}}
+=\mathfrak{m}\)</span>.</p>
+<p>Now, we prove the <span class="math inline">\(\supseteq\)</span>
+inclusion. Let <span class="math inline">\(f\not\in \sqrt{I}\)</span>.
+We want to find <span class="math inline">\(\mathfrak{m}\supseteq
+I\)</span> (a closed point in <span class="math inline">\(V(I)\)</span>)
+such that <span class="math inline">\(f\not\in \mathfrak{m}\)</span>
+(<span class="math inline">\(f\)</span> is nonzero at <span
+class="math inline">\(\mathfrak{m}\)</span>). Thus, we want to find a
+closed point in <span class="math inline">\(D(f)\cap V(I)\)</span>.
+Taking <span class="math inline">\(S=\{1,f,f^2,\cdots\}\)</span>,
+equivalently we are looking for <span
+class="math inline">\(\mathfrak{m}\)</span> such that <span
+class="math inline">\(\mathfrak{m}\cap S =\emptyset\)</span> and <span
+class="math inline">\(f\not\in \mathfrak{m}\)</span>.</p>
+<p>Since <span class="math inline">\(f\not\in \sqrt{I}\)</span>, we know
+<span class="math inline">\(S\cap I =\emptyset\)</span>, so by
+proposition <a href="#getpoint" data-reference-type="ref"
+data-reference="getpoint">4</a>, we can at least find a prime ideal
+<span class="math inline">\(P\)</span> with <span
+class="math inline">\(P\cap S=\emptyset\)</span>, <span
+class="math inline">\(f\not\in P\)</span>, and <span
+class="math inline">\(P_f\)</span> maximal. We now try to show <span
+class="math inline">\(P\)</span> is in fact maximal anyways.</p>
+<p>We consider the field extension which is the composition <span
+class="math inline">\(K\to R/P \to (R/P)_f = R_f/P_f\)</span>. This is
+indeed a field extension (i.e., not the zero map) because the second map
+is injective, since <span class="math inline">\(R/P\)</span> is an
+integral domain.</p>
+<p>Then, by construction <span class="math inline">\(R_f/P_f\)</span> is
+a field, and it is a finitely generated <span
+class="math inline">\(K\)</span>-algebra because it has generators
+consisting of those of <span class="math inline">\(R\hookrightarrow
+R_f\)</span> together with <span
+class="math inline">\(\frac{1}{f}\)</span>. Therefore, by Zariski’s
+lemma <a href="#zariski" data-reference-type="ref"
+data-reference="zariski">18</a>, the extension is finite and in
+particular integral by proposition <a href="#integral"
+data-reference-type="ref" data-reference="integral">7</a>. Thus, <span
+class="math inline">\(R/P \subseteq R_f/P_f\)</span> is integral as
+well, so <span class="math inline">\(R/P\)</span> is a field by
+corollary <a href="#intfield" data-reference-type="ref"
+data-reference="intfield">12</a>. Therefore, <span
+class="math inline">\(P\)</span> is maximal. ◻</p>
+</div>
+<div class="thm">
+<p><strong>Theorem 21</strong> (Hilbert’s Nullstellensatz). <em>Let
+<span class="math inline">\(K\)</span> be algebraically closed. Then for
+every ideal <span class="math inline">\(I\trianglelefteq
+K[x_1,\dots,x_n]\)</span> we have <span class="math inline">\(I(V(I)) =
+\sqrt{I}\)</span>.</em></p>
+<p><em>In particular, there is a bijection <span
+class="math display">\[\begin{aligned}
+        \{\text{affine varieties in } \mathbb{A}_K^n\} \quad
+&amp;\longleftrightarrow \quad \{\text{radical ideals in }
+K[x_1,\dots,x_n]\}\\
+        Y \quad &amp;\longrightarrow \quad I(Y)\\
+        V(I) &amp;\longleftarrow I.
+    
+\end{aligned}\]</span></em></p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> <strong>Hard Part.</strong> We prove <span
+class="math inline">\(I(V(I)) \subseteq \sqrt{I}\)</span>. Assume that
+<span class="math inline">\(f\not\in \sqrt{I}\)</span>. We want to find
+a point <span class="math inline">\(a \in V(I)\)</span> such that <span
+class="math inline">\(f(a)\neq 0\)</span>. By corollary <a
+href="#radpoly" data-reference-type="ref"
+data-reference="radpoly">20</a>, <span class="math display">\[\sqrt{I} =
+\bigcap_{\substack{\mathfrak{m}\text{ maximal}\\ \mathfrak{m}\supseteq
+I}} \mathfrak{m},\]</span> so there exists <span
+class="math inline">\(\mathfrak{m}\)</span> maximal such that <span
+class="math inline">\(f \not\in \mathfrak{m}\)</span>. By corollary <a
+href="#weak" data-reference-type="ref" data-reference="weak">19</a>,
+this maximal ideal is <span class="math inline">\(I(a)\)</span> for some
+<span class="math inline">\(a\in K^n\)</span>. Since <span
+class="math inline">\(I\subseteq I(a)\)</span>, we have <span
+class="math inline">\(a\in V(I)\)</span>. Since <span
+class="math inline">\(f\not\in I(a)\)</span>, we have <span
+class="math inline">\(f(a)\neq 0\)</span>. Therefore, <span
+class="math inline">\(f\not\in \sqrt{I}\)</span>.</p>
+<p><strong>Easy Part.</strong> Let <span class="math inline">\(f\in
+\sqrt{I}\)</span>, so <span class="math inline">\(f^n \in I\)</span>.
+Let <span class="math inline">\(a\in V(I)\)</span>. Since <span
+class="math inline">\(f^n\in I\)</span>, we know <span
+class="math inline">\(f^n(a)=0\)</span>. Thus, <span
+class="math inline">\(f(a)=0\)</span>, so <span class="math inline">\(f
+\in I(V(I))\)</span>.</p>
+<p>This gives us <span class="math inline">\(I(V(I)) =
+\sqrt{I}\)</span>. We also have <span
+class="math inline">\(V(I(X))=X\)</span> for any affine variety in <span
+class="math inline">\(\mathbb{A}_K^n\)</span> because clearly <span
+class="math inline">\(X\subseteq V(I(X))\)</span>. Then conversely, we
+know that since <span class="math inline">\(X\)</span> is an affine
+variety, <span class="math inline">\(X=V(J)\)</span>, so then we want to
+show <span class="math inline">\(V(J) \supseteq V(I(V(J)))\)</span>. By
+our previous discussion, <span class="math inline">\(J \subseteq
+\sqrt{J}\subseteq I(V(J))\)</span>, and applying <span
+class="math inline">\(V\)</span> we get our desired subset relation.</p>
+<p>Therefore, for radical ideals <span class="math inline">\(I\)</span>
+and affine varieties <span class="math inline">\(X\)</span>, we have
+<span class="math inline">\(I(V(I)) = I\)</span> and <span
+class="math inline">\(V(I(X)) = X\)</span>. Therefore, <span
+class="math inline">\(V(-),I(-)\)</span> are inverse bijections. ◻</p>
+</div>
+
+            </div>
+    </section>
+
+<footer class="footer">
+    <div class="content has-text-centered">
+        <p>
+            <label class="checkbox">
+            <input type="checkbox" id="dark-mode">
+                Dark Mode
+                <span class="icon is-small"><i class="fas fa-moon" aria-hidden="true"></i></span>
+            </label>
+        </p>
+        <p>
+            © 2023 Joseph Sullivan
+            <a href="https://github.com/JosephSullivan256"><span class="icon is-small"><i class="fab fa-github" aria-hidden="true"></i></span></a>&nbsp;
+            <a href="mailto: partiallyordered@gmail.com"><span class="icon is-small"><i class="fas fa-envelope" aria-hidden="true"></i></span></a>
+        </p>
+    </div>
+</footer>
+</body>
+</html>
