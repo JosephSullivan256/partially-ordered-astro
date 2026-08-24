@@ -1,0 +1,17 @@
+---
+import BreadcrumbNav from '../components/BreadcrumbNav.astro';
+import Layout from './Layout.astro';
+
+interface Props {
+  title: string;
+  math?: boolean;
+  currentLabel?: string;
+}
+
+const { title, math = false, currentLabel, bodyclass, navclass="bg-paper" } = Astro.props;
+---
+
+<Layout {title} {math} {bodyclass}>
+  <BreadcrumbNav slot="header" {currentLabel} {navclass} />
+  <slot />
+</Layout>

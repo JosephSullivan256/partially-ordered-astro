@@ -1,0 +1,36 @@
+---
+interface Props {
+  /** Replaces the generated final path segment when a page has a display title. */
+  currentLabel?: string;
+}
+
+const { currentLabel, navclass } = Astro.props;
+const segments = Astro.url.pathname.split('/').filter(Boolean);
+
+const formatSegment = (segment: string) => segment
+  .split('-')
+  .filter(Boolean)
+  .join(' ');
+
+const crumbs = [
+  { href: '/', label: 'index' },
+  ...segments.map((segment, index) => ({
+    href: `/${segments.slice(0, index + 1).join('/')}`,
+    label: index === segments.length - 1 && currentLabel ? currentLabel : formatSegment(segment),
+  })),
+];
+---
+
+<header class={navclass+" breadcrumb-header"}>
+  <div class="content-width relative flex min-h-24 items-center justify-center px-6 py-5">
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+      <ol>
+        {crumbs.map((crumb, index) => (
+          <li aria-current={index === crumbs.length - 1 ? 'page' : undefined}>
+            {index === crumbs.length - 1 ? <span>{crumb.label}</span> : <a href={crumb.href}>{crumb.label}</a>}
+          </li>
+        ))}
+      </ol>
+    </nav>
+  </div>
+</header>

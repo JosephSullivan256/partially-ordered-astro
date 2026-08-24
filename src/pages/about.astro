@@ -1,33 +1,33 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '../layouts/BreadcrumbLayout.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 ---
 
-<Layout title="About · Partially Ordered">
-  <section class="content-width grid gap-10 px-6 md:px-40 py-16 md:grid-cols-2 md:items-center">
+<Layout title="about · Partially Ordered" bodyclass="bg-paper-deep">
+  <section class="bg-paper w-full grid gap-8 px-6 md:px-54 py-16 md:grid-cols-2 md:justify-items-center">
     <img class="mx-auto max-w-56 md:max-w-72 rounded-full shadow-lg md:w-full" src="/images/satwiwa.png" alt="Joseph Sullivan trail running" />
-    <div class="text-lg leading-8 text-stone-700 dark:text-stone-200">
-      <h1 class="mt-3 mb-6 text-4xl font-semibold text-stone-900 dark:text-stone-50">Early Life</h1>
-      <p>I grew up in <strong>Newbury Park, CA</strong>. It’s a beautiful area and great for trail running. I was on the same cross-country team as <a href="https://en.wikipedia.org/wiki/Nico_Young">this olympian</a>, which is my big claim to fame. I was nowhere near as fast—I pride myself on my boys JV most-improved award.</p>
+    <div class="md:max-w-80 text-lg leading-8 text-stone-700 dark:text-stone-200">
+      <h1 class="mt-1 mb-6 text-4xl font-semibold text-stone-900 dark:text-stone-50">Hometown</h1>
+      <p>I grew up in <strong>Newbury Park, CA</strong>. It’s a beautiful area and great for trail running. I was on the same cross-country team as <a href="https://en.wikipedia.org/wiki/Nico_Young">this olympian</a>, which is my big claim to fame. I was nowhere near as fast—I instead pride myself on my boys JV most-improved award.</p>
     </div>
   </section>
   <section class="section-tint">
-    <div class="content-width grid gap-10 px-6 md:px-40 py-16 md:grid-cols-2 md:items-center">
-      <div class="order-2 md:order-1 text-lg leading-8 text-stone-700 dark:text-stone-200">
-        <h1 class="mt-3 mb-6 text-4xl font-semibold text-stone-900 dark:text-stone-50">Undergraduate</h1>
+    <div class="bg-paper-deep w-full grid gap-8 px-6 md:px-54 py-16 md:grid-cols-2 md:justify-items-center">
+      <div class="md:max-w-80 order-2 md:order-1 text-lg leading-8 text-stone-700 dark:text-stone-200">
+        <h1 class="mt-1 mb-6 text-4xl font-semibold text-stone-900 dark:text-stone-50">Undergraduate</h1>
         <p>I did my undergrad at <strong>UC Santa Barbara</strong>, within a smaller college called <strong>CCS</strong>. The small accelerated classes in my first years were an awesome advantage. I'm incredibly grateful for the friends I made there, and living on the ocean wasn't bad.</p>
       </div>
       <img class="order-1 md:order-2 mx-auto max-w-56 md:max-w-72 rounded-full shadow-lg md:w-full" src="/images/ucsb.png" alt="University of California, Santa Barbara" />
     </div>
   </section>
-  <section class="content-width grid gap-10 px-6 md:px-40 py-16 md:grid-cols-2 md:items-center">
+  <section class="bg-paper w-full grid gap-8 px-6 md:px-54 py-16 md:grid-cols-2 md:justify-items-center">
     <img class="mx-auto max-w-56 md:max-w-72 rounded-full shadow-lg md:w-full" src="/images/uofu.png" alt="University of Utah" />
-    <div class="text-lg leading-8 text-stone-700 dark:text-stone-200">
-      <h1 class="mt-3 mb-6 text-4xl font-semibold text-stone-900 dark:text-stone-50">Graduate</h1>
+    <div class="md:max-w-80 text-lg leading-8 text-stone-700 dark:text-stone-200">
+      <h1 class="mt-1 mb-6 text-4xl font-semibold text-stone-900 dark:text-stone-50">Graduate</h1>
       <p class="text-lg leading-8 text-stone-700 dark:text-stone-200">Right now I’m a graduate student at the <strong>University of Utah</strong> working with <strong>Aaron Bertram</strong>. I study derived categories of coherent sheaves, particularly semiorthogonal decompositions and Bridgeland stability.</p>
     </div>
   </section>
-  <section class="section-tint">
+  <section class="bg-paper-deep">
     <div class="content-width px-6 py-16"><h2 class="section-title">Hobbies</h2><div class="mt-8 content-width grid justify-items-center"><ProjectCard project={{ name: 'Guitar', description: 'I started on electric guitar at the end of 2018, but now I’m more into acoustic. My music taste ranges from indie rock to midwest emo, math rock, and singer-songwriter.', image: '/images/guitar.png' }} /></div></div>
   </section>
 </Layout>

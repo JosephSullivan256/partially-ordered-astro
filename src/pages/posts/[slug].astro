@@ -1,5 +1,5 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import Layout from '../../layouts/BreadcrumbLayout.astro';
 import { articleHtml, posts } from '../../lib/posts';
 
 export function getStaticPaths() {
@@ -10,9 +10,8 @@ const { post } = Astro.props;
 const html = articleHtml(post.slug);
 ---
 
-<Layout title={`${post.title} · Partially Ordered`} math>
+<Layout title={`${post.title} · Partially Ordered`} math currentLabel={post.title}>
   <article class="mx-auto max-w-3xl px-6 py-16">
-    <p class="mb-7 text-sm"><a href="/posts">← All posts</a></p>
     <div class="article-content" set:html={html} />
   </article>
 </Layout>

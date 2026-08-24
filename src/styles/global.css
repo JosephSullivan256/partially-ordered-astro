@@ -2,7 +2,7 @@
 
 @theme {
   --color-paper: #ffffff;
-  --color-paper-deep: #eeeeee;
+  --color-paper-deep: #f7f7f7;
   --color-ink: #3d3f36;
   --color-accent: #b65069;
 }
@@ -17,7 +17,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 html { scroll-behavior: smooth; }
-body { @apply min-h-screen bg-paper-deep text-ink antialiased; }
+body { @apply min-h-screen text-ink antialiased; }
 body.dark { @apply bg-stone-950 text-stone-100; }
 a { @apply text-accent underline-offset-4 hover:underline; }
 
@@ -25,6 +25,13 @@ a { @apply text-accent underline-offset-4 hover:underline; }
 .section-tint { @apply bg-stone-100/80 dark:bg-stone-900; }
 .section-title { @apply text-center text-3xl font-semibold text-stone-900 dark:text-stone-50; }
 .nav-chip { @apply rounded-full border border-stone-400/70 px-4 py-2 text-sm font-medium text-stone-700 no-underline transition hover:border-accent hover:text-accent dark:border-stone-600 dark:text-stone-200; }
+/* .breadcrumb-header { @apply border-b border-stone-300 bg-paper dark:border-stone-700 dark:bg-stone-950; } */
+.breadcrumb-nav ol { @apply flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-lg; }
+.breadcrumb-nav li { @apply flex items-center text-stone-500 dark:text-stone-400; }
+.breadcrumb-nav li + li::before { @apply mr-2 text-stone-400 content-['›'] dark:text-stone-500; }
+.breadcrumb-nav a { @apply text-accent; }
+.breadcrumb-nav [aria-current='page'] { @apply text-stone-700 dark:text-stone-200; }
+.theme-toggle { @apply absolute right-6 rounded border border-stone-400 px-2 py-1 text-xs text-stone-700 transition hover:border-accent hover:text-accent dark:border-stone-600 dark:text-stone-200; }
 /* .hero-grid { background: radial-gradient(circle at center, rgb(255 255 255 / .8), transparent 58%); }
 .dark .hero-grid { background: radial-gradient(circle at center, rgb(68 64 60 / .35), transparent 58%); } */
 

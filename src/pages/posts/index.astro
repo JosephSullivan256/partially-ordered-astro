@@ -1,14 +1,12 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import Layout from '../../layouts/BreadcrumbLayout.astro';
 import PostCard from '../../components/PostCard.astro';
 import { posts } from '../../lib/posts';
 ---
 
-<Layout title="Posts · Partially Ordered">
-  <section class="content-width px-6 py-16">
-    <p class="text-sm font-medium uppercase tracking-[.18em] text-accent">Writing</p>
-    <h1 class="mt-3 font-serif text-5xl font-semibold text-stone-900 dark:text-stone-50">Posts</h1>
-    <div class="mt-10 grid gap-6 md:grid-cols-2">
+<Layout title="posts · Partially Ordered">
+  <section class="bg-paper w-full px-6 py-16">
+    <div class="mx-auto max-w-128 flex flex-col gap-6">
       {posts.map((post) => <PostCard post={post} />)}
     </div>
   </section>

@@ -9,15 +9,15 @@ import { featuredProjects } from '../lib/projects';
 <Layout title="Partially Ordered" home>
 	<section class="bg-paper-deep hero-grid flex min-h-[min(37vh,50rem)] md:min-h-[min(100vh,54rem)] flex-col gap-5 p-5">
 		<nav aria-label="Main navigation" class="flex justify-center gap-2 sm:gap-5 my-0">
-			<a class="nav-chip" href="/posts">Posts</a>
-			<a class="nav-chip" href="/projects">Projects</a>
-			<a class="nav-chip" href="/about">About</a>
+			<a class="nav-chip" href="/posts">posts</a>
+			<a class="nav-chip" href="/projects">projects</a>
+			<a class="nav-chip" href="/about">about</a>
 		</nav>
 		<img class="mx-auto w-full max-w-3xl px-4 my-auto" src="/logo_hero_text.svg" alt="Partially Ordered" />
 	</section>
 
 	<section class="bg-paper w-full gap-5 md:gap-20 px-6 py-20 grid md:flex md:justify-center">
-		<img class="max-w-50 md:max-w-85 mx-auto md:mx-0 rounded-full aspect-square shadow-lg" src="/images/portrait_blue.png" alt="Joseph Sullivan" />
+		<img class="max-w-50 md:max-w-85 mx-auto md:mx-0 rounded-full aspect-square shadow-lg" src="/images/profile.png" alt="Joseph Sullivan" />
 		<div class="text-lg md:max-w-85 mx-auto md:mx-0 leading-8 text-stone-700 dark:text-stone-200">
 			<h1 class="mb-5 text-4xl font-semibold text-stone-900 dark:text-stone-50">Hello, I’m Joseph.</h1>
 			<p>I’m a fourth-year math PhD candidate at the University of Utah. I like <strong>algebraic geometry</strong> and <strong>derived categories</strong>. When not doing math, you can catch me on a trail run, baking breads and sweet treats, or playing music poorly.</p>
@@ -26,17 +26,17 @@ import { featuredProjects } from '../lib/projects';
 	</section>
 
 	<section class="bg-paper-deep py-18">
-		<div class="w-full py-16"><div class="content-width mx-auto px-6">
+		<div class="w-full py-16"><div class="mx-auto px-6 md:px-12 lg:px-24">
 			<h2 class="section-title">Featured posts</h2>
-			<div class="mt-8 grid gap-6 md:grid-cols-3">
+			<div class="mx-auto mt-8 grid gap-6 md:grid-cols-3">
 				{featuredPosts.map((post) => <PostCard post={post} />)}
 			</div>
 		</div></div>
 	</section>
 
-	<section class="bg-paper w-full py-16"><div class="content-width mx-auto px-6">
+	<section class="bg-paper w-full py-16"><div class="mx-auto px-6">
 		<h2 class="section-title">Featured projects</h2>
-		<div class="mt-8 grid gap-6 md:grid-cols-3">
+		<div class="mx-auto mt-8 w-max grid gap-6 md:grid-cols-3">
 			{featuredProjects.map((project) => <ProjectCard project={project} />)}
 		</div>
 	</div></section>
