@@ -7,5 +7,5 @@ export default defineConfig({
 	vite: {
 		plugins: [tailwindcss()],
 	},
-	site: 'https://josephsullivan256.github.io'
+	site: 'https://partiallyordered.com'
 });
