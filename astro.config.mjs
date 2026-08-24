@@ -7,4 +7,6 @@ export default defineConfig({
 	vite: {
 		plugins: [tailwindcss()],
 	},
+	site: 'https://josephsullivan256.github.io',
+	base: '/partially-ordered-astro',
 });
