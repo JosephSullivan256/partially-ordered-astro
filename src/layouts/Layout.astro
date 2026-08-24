@@ -18,26 +18,22 @@ const { title, home = false, math = false, bodyclass="bg-paper-deep" } = Astro.p
     <meta name="description" content="Partially Ordered — Joseph Sullivan’s mathematics blog and programming portfolio." />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <title>{title}</title>
-    <script is:inline>
-      if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark');
-    </script>
     {math && <script is:inline define:vars={{}}>
       window.MathJax = { tex: { tags: 'ams', inlineMath: [['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']], processEscapes: true, processEnvironments: true, packages: ['base', 'color', 'ams', 'physics'] }, loader: { load: ['[tex]/color', '[tex]/ams', '[tex]/physics'] } };
     </script>}
     {math && <script src="/vendor/mathjax/tex-chtml-full.js" is:inline></script>}
   </head>
   <body class={bodyclass}>
-    {!home && <slot name="header"><header class="border-b border-stone-300/80 bg-paper/90 dark:border-stone-700 dark:bg-stone-950/90">
+    {!home && <slot name="header"><header class="border-b border-stone-300/80 bg-paper/90">
       <div class="content-width flex items-center justify-between px-6 py-4">
         <a href="/" class="no-underline"><img src="/logo.svg" width="140" height="35" alt="Partially Ordered" /></a>
         <nav class="flex items-center gap-4 text-sm" aria-label="Main navigation">
           <a href="/posts">Posts</a><a href="/projects">Projects</a><a href="/about">About</a>
-          <button id="theme-toggle" type="button" class="rounded border border-stone-400 px-2 py-1 text-xs dark:border-stone-600" aria-label="Toggle color theme">Theme</button>
         </nav>
       </div>
     </header></slot>}
     <main><slot /></main>
-    <footer class="border-t border-stone-300 bg-paper-deep px-6 py-10 text-center text-sm text-stone-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-300">
+    <footer class="border-t border-stone-300 bg-paper-deep px-6 py-10 text-center text-sm text-stone-700">
       <p>© 2026 Joseph Sullivan · <a href="https://github.com/JosephSullivan256">GitHub</a> · <a href="mailto:partiallyordered@gmail.com">Email</a></p>
     </footer>
   </body>

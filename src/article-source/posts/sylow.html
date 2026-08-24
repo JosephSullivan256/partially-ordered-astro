@@ -1,33 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
-        let darkmode = false;
-        if(localStorage.getItem('dark-mode')){
-            darkmode = localStorage.getItem('dark-mode')=='enabled';
-        }
-
-        if(darkmode) {
-            document.documentElement.classList.toggle("dark-mode")
-        }
-
-        window.addEventListener("load", ()=>{
-            let darkcheckbox = document.getElementById("dark-mode");
-            darkcheckbox.checked = darkmode;
-
-            darkcheckbox.addEventListener("change", ()=>{
-                darkmode = !darkmode;
-                if(darkmode) {
-                    localStorage.setItem('dark-mode', 'enabled')
-                } else {
-                    localStorage.setItem('dark-mode', 'disabled')
-                }
-
-                document.documentElement.classList.toggle("dark-mode");
-            });
-        })
-
-    </script>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="/static/css/mystyles.css">
     <link rel="stylesheet" href="/static/node_modules/%40fortawesome/fontawesome-free/css/all.css">
@@ -260,13 +233,6 @@ hr {
 
 <footer class="footer">
     <div class="content has-text-centered">
-        <p>
-            <label class="checkbox">
-            <input type="checkbox" id="dark-mode">
-                Dark Mode
-                <span class="icon is-small"><i class="fas fa-moon" aria-hidden="true"></i></span>
-            </label>
-        </p>
         <p>
             © 2023 Joseph Sullivan
             <a href="https://github.com/JosephSullivan256"><span class="icon is-small"><i class="fab fa-github" aria-hidden="true"></i></span></a>&nbsp;
