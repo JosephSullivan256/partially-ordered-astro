@@ -10,7 +10,7 @@ const { post } = Astro.props;
 const html = articleHtml(post.slug);
 ---
 
-<Layout title={`${post.title} · Partially Ordered`} math currentLabel={post.title}>
+<Layout title={`${post.title} · Partially Ordered`} math currentLabel={post.title} bodyclass="bg-paper">
   <article class="mx-auto max-w-3xl px-6 py-16">
     <div class="article-content" set:html={html} />
   </article>
