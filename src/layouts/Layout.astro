@@ -17,6 +17,7 @@ const { title, home = false, math = false, bodyclass="bg-paper-deep" } = Astro.p
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Partially Ordered — Joseph Sullivan’s mathematics blog and programming portfolio." />
     <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <title>{title}</title>
     {math && <script is:inline define:vars={{}}>
       window.MathJax = { tex: { tags: 'ams', inlineMath: [['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']], processEscapes: true, processEnvironments: true, packages: ['base', 'color', 'ams', 'physics'] }, loader: { load: ['[tex]/color', '[tex]/ams', '[tex]/physics'] } };
