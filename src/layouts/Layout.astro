@@ -20,7 +20,21 @@ const { title, home = false, math = false, bodyclass="bg-paper-deep" } = Astro.p
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <title>{title}</title>
     {math && <script is:inline define:vars={{}}>
-      window.MathJax = { tex: { tags: 'ams', inlineMath: [['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']], processEscapes: true, processEnvironments: true, packages: ['base', 'color', 'ams', 'physics'] }, loader: { load: ['[tex]/color', '[tex]/ams', '[tex]/physics'] } };
+      // Keep the notation used in mystyle.sty available for older converted
+      // articles as well as any raw LaTeX Pandoc deliberately preserves.
+      const macro = String.raw;
+      window.MathJax = { tex: { tags: 'ams', inlineMath: [['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']], processEscapes: true, processEnvironments: true, packages: ['base', 'color', 'ams', 'physics'], macros: {
+        bH: macro`\mathbb{H}`, bF: macro`\mathbb{F}`, bS: macro`\mathbb{S}`,
+        cA: macro`\mathcal{A}`, cB: macro`\mathcal{B}`, cC: macro`\mathcal{C}`, cD: macro`\mathcal{D}`, cE: macro`\mathcal{E}`, cF: macro`\mathcal{F}`, cG: macro`\mathcal{G}`, cH: macro`\mathcal{H}`, cI: macro`\mathcal{I}`, cK: macro`\mathcal{K}`, cL: macro`\mathcal{L}`, cM: macro`\mathcal{M}`, cN: macro`\mathcal{N}`, cO: macro`\mathcal{O}`, cP: macro`\mathcal{P}`, cS: macro`\mathcal{S}`, cT: macro`\mathcal{T}`, cV: macro`\mathcal{V}`, cX: macro`\mathcal{X}`,
+        A: macro`\mathbb{A}`, C: macro`\mathbb{C}`, N: macro`\mathbb{N}`, P: macro`\mathbb{P}`, Q: macro`\mathbb{Q}`, R: macro`\mathbb{R}`, Z: macro`\mathbb{Z}`,
+        m: macro`\mathfrak{m}`, fm: macro`\mathfrak{m}`, eps: macro`\varepsilon`, tilde: macro`\widetilde`, defeq: macro`:=`, ds: macro`\displaystyle`, heart: macro`\heartsuit`, teq: macro`\trianglelefteq`, op: macro`\mathrm{op}`,
+        id: macro`\mathrm{id}`, Hom: macro`\mathrm{Hom}`, Ob: macro`\mathrm{Ob}`, eval: macro`\mathrm{eval}`, Aut: macro`\mathrm{Aut}`, Quot: macro`\mathrm{Quot}`, Ext: macro`\mathrm{Ext}`, im: macro`\mathrm{im}`, coker: macro`\mathrm{coker}`, Spec: macro`\mathrm{Spec}`, Proj: macro`\mathrm{Proj}`, Coh: macro`\mathrm{Coh}`, End: macro`\mathrm{End}`, RHom: macro`\mathrm{RHom}`,
+        GL: macro`\mathrm{GL}`, SL: macro`\mathrm{SL}`, QCoh: macro`\mathrm{QCoh}`, Set: macro`\mathrm{Set}`, Sch: macro`\mathrm{Sch}`, Sym: macro`\mathrm{Sym}`, Tor: macro`\mathrm{Tor}`, Rep: macro`\mathrm{Rep}`, rep: macro`\mathrm{rep}`, reg: macro`\mathrm{reg}`, colim: macro`\mathrm{colim}`,
+        rmod: macro`\mathrm{mod}\text{-}`, rMod: macro`\mathrm{Mod}\text{-}`, lmod: macro`\text{-}\mathrm{mod}`, lMod: macro`\text{-}\mathrm{Mod}`, grlMod: [macro`\mathrm{Gr}\,#1\text{-}\mathrm{Mod}`, 1],
+        cHom: macro`\mathcal{H}\mathit{om}`, cEnd: macro`\mathcal{E}\mathit{nd}`, Re: macro`\mathrm{Re}`, Im: macro`\mathrm{Im}`, codim: macro`\mathrm{codim}`, supp: macro`\mathrm{supp}`,
+        floor: [macro`\left\lfloor #1 \right\rfloor`, 1], ceil: [macro`\left\lceil #1 \right\rceil`, 1], pdv: [macro`\frac{\partial #1}{\partial #2}`, 2], dv: [macro`\frac{\mathrm{d} #1}{\mathrm{d} #2}`, 2], dd: macro`\,\mathrm{d}`,
+        '<': macro`\left\langle`, '>': macro`\right\rangle`
+      } }, loader: { load: ['[tex]/color', '[tex]/ams', '[tex]/physics'] } };
     </script>}
     {math && <script src="/vendor/mathjax/tex-chtml-full.js" is:inline></script>}
   </head>

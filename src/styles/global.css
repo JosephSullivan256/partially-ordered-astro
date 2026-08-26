@@ -39,7 +39,12 @@ a { @apply text-accent underline-offset-4 hover:underline; }
 .article-content li { @apply my-2; }
 .article-content hr { @apply my-9 border-stone-300; }
 .article-content img { @apply my-6 max-w-full; }
+.article-content img[src$=".svg"] { display: block; margin-inline: auto; zoom: 1.5; max-width: calc(100% / 1.5); }
+.article-content .latex-diagram { @apply my-8 flex justify-center; }
+.article-content .latex-diagram img { @apply my-0 max-h-[32rem]; }
+.article-content table { @apply mx-auto my-6 border-collapse text-center; }
+.article-content th, .article-content td { @apply border border-stone-400 px-3 py-1; }
 .article-content #TOC { @apply rounded-lg bg-stone-100 p-5 text-base; }
-.article-content .lemma, .article-content .proposition, .article-content .definition, .article-content .remark, .article-content .theorem, .article-content .example { @apply my-5 border border-stone-400 p-4; }
+.article-content .lemma, .article-content .proposition, .article-content .definition, .article-content .remark, .article-content .theorem, .article-content .example, .article-content .corollary, .article-content .construction, .article-content .notation, .article-content .convention, .article-content .computation, .article-content .conjecture, .article-content .exercise, .article-content .problem, .article-content .warning { @apply my-5 border border-stone-400 p-4; }
 .article-content header { @apply mb-16 text-center; }
 .article-content header h1 { @apply mt-0 text-4xl; }

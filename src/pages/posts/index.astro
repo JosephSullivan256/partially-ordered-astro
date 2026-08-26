@@ -5,7 +5,7 @@ import { posts, tags } from '../../lib/posts';
 ---
 
 <Layout title="posts · Partially Ordered">
-  <section class="bg-paper w-full px-6 py-16 md:pl-50 md:pr-70">
+  <section class="bg-paper w-full px-6 py-16 md:pl-30 md:pr-50">
     <div class="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[14rem_minmax(0,1fr)]">
       <aside class="lg:sticky lg:top-8 lg:self-start" aria-label="Post navigation">
         <h2 class="text-2xl font-semibold text-stone-900">Table of Contents</h2>
@@ -16,7 +16,7 @@ import { posts, tags } from '../../lib/posts';
           </ul>
         </nav>
       </aside>
-      <div class="flex min-w-0 flex-col gap-6">
+      <div class="flex min-w-0 grid grid-cols-1 md:grid-cols-2 gap-6">
         {posts.map((post) => <PostCard post={post} />)}
       </div>
     </div>

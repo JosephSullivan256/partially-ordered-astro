@@ -1,0 +1,133 @@
+<header id="title-block-header"><h1>Variations of Hodge Structures</h1><p class="author">Joseph Sullivan</p><p class="date">April 2024</p><p class="article-download"><a href="/posts/variations-of-hodge-structures/variations_of_hodge.pdf">Download PDF</a></p></header>
+<h1 id="motivation">Motivation</h1>
+<div class="theorem"><p><strong>Theorem (Ehresmann).</strong> Let <span class="math inline">\(\mathcal{X}\xrightarrow{\phi} B\)</span> be a family of complex manifolds, i.e., a holomorphic proper submersion. Let <span class="math inline">\(0\in B\)</span>. Then, up to replacing <span class="math inline">\(B\)</span> with a neighborhood of <span class="math inline">\(0\)</span>, there exists a <span class="math inline">\(C^\infty\)</span> trivialization</p>
+<figure class="latex-diagram"><img src="/posts/variations-of-hodge-structures/tikz/variations-of-hodge-structures_fig1.svg" alt="LaTeX diagram" loading="lazy"></figure>
+</div>
+<p>In other words, families/proper submersions are <span class="math inline">\(C^\infty\)</span> fiber products.</p>
+<div class="proof">
+<p><em>Proof sketch..</em> In a contractible neighborhood of <span class="math inline">\(B\)</span>, choose a vector field whose flow gives a deformation retraction to <span class="math inline">\(0\)</span>. Lift this vector field upstairs (non uniquely) and the flow gives a deformation retraction onto the fiber to <span class="math inline">\(X_0\)</span>. The flow exists for long enough due to properness. ◻</p>
+</div>
+<div class="remark"><p><strong>Remark.</strong> <strong>Fibers only diffeomorphic, not biholomorphic.</strong> We can understand these diffeomorphisms as equipping our favorite fiber <span class="math inline">\(X_0\)</span> with different complex structures, which will then induce different Hodge decompositions, i.e., different Hodge structures on cohomology.</p>
+</div>
+<p>Starting with a family, we want to extract just the notion of how the Hodge structures vary. So, we throw away this fiber product and replace it with a filtration of vector bundles over the base. That is, we will attach the de Rham cohomology of <span class="math inline">\(X_b\)</span> to <span class="math inline">\(b\in B\)</span> to get our largest vector bundle, and then we will have subbundles which are attaching the <span class="math inline">\(p\)</span>th Hodge filtration to <span class="math inline">\(b\)</span>.</p>
+<h1 id="formalism">Formalism</h1>
+<div class="definition"><p><strong>Definition.</strong> A local system <span class="math inline">\(H\)</span> over <span class="math inline">\(B\)</span> is a sheaf of abelian groups locally isomorphic to a constant sheaf of stalk <span class="math inline">\(G\)</span>.</p>
+</div>
+<p>We will call an isomorphism <span class="math inline">\(H|_U \cong \underline{G}|_U\)</span> a trivialization of the local system.</p>
+<div class="proposition"><p><strong>Proposition.</strong> Let <span class="math inline">\(\pi: \mathcal{X}\to B\)</span> be a family of complex manifolds. Then, <span class="math inline">\(R^k\pi_* \underline{\mathbb{C}}\)</span> is a local system on <span class="math inline">\(B\)</span>.</p>
+</div>
+<div class="proof">
+<p><em>Proof.</em> One can check that <span class="math inline">\(R^k\pi_* \underline{\mathbb{C}}\)</span> is the sheafification of <span class="math display">\[U\mapsto H^k(\pi^{-1}(U), \underline{\mathbb{C}}).\]</span> (by arguing that <span class="math inline">\(\mathcal{F}\mapsto s H^k(\pi^{-}(-),\mathcal{F})\)</span> is a universal <span class="math inline">\(\delta\)</span>-functor because it vanishes on injective objects, and then constructing a morphism of <span class="math inline">\(\delta\)</span>-functors from it to <span class="math inline">\(R^k\pi_*\)</span> that agrees on degree 0).</p>
+<p>Then, at a point <span class="math inline">\(0\in B\)</span>, by Ehresmann’s theorem there exists a (contractible) neighborhood <span class="math inline">\(B_0\)</span> such that <span class="math inline">\(\pi^{-1}(B_0)\)</span> is <span class="math inline">\(X_0\times B_0\)</span>, so projection <span class="math inline">\(X_0\times B_0\to X_0\)</span> is a homotopy equivalence, so <span class="math display">\[H^k(X_0\times B_0, \mathbb{C}) \cong H^k(X_0,\mathbb{C}).\]</span> This will tell us <span class="math display">\[(R^k\pi_* \underline{\mathbb{C}})|_{U_0} \cong \underline{H^k(X_0,\mathbb{C})}|_{U_0}\]</span> which tells us that it is indeed a local system on <span class="math inline">\(B\)</span>. ◻</p>
+</div>
+<p>Note that <span class="math inline">\(R^k\pi_* \underline{\mathbb{C}}\)</span> and local systems in general are <em>not</em> exactly vector bundles, in the sense of being locally free <span class="math inline">\(\mathcal{O}_B\)</span> or <span class="math inline">\(C^\infty\)</span> modules. Instead, we only have “flat” sections, sections which are constant on the trivializations of the local system.</p>
+<div class="definition"><p><strong>Definition.</strong> The holomorphic vector bundle associated to a <span class="math inline">\(\mathbb{C}\)</span>-vector space local system <span class="math inline">\(H\)</span> on <span class="math inline">\(B\)</span> is <span class="math display">\[\mathcal{H}= H \otimes_\mathbb{C}\mathcal{O}_B.\]</span> We denote the locally free sheaf by <span class="math inline">\(\mathcal{H}\)</span> and the geometric vector bundle by <span class="math inline">\(\mathbb{H}\)</span>. This vector bundle comes equipped with the holomorphic connection <span class="math inline">\(\nabla\)</span> called the <strong>Gauss-Manin connection</strong>, defined as follows: for <span class="math inline">\(\sigma\in \mathcal{H}(U)\)</span>, write locally <span class="math inline">\(\sigma = \sum_i \alpha_i \sigma_i\)</span> where <span class="math inline">\(\sigma_i\)</span> form a basis of a local trivialization of <span class="math inline">\(H\)</span>, and define <span class="math display">\[\begin{aligned}
+        \nabla: \mathcal{H}&amp;\longrightarrow \mathcal{H}\otimes \Omega_B\\
+        \sigma &amp;\longmapsto \sum_{i} \sigma_i \otimes d \alpha_i.
+    
+\end{aligned}\]</span> This is well-defined, since the transition functions <span class="math inline">\(g_{ij}: U_{ij}\to \mathrm{GL}(\mathbb{C}^r)\)</span> are constant because <span class="math inline">\(\mathcal{H}\)</span> comes from the local system <span class="math inline">\(H\)</span>.</p>
+</div>
+<p>This Gauss-Manin connection is flat, in the sense that <span class="math inline">\(\Theta = \nabla \circ \nabla = 0\)</span>, since the Gauss-Manin connection is computed locally by taking exterior derivatives of component functions of flat sections, and <span class="math inline">\(d^2=0\)</span>.</p>
+<p>We can also study a local system by its obstruction to being constant, which is the way in which <span class="math inline">\(\pi_1(B)\)</span> “moves” sections.</p>
+<div class="definition"><p><strong>Definition.</strong> The finite-dimensional representation of the fundamental group <span class="math inline">\(\pi_1(B,0)\)</span> associated to the local system <span class="math inline">\(H\)</span> is the homomorphism <span class="math display">\[\begin{aligned}
+        \rho: \pi_1(B,0) &amp;\longrightarrow \mathrm{GL}(H_0)\\
+        \alpha &amp;\longmapsto \tau^\alpha,
+    
+\end{aligned}\]</span> where <span class="math inline">\(\tau^\alpha\)</span> is calculated by pulling back <span class="math inline">\(H\)</span> to a sheaf <span class="math inline">\(\alpha^* H\)</span> on <span class="math inline">\([0,1]\)</span> which is literally constant, and looking at <span class="math display">\[H_0=(\alpha^* H)_1 \xleftarrow{\cong} H^0([0,1],\alpha^*H) \xrightarrow{\cong} (\alpha^* H)_0 = H_0.\]</span> Equivalently, <span class="math inline">\(\tau^\alpha\)</span> is defined by parallel transport of a value on the fiber <span class="math inline">\(H_0 = \mathcal{H}_0/m_0\mathcal{H}_0\)</span> along <span class="math inline">\(\alpha^{-1}\)</span>. In other words, this is the usual monodromy representation <span class="math inline">\(\pi_1(B,0) \to \mathrm{Hol}_0(\nabla)/\mathrm{Hol}_0^0(\nabla)\)</span> of the connection.</p>
+</div>
+<p>In fact, these pieces of data are all equivalent.</p>
+<div class="proposition"><p><strong>Proposition.</strong> Let <span class="math inline">\(B\)</span> be a connected complex manifold. There is an equivalence of categories between the following:</p>
+<ol>
+<li><p>Local systems of <span class="math inline">\(\mathbb{C}\)</span>-vector spaces on <span class="math inline">\(B\)</span>.</p></li>
+<li><p>Flat vector bundles <span class="math inline">\((\mathcal{H},\nabla)\)</span> on <span class="math inline">\(B\)</span>.</p></li>
+<li><p>Finite-dimensional <span class="math inline">\(\mathbb{C}\)</span>-representations of <span class="math inline">\(\pi_1(B,0)\)</span>.</p></li>
+</ol>
+</div>
+<div class="proof">
+<p><em>Proof.</em> <span class="math inline">\((1)\iff(2)\)</span>. We have seen how to go from a local system <span class="math inline">\(H\)</span> to a holomorphic vector bundle with flat connection <span class="math inline">\((\mathcal{H},\nabla)\)</span>. The reverse direction goes by defining a sheaf <span class="math inline">\(H\)</span> on <span class="math inline">\(B\)</span> which sends <span class="math inline">\(U\mapsto \{\text{flat sections on } U\}\)</span>, where a section <span class="math inline">\(\sigma\)</span> is flat if <span class="math inline">\(\nabla \sigma = 0\)</span>. The proof that this is actually a local system is a somewhat technical differential topology argument via Frobenius’ theorem.</p>
+<p><span class="math inline">\((2)\iff(3)\)</span>. We have seen how to construct monodromy representation of a flat vector bundle. Conversely, given a representation <span class="math display">\[\rho: \pi_1(B,0) \to \mathrm{GL}(\mathbb{C}^r)\]</span> we can get a flat vector bundle by considering the universal cover <span class="math display">\[\pi: \widetilde{B} \to B\]</span> and quotienting the trivial bundle <span class="math inline">\(\widetilde{B}\times \mathbb{C}^r\)</span> by <span class="math inline">\(\pi_1(B,0)\)</span> acting via <span class="math display">\[\alpha \cdot (\widetilde{b},v) = (\alpha\cdot \widetilde{b},\rho(\alpha^{-1})v).\]</span> ◻</p>
+</div>
+<div class="definition"><p><strong>Definition.</strong> Let <span class="math inline">\(B\)</span> be a connected complex manifold. An <strong>variation of Hodge structures</strong> of weight <span class="math inline">\(k\)</span> (VHS) over <span class="math inline">\(B\)</span> consists of a local system <span class="math inline">\(H_\mathbb{Z}\)</span> and a filtration of the associated holomorphic vector bundle <span class="math inline">\(\mathbb{H}\)</span> gotten from <span class="math inline">\(\mathcal{H}= H_\mathbb{Z}\otimes_\mathbb{Z}\mathcal{O}_B\)</span> <span class="math display">\[\cdots \subseteq \mathbb{F}^p \subseteq \mathbb{F}^{p-1} \subseteq \cdots\]</span> satisfying</p>
+<ol>
+<li><p><span class="math inline">\(\mathbb{H}= \mathbb{F}^p \oplus \overline{\mathbb{F}^{k-p+1}}\)</span> as <span class="math inline">\(C^\infty\)</span> bundles.</p></li>
+<li><p><span class="math inline">\(\nabla(\mathcal{F}^p) \subseteq \Omega_B^1 \otimes \mathcal{F}^{p-1}\)</span> (Griffiths’ Transversality).</p></li>
+</ol>
+</div>
+<p>Our setup of a family of complex manifolds <span class="math inline">\(\pi: \mathcal{X}\to B\)</span> gives us a variation of Hodge structures: the local system is <span class="math inline">\(H^k_\mathbb{Z}= R^k\pi_* \underline{\mathbb{Z}}\)</span>, the filtration is pointwise given by the Hodge filtrations on the fibers <span class="math inline">\(\mathbb{H}^k_p = H^k(X_b, \mathbb{C})\)</span>, and Griffiths’ transversality is a theorem we won’t prove in these notes (and unfortunately won’t see in our example because we won’t go into high enough dimensions). The fact that the filtrations assemble into vector bundles is a theorem of Kodaira that follows from constancy of Hodge numbers. This in turn is due to the Hodge numbers varying semicontinuously (in the algebraic setting this follows from Hartshorne, and more generally it is by studying the kernel of elliptic operators), and then the Hodge numbers always add up to the betti numbers, which is constant by Ehresmann.</p>
+<h1 id="example">Example</h1>
+<p>We will work out all of these things in an example. Define <span class="math display">\[\mathcal{X}= \{y^2=x(x-1)(x-\lambda) \} \subseteq \mathbb{P}^2\times (\mathbb{A}^1\setminus\{0,1\})\]</span> which projects onto <span class="math inline">\(\lambda\)</span> in <span class="math display">\[B = \mathbb{A}^1\setminus\{0,1\}.\]</span> This is the <strong>Legendre family</strong>. To get our hands dirty, we will</p>
+<ul>
+<li><p>See how to locally identify the de Rham cohomology of the fibers</p></li>
+<li><p>See how to get the Hodge filtration as the span of a section of our flat vector bundle</p></li>
+<li><p>Compute the Gauss-Manin derivative of our section to see that the variation of Hodge structures indeed varies</p></li>
+<li><p>Compute the monodromy representation of our local system/flat vector bundle.</p></li>
+</ul>
+<h2 id="cohomology-of-a-fiber.">Cohomology of a Fiber.</h2>
+<p>For a fixed <span class="math inline">\(\lambda\in \mathbb{C}\setminus\{0,1\}\)</span>, the fiber <span class="math inline">\(\mathcal{E}_\lambda\)</span> is the elliptic curve <span class="math display">\[y^2=x(x-1)(x-\lambda),\]</span> which is a branched double cover of <span class="math inline">\(\mathbb{P}^1\)</span> by projecting to <span class="math inline">\(x\)</span>. To understand the topology of <span class="math inline">\(\mathcal{E}_\lambda\)</span>, we place “branch cuts” so that <span class="math inline">\(y\)</span> has a single-valued determinations, i.e., <span class="math inline">\(\sqrt{x(x-1)(x-\lambda)}\)</span> can be analytically continued to all of <span class="math inline">\(\mathbb{P}^1\setminus\{\text{branch cuts}\}\)</span>.</p>
+<div class="center">
+<p><img src="/posts/variations-of-hodge-structures/variation_fig1.png" alt="image" /></p>
+</div>
+<p>(figure from <span class="citation" data-cites="carlson">(<a href="#ref-carlson" role="doc-biblioref">Carlson, Müller-Stach, and Peters 2017</a>)</span>). Then, gluing these two sheets together we get <span class="math inline">\(\mathcal{E}_\lambda\)</span></p>
+<div class="center">
+<p><img src="/posts/variations-of-hodge-structures/variation_fig2.png" alt="image" /></p>
+</div>
+<p>(figure from <span class="citation" data-cites="carlson">(<a href="#ref-carlson" role="doc-biblioref">Carlson, Müller-Stach, and Peters 2017</a>)</span>) which is a torus! The interesting cohomology groups for us will be <span class="math inline">\(H^1\)</span>, since there isn’t anything to say about the Hodge structures in degree 0 or 1—a Hodge structure of weight 0 is boring, and since each <span class="math inline">\(\mathcal{E}_\lambda\)</span> is a complex torus, <span class="math inline">\(H^2\cong \mathbb{C}\)</span> has to just be <span class="math inline">\(H^{1,1}\)</span>, otherwise our dimension would be too high.</p>
+<p>So, we pick curves which represent a homology basis of <span class="math inline">\(H_1\)</span>, choosing orientations so that <span class="math inline">\(\delta \cdot \gamma = 1\)</span>. We also get a dual basis <span class="math inline">\(\delta^*,\gamma^*\)</span> for cohomology.</p>
+<p>Now, for a nearby choice of <span class="math inline">\(\lambda\)</span>, the essentially the same choice of <span class="math inline">\(\delta,\gamma\)</span> in <span class="math inline">\(\mathbb{P}^1\)</span> will give the identifications of (co)homology. So locally, <span class="math display">\[R^1\pi_*\underline{\mathbb{C}} = \mathbb{C}\delta \oplus \mathbb{C}\gamma\]</span></p>
+<h2 id="hodge-filtration-of-vector-bundle.">Hodge filtration of vector bundle.</h2>
+<p>We define the form <span class="math display">\[\omega = \frac{dx}{y} = \frac{dx}{\sqrt{x(x-1)(x-\lambda)}}\]</span> on our family <span class="math inline">\(\mathcal{X}\)</span>, which when restricted to each <span class="math inline">\(\mathcal{E}_\lambda\)</span> is holomorphic and therefore closed. This gives us a section of our vector bundle <span class="math inline">\(\mathbb{H}^1\)</span> by <span class="math display">\[\lambda \longmapsto [\omega_\lambda]\]</span> where <span class="math inline">\(\omega_\lambda\)</span> denotes the restriction to the fiber <span class="math inline">\(\mathcal{E}_\lambda\)</span>. Since <span class="math inline">\(\omega_\lambda\)</span> is holomorphic, we will have <span class="math display">\[[\omega_\lambda] \in H^{1,0}(X_\lambda).\]</span> We would like to say that <span class="math inline">\(\mathcal{F}^1 = \mathcal{O}_X \cdot [\omega_\lambda]\)</span>, but we need to check that <span class="math inline">\([\omega_\lambda]\neq 0\)</span> for any <span class="math inline">\(\lambda\)</span>.</p>
+<p>We are trivializing our bundle <span class="math inline">\(\mathbb{H}^1\)</span> by <span class="math inline">\(\delta^*,\gamma^*\)</span>, so in these coordinates we can write <span class="math display">\[[\omega_\lambda] = \delta^*\int_\delta \omega_\lambda + \gamma^* \int_\gamma \omega_\lambda.\]</span> Denote these integrals by <span class="math inline">\(A=A(\lambda)\)</span> and <span class="math inline">\(B=B(\lambda)\)</span> respectively, and we want to show at least one is nonzero. To do this, we show <span class="math display">\[[\omega]\smile [\overline{\omega}] = (A\overline{B}-B\overline{A})\delta^* \smile \gamma^* = -2i\operatorname{Im}(B\overline{A})\delta^* \smile \gamma^*\]</span> is nonzero. On one hand, <span class="math display">\[i\int_{\mathcal{E}} \omega \wedge \overline{\omega} = 2\operatorname{Im}(B\overline{A}),\]</span> (up to a positive scalar multiple) because <span class="math inline">\(\omega^*\smile \gamma^*\)</span> is the orientation.</p>
+<p>On the other hand, since <span class="math inline">\(\omega\)</span> is holomorphic, it is locally given by <span class="math inline">\(\omega=fdz\)</span>, so <span class="math display">\[\omega \wedge \overline{\omega} = |f|^2 dz\wedge d\overline{z} = -2i|f|^2 dx\wedge dy,\]</span> so <span class="math display">\[i\omega\wedge \overline{\omega} = 2|f|^2 dx\wedge dy \geq 0,\]</span> so <span class="math inline">\(i\int\omega\wedge\overline{\omega}\)</span> is positive and in particular nonzero.</p>
+<h2 id="gauss-manin-derivative">Gauss-Manin Derivative</h2>
+<p>Now, we’d like to see that our Hodge structure on de Rham cohomology actually varies as we vary <span class="math inline">\(\lambda\)</span>. To see this, we compute the derivative of <span class="math inline">\([\omega_\lambda]\)</span> with respective to the Gauss-Manin connection, and see that we get something nonzero.</p>
+<p>As per the definition, <span class="math display">\[\nabla [\omega_\lambda] = dA(\lambda) \delta^* + dB(\lambda) \gamma^*,\]</span> since the <span class="math inline">\(\delta^*,\gamma^*\)</span> provide the local trivialization. Locally, we can think of <span class="math inline">\(\delta,\gamma\)</span> as fixed curves in <span class="math inline">\(\mathbb{P}^1\)</span>, against which we integrate the form <span class="math inline">\(\omega_\lambda\)</span> which varies with <span class="math inline">\(\lambda\)</span>. In this case, for example, <span class="math display">\[\begin{aligned}
+    dA(\lambda) &amp;= \frac{\partial}{\partial\lambda} A(\lambda) d\lambda\\
+    &amp;= \left(\frac{\partial }{\partial \lambda} \int_{\delta} \frac{dx}{\sqrt{x(x-1)(x-\lambda)}}\right) d\lambda\\
+    &amp;= \left(\int_\delta \frac{\partial }{\partial \lambda} \frac{1}{\sqrt{x(x-1)(x-\lambda)}} dx\right) d\lambda\\
+    &amp;= \left(\int_\delta \frac{dx}{2\sqrt{x(x-1)(x-\lambda)^3}} \right) d\lambda
+\end{aligned}\]</span> and similarly for <span class="math inline">\(dB(\lambda)\)</span>. So, we see that <span class="math inline">\(\nabla [\omega_\lambda] = [\omega_\lambda&#39;] \otimes d\lambda\)</span>, where <span class="math display">\[\omega_\lambda&#39; = \frac{dx}{2\sqrt{x(x-1)(x-\lambda)^3}}.\]</span> This doesn’t actually make sense at first glance—this form has a pole at <span class="math inline">\(\lambda\)</span>, but it turns out the residue is 0, so by the Gysin sequence, this form represents a cohomology class on all of <span class="math inline">\(\mathcal{E}_\lambda\)</span>: For a Riemann surface <span class="math inline">\(S\)</span> and a discrete subset <span class="math inline">\(A\)</span>, we have <span class="math display">\[0 \to H^1(S) \to H^1(S\setminus A) \xrightarrow{\mathrm{res}} H^0(A) \to H^0(S) \to 0,\]</span> which is obtained from the LES of the pair <span class="math inline">\((S,S-A)\)</span> and doing Poincaré duality.</p>
+<p>Now, one can show <span class="math inline">\(\nabla [\omega_\lambda] = [\omega_\lambda&#39;]\otimes d\lambda\)</span> is nonzero by reducing to a residue integral calculation.</p>
+<h2 id="monodromy-representation">Monodromy Representation</h2>
+<p>Finally, we compute the monodromy representation <span class="math display">\[\rho: \pi_1(\mathbb{P}^1\setminus\{0,1,\infty\}) \to \mathrm{GL}(\mathbb{C}^2)\]</span> associated to our local system <span class="math inline">\(R^1\pi_* \underline{\mathbb{C}}\)</span>. First, the fundamental group of our base space is generated by the following loops <span class="math inline">\(a,b\)</span>:</p>
+<div class="center">
+<p><img src="/posts/variations-of-hodge-structures/variation_fig3.png" alt="image" /></p>
+</div>
+<p>(figure from <span class="citation" data-cites="carlson">(<a href="#ref-carlson" role="doc-biblioref">Carlson, Müller-Stach, and Peters 2017</a>)</span>). So, we have to compute the image of <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span>. Let’s compute <span class="math inline">\(\rho(a)\)</span>. This is done by going around <span class="math inline">\(a\)</span> at small timesteps so that our local system <span class="math inline">\(R^1\pi_* \underline{\mathbb{C}}\)</span> identifies <span class="math inline">\(H^1(\mathcal{E}_{\lambda_k}; \mathbb{C})\)</span> with <span class="math inline">\(H^1(\mathcal{E}_{\lambda_{k+1}};\mathbb{C})\)</span>, and then to compose these identifications until we potentially get something nontrivial when doing the entire loop. Now, these cohomologies are identified by the diffeomorphisms coming from flowing along the base space, as per the proof of Ehresmann. So, our final isomorphism <span class="math inline">\(\tau^\alpha: H^1(\mathcal{E}_{p};\mathbb{C}) \to H^1(\mathcal{E}_{p};\mathbb{C})\)</span> will be given by (the inverse of) the induced map from the diffeomorphism which is flowing around the entire loop of <span class="math inline">\(a\)</span>.</p>
+<p>Practically, pick a small circle <span class="math inline">\(S^1\)</span> around <span class="math inline">\(0\)</span>, and give it the CW vector field <span class="math inline">\(\frac{\partial }{\partial \theta}\)</span>, which we lift upstairs. Let <span class="math inline">\(g_t\)</span> be the time <span class="math inline">\(t\)</span> map of the flow. Then, <span class="math inline">\(\rho(a)\)</span> will be given by (the inverse of) <span class="math display">\[g_{2\pi}^*: H^1(\mathcal{E}_p, \mathbb{C}) \to H^1(\mathcal{E}_p, \mathbb{C}).\]</span></p>
+<p>To compute these, we first choose new branch cuts to make it more convenient. We have the following picture:</p>
+<div class="center">
+<p><img src="/posts/variations-of-hodge-structures/variation_fig4.png" alt="image" /></p>
+</div>
+<p>Now, we draw the following steps:</p>
+<div class="center">
+<p><img src="/posts/variations-of-hodge-structures/variation_fig5.png" alt="image" /></p>
+</div>
+<p>We relabel the “new” <span class="math inline">\(\delta,\gamma\)</span> by <span class="math inline">\(\delta&#39;,\gamma&#39;\)</span>, and we want to understand how they have transformed via the flow. So, we write <span class="math inline">\(\delta&#39;,\gamma&#39;\)</span> in terms of our old basis, by computing them under <span class="math inline">\(\delta^*, \gamma^*\)</span>. As usual in Poincaré duality, cohomology classes are pairings/intersections with homology classes of the complementary dimensions. This tells us that <span class="math display">\[\delta^*(\alpha) = \alpha \cdot \gamma, \qquad \gamma^*(\alpha) = \delta \cdot \alpha,\]</span> so we compute using the following picture:</p>
+<div class="center">
+<p><img src="/posts/variations-of-hodge-structures/variation_fig6.png" alt="image" /></p>
+</div>
+<p>giving us <span class="math display">\[\begin{aligned}
+    \delta&#39; &amp;= \delta - 2\gamma\\
+    \gamma&#39; &amp;= \gamma,
+\end{aligned}\]</span> so we see that, represented in the basis <span class="math inline">\(\{\delta,\gamma\}\)</span> <span class="math display">\[(g_{2\pi})_* = T = \begin{bmatrix}
+    1 &amp; 0\\
+    -2 &amp; 1
+\end{bmatrix},\]</span> so <span class="math display">\[\rho(a) = (T^*)^{-1} = \begin{bmatrix}
+    1 &amp; 2\\
+    0 &amp; 1
+\end{bmatrix}.\]</span> Similar computations should tell us (apparently?) <span class="math display">\[\rho(b) = \begin{bmatrix}
+    1 &amp; 0\\
+    -2 &amp; 1
+\end{bmatrix},\]</span> which determines our representation <span class="math inline">\(\rho\)</span>.</p>
+<p></p>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-carlson" class="csl-entry" role="listitem">
+Carlson, James, Stefan Müller-Stach, and Chris Peters. 2017. <em>Period Mappings and Period Domains</em>. 2nd ed. Cambridge Studies in Advanced Mathematics. Cambridge University Press.
+</div>
+<div id="ref-cattani" class="csl-entry" role="listitem">
+Cattani, Eduardo, Fouad El Zein, Phillip A. Griffiths, and Lê Dũng Tráng. 2013. <em>Hodge Theory</em>. Princeton University Press.
+</div>
+<div id="ref-voison" class="csl-entry" role="listitem">
+Voisin, Claire. 2002. <em>Hodge Theory and Complex Algebraic Geometry i</em>. Edited by LeilaTranslator Schneps. Cambridge Studies in Advanced Mathematics. Cambridge University Press.
+</div>
+</div>
