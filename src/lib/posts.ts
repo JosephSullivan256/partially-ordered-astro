@@ -9,6 +9,11 @@ export interface Post {
   tags: string[];
 }
 
+export interface PostTag {
+  name: string;
+  slug: string;
+}
+
 export const posts: Post[] = [
   { slug: 'de-rham', title: 'De Rham’s Theorem', date: 'December 2023', excerpt: 'De Rham’s theorem provides an important connection between topology and smooth manifolds: de Rham cohomology is real singular cohomology, with the isomorphism given by integration.', tags: ['Topology'] },
   { slug: 'covering-spaces', title: 'Covering Spaces', date: 'August 2022', excerpt: 'Covering spaces are a cool thing in topology. Finding covering spaces is like unwrapping a topological space, with intimate connections to the fundamental group.', tags: ['Topology'] },
@@ -20,6 +25,17 @@ export const posts: Post[] = [
 ];
 
 export const featuredPosts = posts.slice(0, 3);
+
+export function tagSlug(tag: string) {
+  return tag.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+export const tags: PostTag[] = [...new Set(posts.flatMap((post) => post.tags))]
+  .map((name) => ({ name, slug: tagSlug(name) }));
+
+export function postsForTag(tag: PostTag) {
+  return posts.filter((post) => post.tags.includes(tag.name));
+}
 
 export function articleHtml(slug: string) {
   const source = readFileSync(join(process.cwd(), 'src', 'article-source', 'posts', `${slug}.html`), 'utf8');

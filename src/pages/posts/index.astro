@@ -1,13 +1,24 @@
 ---
 import Layout from '../../layouts/BreadcrumbLayout.astro';
 import PostCard from '../../components/PostCard.astro';
-import { posts } from '../../lib/posts';
+import { posts, tags } from '../../lib/posts';
 ---
 
 <Layout title="posts · Partially Ordered">
-  <section class="bg-paper w-full px-6 py-16">
-    <div class="mx-auto max-w-128 flex flex-col gap-6">
-      {posts.map((post) => <PostCard post={post} />)}
+  <section class="bg-paper w-full px-6 py-16 md:pl-50 md:pr-70">
+    <div class="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[14rem_minmax(0,1fr)]">
+      <aside class="lg:sticky lg:top-8 lg:self-start" aria-label="Post navigation">
+        <h2 class="text-2xl font-semibold text-stone-900">Table of Contents</h2>
+        <nav class="mt-5 text-sm">
+          <p class="mt-6 font-medium uppercase tracking-wide text-stone-500">Tags</p>
+          <ul class="mt-2 space-y-2">
+            {tags.map((tag) => <li><a href={`/posts/tags/${tag.slug}`}>{tag.name}</a></li>)}
+          </ul>
+        </nav>
+      </aside>
+      <div class="flex min-w-0 flex-col gap-6">
+        {posts.map((post) => <PostCard post={post} />)}
+      </div>
     </div>
   </section>
 </Layout>

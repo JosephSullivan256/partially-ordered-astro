@@ -1,0 +1,25 @@
+---
+import PostCard from '../../../components/PostCard.astro';
+import Layout from '../../../layouts/BreadcrumbLayout.astro';
+import { postsForTag, tags } from '../../../lib/posts';
+
+export function getStaticPaths() {
+  return tags.map((tag) => ({ params: { tag: tag.slug }, props: { tag } }));
+}
+
+const { tag } = Astro.props;
+const taggedPosts = postsForTag(tag);
+---
+
+<Layout title={`${tag.name} posts · Partially Ordered`} currentLabel={`${tag.name}`} crumb_filter={(crumb)=>crumb.label!="tags"}>
+  <section class="bg-paper w-full px-6 py-16 md:px-70">
+    <div class="mx-auto max-w-4xl">
+      <p class="text-sm font-medium uppercase tracking-wide text-stone-500">Tag</p>
+      <h1 class="mt-2 text-4xl font-semibold text-stone-900">{tag.name}</h1>
+      <p class="mt-8"><a href="/posts">← All posts</a></p>
+      <div class="mt-8 flex flex-col gap-6">
+        {taggedPosts.map((post) => <PostCard post={post} />)}
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -16,5 +16,8 @@
     "astro": "^7.2.4",
     "mathjax": "^3.2.2",
     "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.3.0"
   }
 }

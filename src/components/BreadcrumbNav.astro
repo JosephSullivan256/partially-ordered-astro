@@ -1,10 +1,6 @@
 ---
-interface Props {
-  /** Replaces the generated final path segment when a page has a display title. */
-  currentLabel?: string;
-}
 
-const { currentLabel, navclass } = Astro.props;
+const { currentLabel, navclass, crumb_filter } = Astro.props;
 const segments = Astro.url.pathname.split('/').filter(Boolean);
 
 const formatSegment = (segment: string) => segment
@@ -18,7 +14,7 @@ const crumbs = [
     href: `/${segments.slice(0, index + 1).join('/')}`,
     label: index === segments.length - 1 && currentLabel ? currentLabel : formatSegment(segment),
   })),
-];
+].filter(crumb_filter);
 ---
 
 <header class={navclass+" breadcrumb-header"}>
